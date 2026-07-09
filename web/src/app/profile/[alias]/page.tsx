@@ -130,7 +130,7 @@ export default function ProfilePage() {
 
             {/* Badges Container */}
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-6">
-              {isOwner && (
+              {(isOwner || (typeof window !== 'undefined' && localStorage.getItem("pitchsense_alias")?.toLowerCase() === alias.toLowerCase())) && (
                 <button
                   onClick={() => setIsEditingAvatar(!isEditingAvatar)}
                   className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors"
