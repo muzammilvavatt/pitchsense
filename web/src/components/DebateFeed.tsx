@@ -114,7 +114,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
     if (!error) {
       setReplyingTo(null);
       setReplyContent("");
-      fetchPredictions();
+      fetchPredictions(sortBy);
     }
     setSubmittingReply(false);
   };
