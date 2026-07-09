@@ -61,6 +61,8 @@ export default function Home() {
     await supabase.auth.signOut();
     setAlias(null);
     setAvatarUrl(null);
+    localStorage.removeItem("pitchsense_alias");
+    localStorage.removeItem("pitchsense_avatar_url");
   };
 
   if (loading) {
