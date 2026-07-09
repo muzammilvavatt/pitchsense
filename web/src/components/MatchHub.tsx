@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Bot, User, CheckCircle2, AlertCircle } from "lucide-react";
+import { Bot, User, CheckCircle2, AlertCircle, Share2, Copy } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import SeasonBanner from "./SeasonBanner";
 
@@ -117,15 +117,35 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
     </div>
   );
 
+  const handleShare = async (match: any) => {
+    const text = `Who will win ${match.home_team} vs ${match.away_team}? Make your prediction on PitchSense!`;
+    const url = window.location.origin;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'PitchSense Prediction',
+          text: text,
+          url: url,
+        });
+      } catch (err) {
+        console.log('Share dismissed');
+      }
+    } else {
+      navigator.clipboard.writeText(`${text} ${url}`);
+      alert("Link copied to clipboard!");
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-8">
+      <SeasonBanner />
       {successMsg && (
         <div className="bg-emerald-500/20 border border-emerald-500 text-emerald-400 p-4 rounded-lg flex items-center gap-3 animate-fade-in">
           <CheckCircle2 size={20} /> {successMsg}
         </div>
       )}
 
-      <SeasonBanner />
 
       {(() => {
         const groupedMatches = matches.reduce((acc, match) => {
@@ -150,11 +170,19 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
 
               return (
           <div key={match.id} className="glass-card overflow-hidden">
-            <div className="bg-slate-800/80 p-4 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div className="bg-slate-800/80 p-4 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h3 className="font-bold text-lg md:text-xl">
                 {match.home_team} <span className="text-slate-500 font-normal mx-1 md:mx-2 text-sm md:text-base">vs</span> {match.away_team}
               </h3>
-              <span className="text-xs md:text-sm text-slate-400 bg-slate-900 px-3 py-1 rounded-full whitespace-nowrap">{kickoff}</span>
+              <div className="flex items-center gap-3 self-end sm:self-auto">
+                <span className="text-xs md:text-sm text-slate-400 bg-slate-900 px-3 py-1 rounded-full whitespace-nowrap">{kickoff}</span>
+                <button
+                  onClick={() => handleShare(match)}
+                  className="flex items-center gap-2 text-slate-300 bg-slate-700/50 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition-colors"
+                >
+                  <Share2 size={16} /> Share
+                </button>
+              </div>
             </div>
 
             <div className="flex justify-between items-center px-2 md:px-8 py-6 mb-2 mt-4 mx-4 relative bg-slate-900/30 rounded-2xl border border-slate-800/50">
