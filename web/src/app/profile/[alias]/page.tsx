@@ -59,6 +59,44 @@ export default function ProfilePage() {
     fetchProfile();
   }, [alias]);
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_SIZE = 150;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+        setNewAvatarUrl(dataUrl);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const saveAvatar = async () => {
     setSavingAvatar(true);
     // Update local storage
@@ -70,6 +108,12 @@ export default function ProfilePage() {
     // Update all previous predictions in DB
     await supabase
       .from("predictions")
+      .update({ avatar_url: newAvatarUrl })
+      .eq("alias", alias);
+      
+    // Update all previous replies in DB
+    await supabase
+      .from("replies")
       .update({ avatar_url: newAvatarUrl })
       .eq("alias", alias);
       
@@ -194,13 +238,17 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-slate-800">
-                  <input 
-                    type="url" 
-                    value={newAvatarUrl}
-                    onChange={(e) => setNewAvatarUrl(e.target.value)}
-                    placeholder="Or paste a custom image URL..."
-                    className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
-                  />
+                  <div className="flex-1 flex items-center gap-3">
+                    <label className="flex-1 cursor-pointer bg-slate-950 border border-slate-700 hover:border-emerald-500 rounded-lg px-4 py-2 text-sm text-slate-400 text-center transition-colors">
+                      {newAvatarUrl && newAvatarUrl.startsWith('data:image') ? '✅ Custom Image Selected' : '📁 Upload a Custom Image...'}
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                      />
+                    </label>
+                  </div>
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setIsEditingAvatar(false)}
