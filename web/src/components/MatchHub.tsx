@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Bot, User, CheckCircle2, AlertCircle } from "lucide-react";
+import { Bot, User, CheckCircle2, AlertCircle, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUrl?: string | null }) {
@@ -107,6 +107,28 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
     }
   };
 
+  const deletePrediction = async (matchId: string) => {
+    if (!confirm("Are you sure you want to delete your prediction for this match?")) return;
+    
+    setSubmitting(matchId);
+    const { error } = await supabase
+      .from("predictions")
+      .delete()
+      .eq("alias", alias)
+      .eq("match_id", matchId);
+      
+    setSubmitting(null);
+    if (!error) {
+      setSuccessMsg("Prediction deleted successfully!");
+      setPredictions(prev => {
+        const newPreds = { ...prev };
+        delete newPreds[matchId];
+        return newPreds;
+      });
+      setTimeout(() => setSuccessMsg(null), 3000);
+    }
+  };
+
   if (loading) return <div className="text-center py-10 text-slate-400">Loading fixtures...</div>;
 
   if (matches.length === 0) return (
@@ -184,7 +206,15 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
                 </div>
                 
                 {pred.locked ? (
-                  <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6 text-center space-y-2 shadow-inner">
+                  <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6 text-center space-y-2 shadow-inner relative">
+                    <button 
+                      onClick={() => deletePrediction(match.id)}
+                      className="absolute top-4 right-4 text-slate-500 hover:text-red-400 transition-colors"
+                      title="Delete Prediction"
+                      disabled={submitting === match.id}
+                    >
+                      <Trash2 size={18} />
+                    </button>
                     <CheckCircle2 className="mx-auto text-emerald-400 mb-2" size={32} />
                     <h4 className="text-white font-bold text-lg">Prediction Locked</h4>
                     <p className="text-slate-400 text-sm">You predicted <span className="font-bold text-white">{pred.winner} ({pred.score})</span>.</p>
