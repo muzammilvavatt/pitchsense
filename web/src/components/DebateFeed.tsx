@@ -11,17 +11,25 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
+  const [sortBy, setSortBy] = useState<"top" | "recent">("top");
+  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
 
-  const fetchPredictions = async () => {
-    const { data } = await supabase
+  const fetchPredictions = async (currentSort: "top" | "recent") => {
+    let query = supabase
       .from("predictions")
       .select(`
         id, alias, prediction, score_prediction, justification, likes, created_at,
         matches ( home_team, away_team ),
         replies ( id, alias, avatar_url, content, created_at )
-      `)
-      .order("created_at", { ascending: false })
-      .limit(50);
+      `);
+      
+    if (currentSort === "top") {
+      query = query.order("likes", { ascending: false }).order("created_at", { ascending: false });
+    } else {
+      query = query.order("created_at", { ascending: false });
+    }
+    
+    const { data } = await query.limit(50);
     
     if (data) {
       // Sort replies by creation time for each prediction
@@ -41,21 +49,27 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
       setLikedIds(new Set(JSON.parse(storedLikes)));
     }
     
-    fetchPredictions();
+    fetchPredictions(sortBy);
     
     // Subscribe to new predictions
     const channel = supabase
       .channel("public:predictions")
       .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, payload => {
-        // Simple refetch to keep it easy
-        fetchPredictions();
+        fetchPredictions(sortBy);
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [sortBy]);
+
+  const toggleExpand = (id: string) => {
+    const newSet = new Set(expandedPosts);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setExpandedPosts(newSet);
+  };
 
   const handleUpvote = async (id: string, currentLikes: number) => {
     const isLiked = likedIds.has(id);
@@ -121,6 +135,26 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
 
   return (
     <div className="space-y-4 max-w-3xl mx-auto">
+      <div className="flex justify-between items-center mb-2 border-b border-slate-800/50 pb-3">
+        <h2 className="text-lg font-bold text-white hidden md:flex items-center gap-2">
+          <MessageSquare className="text-blue-500" size={18} /> Match Debates
+        </h2>
+        <div className="flex bg-slate-900/80 rounded-lg p-1 border border-slate-800 ml-auto md:ml-0">
+          <button 
+            onClick={() => setSortBy("top")}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${sortBy === "top" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"}`}
+          >
+            Top
+          </button>
+          <button 
+            onClick={() => setSortBy("recent")}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${sortBy === "recent" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"}`}
+          >
+            Recent
+          </button>
+        </div>
+      </div>
+
       {predictions.length === 0 ? (
         <div className="glass-card p-10 text-center text-slate-400">No predictions yet.</div>
       ) : (
@@ -185,9 +219,17 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                   </div>
 
                   <div className="bg-slate-900/50 p-3 md:p-4 rounded-xl border border-slate-800/80 mb-3">
-                    <p className="text-white text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap">
+                    <p className={`text-white text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
                       {p.justification}
                     </p>
+                    {p.justification?.length > 180 && !expandedPosts.has(p.id) && (
+                      <button 
+                        onClick={() => toggleExpand(p.id)}
+                        className="text-blue-400 text-sm font-bold mt-2 hover:underline"
+                      >
+                        Read more
+                      </button>
+                    )}
                   </div>
 
                   {/* Action Bar */}
