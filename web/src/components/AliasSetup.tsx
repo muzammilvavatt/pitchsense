@@ -81,30 +81,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
       } else if (data.session) {
         let finalAvatarUrl = null;
 
-        // If they selected a file, upload it now that they are authenticated
-        if (avatarFile && data.user) {
-          const fileExt = avatarFile.name.split('.').pop();
-          const fileName = `${data.user.id}-${Date.now()}.${fileExt}`;
-          
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(fileName, avatarFile);
-            
-          if (!uploadError) {
-            const { data: { publicUrl } } = supabase.storage
-              .from('avatars')
-              .getPublicUrl(fileName);
-              
-            finalAvatarUrl = publicUrl;
-            
-            // Update auth metadata
-            await supabase.auth.updateUser({
-              data: { avatar_url: publicUrl }
-            });
-          } else {
-            console.error("Failed to upload avatar:", uploadError);
-          }
-        }
+
 
         // Log them in
         onAliasSet(trimmedAlias, finalAvatarUrl);
@@ -198,31 +175,6 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
                   maxLength={50}
                   required={!isLogin}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Profile Picture (Optional)</label>
-                <div className="flex items-center gap-4">
-                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-slate-800 border-2 border-slate-700 flex-shrink-0 flex items-center justify-center">
-                    {avatarPreview ? (
-                      <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-slate-500 font-bold text-xl">
-                        {alias ? alias.charAt(0).toUpperCase() : '?'}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <label className="cursor-pointer bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-300 font-medium transition-colors inline-block text-center w-full">
-                      Choose Image
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                </div>
               </div>
             </div>
           )}
