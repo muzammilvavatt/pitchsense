@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Info, X, Trophy, Brain, Target, Heart, Crosshair } from "lucide-react";
 
 export default function HowItWorksModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <>
@@ -13,9 +19,9 @@ export default function HowItWorksModal() {
         <Info size={16} /> How it Works
       </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] grid place-items-center overflow-y-auto p-4 bg-black/80 backdrop-blur-md transition-opacity">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative animate-in fade-in zoom-in duration-200 my-8">
+      {isOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[100] grid place-items-center p-4 bg-black/80 backdrop-blur-md transition-opacity">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative animate-in fade-in zoom-in duration-200 my-8 max-h-[90vh] overflow-y-auto">
             <button 
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
@@ -82,7 +88,7 @@ export default function HowItWorksModal() {
               </button>
             </div>
           </div>
-        </div>
+        </div>, document.body
       )}
     </>
   );
