@@ -224,17 +224,16 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                     </span>
                   </div>
 
-                  <div className="mb-2">
+                  <div className="mb-2 cursor-pointer group" onClick={() => toggleExpand(p.id)}>
                     <p className={`text-slate-200 text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
                       {p.justification}
                     </p>
-                    {p.justification?.length > 180 && !expandedPosts.has(p.id) && (
-                      <button 
-                        onClick={() => toggleExpand(p.id)}
-                        className="text-blue-400 text-sm font-bold mt-1 hover:underline"
+                    {p.justification?.length > 120 && !expandedPosts.has(p.id) && (
+                      <span 
+                        className="text-blue-400 text-sm font-bold mt-1 group-hover:underline inline-block"
                       >
                         Read more
-                      </button>
+                      </span>
                     )}
                   </div>
 
