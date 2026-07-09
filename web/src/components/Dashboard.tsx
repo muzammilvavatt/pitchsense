@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LogOut, Trophy, MessageSquare, LayoutDashboard } from "lucide-react";
+import { LogOut, Trophy, MessageSquare, LayoutDashboard, Palette } from "lucide-react";
 import MatchHub from "./MatchHub";
 import DebateFeed from "./DebateFeed";
 import Leaderboard from "./Leaderboard";
@@ -9,7 +9,7 @@ import Link from "next/link";
 
 type Tab = "hub" | "debate" | "leaderboard";
 
-export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLoginClick }: { alias: string, avatarUrl?: string | null, onLogout: () => void, isGuest?: boolean, onLoginClick?: () => void }) {
+export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLoginClick, theme, onToggleTheme }: { alias: string, avatarUrl?: string | null, onLogout: () => void, isGuest?: boolean, onLoginClick?: () => void, theme?: "dark" | "worldcup", onToggleTheme?: () => void }) {
   const [activeTab, setActiveTab] = useState<Tab>("hub");
   const [localAvatar, setLocalAvatar] = useState<string | null>(null);
 
@@ -91,23 +91,39 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
           </button>
         </div>
 
-        {/* Desktop logout/login button */}
-        {isGuest ? (
-          <button
-            onClick={onLoginClick}
-            className="hidden md:flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-lg shadow-md transition-all hover:scale-105"
-          >
-            Sign Up to Play
-          </button>
-        ) : (
-          <button
-            onClick={onLogout}
-            className="hidden md:flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors p-2 rounded-lg"
-            title="Log Out"
-          >
-            <LogOut size={20} />
-          </button>
-        )}
+        {/* Desktop actions (Theme Toggle + Auth) */}
+        <div className="hidden md:flex items-center gap-2">
+          {onToggleTheme && (
+            <button
+              onClick={onToggleTheme}
+              className={`flex items-center justify-center p-2 rounded-lg transition-colors ${
+                theme === "worldcup" 
+                  ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/50" 
+                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+              }`}
+              title="Toggle World Cup Theme"
+            >
+              <Palette size={20} />
+            </button>
+          )}
+          
+          {isGuest ? (
+            <button
+              onClick={onLoginClick}
+              className="flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-lg shadow-md transition-all hover:scale-105"
+            >
+              Sign Up to Play
+            </button>
+          ) : (
+            <button
+              onClick={onLogout}
+              className="flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors p-2 rounded-lg"
+              title="Log Out"
+            >
+              <LogOut size={20} />
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Main Content Area */}
