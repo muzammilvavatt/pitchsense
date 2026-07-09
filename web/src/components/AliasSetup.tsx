@@ -139,16 +139,6 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
                   required={!isLogin}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Avatar Image URL (Optional)</label>
-                <input
-                  type="url"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="Link to a player/club icon"
-                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-sm"
-                />
-              </div>
             </div>
           )}
 

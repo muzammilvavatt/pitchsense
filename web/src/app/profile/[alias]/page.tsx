@@ -13,6 +13,10 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState(false);
+  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+  const [newAvatarUrl, setNewAvatarUrl] = useState("");
+  const [savingAvatar, setSavingAvatar] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -41,11 +45,32 @@ export default function ProfilePage() {
         setHistory(recentPreds);
       }
       
+      const currentUser = localStorage.getItem("pitchsense_alias");
+      if (currentUser === alias) {
+        setIsOwner(true);
+      }
+      
       setLoading(false);
     };
 
     fetchProfile();
   }, [alias]);
+
+  const saveAvatar = async () => {
+    setSavingAvatar(true);
+    // Update local storage
+    localStorage.setItem("pitchsense_avatar_url", newAvatarUrl);
+    
+    // Update all previous predictions in DB
+    await supabase
+      .from("predictions")
+      .update({ avatar_url: newAvatarUrl })
+      .eq("alias", alias);
+      
+    setStats({ ...stats, avatar_url: newAvatarUrl });
+    setIsEditingAvatar(false);
+    setSavingAvatar(false);
+  };
 
   if (loading) {
     return (
@@ -101,6 +126,14 @@ export default function ProfilePage() {
 
             {/* Badges Container */}
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-6">
+              {isOwner && (
+                <button
+                  onClick={() => setIsEditingAvatar(!isEditingAvatar)}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors"
+                >
+                  Edit Avatar
+                </button>
+              )}
               {stats?.correct_predictions > 0 && (
                 <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
                   <Target size={16} className="text-emerald-400" />
@@ -126,6 +159,25 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
+            
+            {isEditingAvatar && (
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <input 
+                  type="url" 
+                  value={newAvatarUrl}
+                  onChange={(e) => setNewAvatarUrl(e.target.value)}
+                  placeholder="Paste image URL here..."
+                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                />
+                <button 
+                  onClick={saveAvatar}
+                  disabled={savingAvatar}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
+                >
+                  {savingAvatar ? "Saving..." : "Save"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
