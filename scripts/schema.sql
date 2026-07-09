@@ -20,6 +20,8 @@ CREATE TABLE predictions (
     justification TEXT,
     likes INT DEFAULT 0,
     is_correct BOOLEAN,
+    countered_ai BOOLEAN DEFAULT FALSE,
+    is_exact_score BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -39,12 +41,17 @@ CREATE INDEX idx_machine_insights_match_id ON machine_insights(match_id);
 CREATE OR REPLACE VIEW leaderboard AS
 SELECT 
     alias,
-    COUNT(*) FILTER (WHERE is_correct = TRUE) AS correct_predictions,
+    COUNT(*) FILTER (WHERE is_correct = TRUE AND countered_ai = FALSE AND is_exact_score = FALSE) AS correct_predictions,
+    COUNT(*) FILTER (WHERE is_correct = TRUE AND countered_ai = TRUE) AS mastermind_predictions,
+    COUNT(*) FILTER (WHERE is_exact_score = TRUE) AS sniper_predictions,
     SUM(likes) AS total_likes,
-    (COUNT(*) FILTER (WHERE is_correct = TRUE) * 2) + COALESCE(SUM(likes), 0) AS total_score
+    (COUNT(*) FILTER (WHERE is_correct = TRUE AND countered_ai = FALSE AND is_exact_score = FALSE) * 2) + 
+    (COUNT(*) FILTER (WHERE is_correct = TRUE AND countered_ai = TRUE) * 4) + 
+    (COUNT(*) FILTER (WHERE is_exact_score = TRUE) * 3) + 
+    COALESCE(SUM(likes), 0) AS total_score
 FROM predictions
 GROUP BY alias
-ORDER BY total_score DESC, correct_predictions DESC, total_likes DESC;
+ORDER BY total_score DESC, correct_predictions DESC, mastermind_predictions DESC, sniper_predictions DESC, total_likes DESC;
 
 -- Replies Table
 CREATE TABLE replies (
