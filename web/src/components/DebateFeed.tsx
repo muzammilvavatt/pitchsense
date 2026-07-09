@@ -88,10 +88,12 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
     if (!replyContent.trim()) return;
     setSubmittingReply(true);
 
+    const validAvatar = (currentUserAvatar && currentUserAvatar !== "null" && currentUserAvatar !== "undefined") ? currentUserAvatar : null;
+
     const { error } = await supabase.from("replies").insert({
       prediction_id: predictionId,
       alias: currentUserAlias || "UnknownUser",
-      avatar_url: currentUserAvatar || null,
+      avatar_url: validAvatar,
       content: replyContent.trim(),
     });
 
@@ -213,7 +215,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                   {p.replies?.map((r: any) => (
                     <div key={r.id} className="bg-slate-900/50 p-3 rounded-lg border border-slate-800/50">
                       <div className="flex items-center gap-2 mb-1.5">
-                        {r.avatar_url ? (
+                        {(r.avatar_url && r.avatar_url !== "null" && r.avatar_url !== "undefined") ? (
                           <img src={r.avatar_url} alt={r.alias} className="w-5 h-5 rounded-full object-cover border border-slate-700 bg-white" />
                         ) : (
                           <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-700">
@@ -239,7 +241,14 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                   ))}
                   
                   {replyingTo === p.id && (
-                    <div className="mt-3 flex gap-2 ml-7">
+                    <div className="mt-3 flex items-center gap-2 ml-7">
+                      {(currentUserAvatar && currentUserAvatar !== "null" && currentUserAvatar !== "undefined") ? (
+                        <img src={currentUserAvatar} alt={currentUserAlias || ""} className="w-6 h-6 rounded-full object-cover border border-slate-700 bg-white shrink-0" />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[12px] border border-slate-700 shrink-0">
+                          ⚽
+                        </div>
+                      )}
                       <input 
                         type="text" 
                         value={replyContent}
