@@ -111,10 +111,10 @@ export default function DebateFeed() {
               
               <div className="text-xs md:text-sm text-slate-300 mb-3 flex flex-wrap items-center gap-1.5">
                 {p.avatar_url ? (
-                  <img src={p.avatar_url} alt={p.alias} className="w-5 h-5 rounded-full object-cover border border-slate-600" />
+                  <img src={p.avatar_url} alt={p.alias} className="w-5 h-5 rounded-full object-cover border border-slate-600 bg-white" />
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center text-[10px] font-bold text-white">
-                    {p.alias.charAt(0).toUpperCase()}
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-600">
+                    ⚽
                   </div>
                 )}
                 <span className="font-bold text-blue-400">{p.alias}</span>

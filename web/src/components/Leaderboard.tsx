@@ -54,10 +54,10 @@ export default function Leaderboard() {
                     <span className="font-black text-slate-500 text-lg">#{idx + 1}</span>
                     <Link href={`/profile/${leader.alias}`} className="flex items-center gap-2 group-hover:opacity-80 transition-opacity">
                       {leader.avatar_url ? (
-                        <img src={leader.avatar_url} alt={leader.alias} className="w-8 h-8 rounded-full object-cover border-2 border-slate-700" />
+                        <img src={leader.avatar_url} alt={leader.alias} className="w-10 h-10 rounded-full object-cover border border-slate-700 bg-white" />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white text-xs">
-                          {leader.alias.charAt(0).toUpperCase()}
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-lg border border-slate-700">
+                          ⚽
                         </div>
                       )}
                       <span className="font-bold text-blue-400 text-lg group-hover:underline">{leader.alias}</span>
@@ -126,8 +126,8 @@ export default function Leaderboard() {
                         {leader.avatar_url ? (
                           <img src={leader.avatar_url} alt={leader.alias} className="w-6 h-6 rounded-full object-cover border border-slate-600 group-hover/link:border-blue-400 transition-colors" />
                         ) : (
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white text-[10px]">
-                            {leader.alias.charAt(0).toUpperCase()}
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px]">
+                            ⚽
                           </div>
                         )}
                         <span className="text-blue-400 group-hover/link:text-blue-300 group-hover/link:underline transition-colors">{leader.alias}</span>

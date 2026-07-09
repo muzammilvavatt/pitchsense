@@ -11,6 +11,13 @@ type Tab = "hub" | "debate" | "leaderboard";
 
 export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: string, avatarUrl?: string | null, onLogout: () => void }) {
   const [activeTab, setActiveTab] = useState<Tab>("hub");
+  const [localAvatar, setLocalAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    // When returning to dashboard from profile, check if avatar changed
+    const storedAvatar = localStorage.getItem("pitchsense_avatar_url");
+    setLocalAvatar(storedAvatar || avatarUrl || null);
+  }, [avatarUrl]);
 
   return (
     <div className="space-y-6">
@@ -18,11 +25,11 @@ export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: strin
       <header className="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-4 z-40 shadow-xl shadow-slate-900/50">
         <div className="flex w-full md:w-auto justify-between items-center">
           <Link href={`/profile/${alias}`} className="flex items-center gap-3 group">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={alias} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700 shadow-lg group-hover:border-blue-400 transition-colors" />
+            {localAvatar ? (
+              <img src={localAvatar} alt={alias} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700 shadow-lg group-hover:border-blue-400 transition-colors bg-white" />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white shadow-lg text-lg">
-                {alias.charAt(0).toUpperCase()}
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-lg text-xl border-2 border-slate-700">
+                ⚽
               </div>
             )}
             <div>

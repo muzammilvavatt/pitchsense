@@ -170,14 +170,14 @@ export default function ProfilePage() {
                 <h3 className="text-white font-bold mb-3 text-sm">Choose an Avatar:</h3>
                 <div className="flex flex-wrap gap-3 mb-4">
                   {[
-                    "https://api.dicebear.com/7.x/micah/svg?seed=Messi&backgroundColor=0ea5e9",
-                    "https://api.dicebear.com/7.x/micah/svg?seed=Ronaldo&backgroundColor=10b981",
-                    "https://api.dicebear.com/7.x/micah/svg?seed=Zidane&backgroundColor=f59e0b",
-                    "https://api.dicebear.com/7.x/micah/svg?seed=Pele&backgroundColor=ec4899",
-                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Maradona&backgroundColor=6366f1",
-                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Henry&backgroundColor=14b8a6",
-                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Ronaldinho&backgroundColor=8b5cf6",
-                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Kaka&backgroundColor=f43f5e"
+                    "/avatars/shirt-red-white.svg",
+                    "/avatars/shirt-blue-white.svg",
+                    "/avatars/shirt-green-white.svg",
+                    "/avatars/shirt-white-black.svg",
+                    "/avatars/shirt-yellow-blue.svg",
+                    "/avatars/shirt-black-gold.svg",
+                    "/avatars/shirt-purple-white.svg",
+                    "/avatars/shirt-orange-black.svg",
                   ].map((url, idx) => (
                     <button
                       key={idx}
