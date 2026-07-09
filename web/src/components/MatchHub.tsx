@@ -17,18 +17,21 @@ export default function MatchHub({ alias }: { alias: string }) {
 
   useEffect(() => {
     async function fetchData() {
-      // Fetch upcoming matches
+      // 1. Fetch upcoming matches (kickoff > now)
+      const now = new Date().toISOString();
       const { data: matchData } = await supabase
         .from("matches")
         .select("*")
         .is("result", null)
+        .gt("kickoff", now)
         .order("kickoff")
-        .limit(2);
+        .limit(3); // Bumped to 3 so they have options
       
-      if (matchData) {
+      if (matchData && matchData.length > 0) {
         setMatches(matchData);
-        // Fetch insights for these matches
         const matchIds = matchData.map((m: any) => m.id);
+        
+        // 2. Fetch insights
         const { data: insightData } = await supabase
           .from("machine_insights")
           .select("*")
@@ -41,11 +44,26 @@ export default function MatchHub({ alias }: { alias: string }) {
           });
           setInsights(insightMap);
         }
+
+        // 3. Fetch user's existing predictions for these matches to lock them out
+        const { data: existingPreds } = await supabase
+          .from("predictions")
+          .select("*")
+          .eq("alias", alias)
+          .in("match_id", matchIds);
+        
+        if (existingPreds) {
+          const predMap: Record<string, any> = {};
+          existingPreds.forEach((p: any) => {
+            predMap[p.match_id] = { winner: p.prediction, score: p.score_prediction, justification: p.justification, locked: true };
+          });
+          setPredictions(predMap);
+        }
       }
       setLoading(false);
     }
     fetchData();
-  }, []);
+  }, [alias]);
 
   const handlePredictionChange = (matchId: string, field: string, value: string) => {
     setPredictions(prev => ({
@@ -82,8 +100,8 @@ export default function MatchHub({ alias }: { alias: string }) {
     setSubmitting(null);
     if (!error) {
       setSuccessMsg(`Prediction for match submitted successfully!`);
-      // Clear form
-      setPredictions(prev => ({ ...prev, [matchId]: { winner: "", score: "", justification: "" } }));
+      // Lock the form
+      setPredictions(prev => ({ ...prev, [matchId]: { ...prev[matchId], locked: true } }));
       setTimeout(() => setSuccessMsg(null), 3000);
     }
   };
@@ -163,40 +181,50 @@ export default function MatchHub({ alias }: { alias: string }) {
                 <div className="flex items-center gap-2 text-emerald-400 font-medium pb-2 border-b border-slate-700">
                   <User size={20} /> Counter or Support the AI
                 </div>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <select
-                      value={pred.winner}
-                      onChange={(e) => handlePredictionChange(match.id, "winner", e.target.value)}
-                      className="bg-slate-900 border border-slate-700 rounded-md p-2 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
-                    >
-                      <option value="">Select Winner</option>
-                      <option value={match.home_team}>{match.home_team}</option>
-                      <option value={match.away_team}>{match.away_team}</option>
-                      {!match.is_knockout && <option value="Draw">Draw</option>}
-                    </select>
-                    <input
-                      type="text"
-                      placeholder="Score (e.g. 2-1)"
-                      value={pred.score}
-                      onChange={(e) => handlePredictionChange(match.id, "score", e.target.value)}
-                      className="bg-slate-900 border border-slate-700 rounded-md p-2 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
-                    />
+                
+                {pred.locked ? (
+                  <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6 text-center space-y-2">
+                    <CheckCircle2 className="mx-auto text-emerald-400 mb-2" size={32} />
+                    <h4 className="text-white font-bold text-lg">Prediction Locked</h4>
+                    <p className="text-slate-400 text-sm">You predicted <span className="font-bold text-white">{pred.winner} ({pred.score})</span>.</p>
+                    <p className="text-slate-500 text-xs mt-2 italic">You cannot edit this prediction.</p>
                   </div>
-                  <textarea
-                    placeholder="Provide your tactical counter-argument or supporting evidence here..."
-                    value={pred.justification}
-                    onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-md p-3 text-sm min-h-[120px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
-                  />
-                  <button
-                    onClick={() => submitPrediction(match.id)}
-                    disabled={!pred.winner || !pred.score || !pred.justification || submitting === match.id}
-                    className="w-full bg-slate-700 hover:bg-emerald-600 disabled:opacity-50 disabled:hover:bg-slate-700 text-white font-medium py-2 rounded-md transition-colors"
-                  >
-                    {submitting === match.id ? "Submitting..." : "Submit Your Argument"}
-                  </button>
-                </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <select
+                        value={pred.winner}
+                        onChange={(e) => handlePredictionChange(match.id, "winner", e.target.value)}
+                        className="bg-slate-900 border border-slate-700 rounded-md p-2 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                      >
+                        <option value="">Select Winner</option>
+                        <option value={match.home_team}>{match.home_team}</option>
+                        <option value={match.away_team}>{match.away_team}</option>
+                        {!match.is_knockout && <option value="Draw">Draw</option>}
+                      </select>
+                      <input
+                        type="text"
+                        placeholder="Score (e.g. 2-1)"
+                        value={pred.score}
+                        onChange={(e) => handlePredictionChange(match.id, "score", e.target.value)}
+                        className="bg-slate-900 border border-slate-700 rounded-md p-2 text-sm focus:ring-1 focus:ring-emerald-500 outline-none"
+                      />
+                    </div>
+                    <textarea
+                      placeholder="Provide your tactical counter-argument or supporting evidence here..."
+                      value={pred.justification}
+                      onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-md p-3 text-sm min-h-[120px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
+                    />
+                    <button
+                      onClick={() => submitPrediction(match.id)}
+                      disabled={!pred.winner || !pred.score || !pred.justification || submitting === match.id}
+                      className="w-full bg-slate-700 hover:bg-emerald-600 disabled:opacity-50 disabled:hover:bg-slate-700 text-white font-medium py-2 rounded-md transition-colors"
+                    >
+                      {submitting === match.id ? "Submitting..." : "Submit Your Argument"}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
