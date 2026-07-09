@@ -89,7 +89,9 @@ FOR UPDATE USING (alias = (SELECT alias FROM public.profiles WHERE id = auth.uid
 -- STEP 5: FIX LEADERBOARD SECURITY DEFINER WARNING
 -- ==========================================
 -- We recreate the view explicitly telling Supabase to apply security rules (security_invoker = true)
-CREATE OR REPLACE VIEW leaderboard WITH (security_invoker = true) AS
+DROP VIEW IF EXISTS leaderboard;
+
+CREATE VIEW leaderboard WITH (security_invoker = true) AS
 SELECT 
     alias,
     COUNT(*) FILTER (WHERE is_correct = TRUE) AS correct_predictions,

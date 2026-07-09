@@ -29,8 +29,22 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
         onAliasSet(userAlias);
       }
     } else {
-      if (!alias.trim()) {
+      const trimmedAlias = alias.trim();
+      if (!trimmedAlias) {
         setErrorMsg('Username is required for sign up.');
+        setLoading(false);
+        return;
+      }
+
+      // Pre-flight check: see if the alias is already taken
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('alias')
+        .eq('alias', trimmedAlias)
+        .maybeSingle();
+
+      if (existingProfile) {
+        setErrorMsg('That Username is already taken! Please choose another one.');
         setLoading(false);
         return;
       }
