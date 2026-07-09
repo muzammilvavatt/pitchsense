@@ -8,6 +8,7 @@ import HowItWorksModal from "@/components/HowItWorksModal";
 
 export default function Home() {
   const [alias, setAlias] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,6 +16,7 @@ export default function Home() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setAlias(session.user.user_metadata?.alias || 'UnknownUser');
+        setAvatarUrl(session.user.user_metadata?.avatar_url || null);
       }
       setLoading(false);
     });
@@ -25,8 +27,10 @@ export default function Home() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         setAlias(session.user.user_metadata?.alias || 'UnknownUser');
+        setAvatarUrl(session.user.user_metadata?.avatar_url || null);
       } else {
         setAlias(null);
+        setAvatarUrl(null);
       }
     });
 
@@ -36,6 +40,7 @@ export default function Home() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setAlias(null);
+    setAvatarUrl(null);
   };
 
   if (loading) {
@@ -54,12 +59,12 @@ export default function Home() {
         <>
           <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3 group cursor-default">
-              <div className="bg-gradient-to-tr from-blue-500 to-emerald-400 p-2 rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+              <div className="bg-gradient-to-tr from-red-600 to-rose-400 p-2 rounded-xl shadow-lg shadow-red-600/20 group-hover:scale-105 transition-transform duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-emerald-300 uppercase drop-shadow-md">
+              <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-500 to-orange-500 uppercase drop-shadow-md">
                 PitchSense
               </h1>
             </div>
@@ -67,7 +72,7 @@ export default function Home() {
               <HowItWorksModal />
             </div>
           </header>
-          <Dashboard alias={alias} onLogout={handleLogout} />
+          <Dashboard alias={alias} avatarUrl={avatarUrl} onLogout={handleLogout} />
         </>
       )}
     </main>

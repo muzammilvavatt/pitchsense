@@ -11,6 +11,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [alias, setAlias] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -37,7 +38,10 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
         email,
         password,
         options: {
-          data: { alias: alias.trim() }
+          data: { 
+            alias: alias.trim(),
+            avatar_url: avatarUrl.trim() || null
+          }
         }
       });
       
@@ -55,7 +59,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
       <div className="text-center mb-10">
-        <h1 className="text-5xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-500">
+        <h1 className="text-5xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-rose-400">
           PitchSense
         </h1>
         <p className="text-slate-400 text-lg max-w-md mx-auto">
@@ -68,14 +72,14 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
           <button 
             type="button"
             onClick={() => { setIsLogin(true); setErrorMsg(''); }}
-            className={`flex-1 font-semibold text-center pb-2 ${isLogin ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-slate-500'}`}
+            className={`flex-1 font-semibold text-center pb-2 ${isLogin ? 'text-red-400 border-b-2 border-red-400' : 'text-slate-500'}`}
           >
             Sign In
           </button>
           <button 
             type="button"
             onClick={() => { setIsLogin(false); setErrorMsg(''); }}
-            className={`flex-1 font-semibold text-center pb-2 ${!isLogin ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-500'}`}
+            className={`flex-1 font-semibold text-center pb-2 ${!isLogin ? 'text-rose-400 border-b-2 border-rose-400' : 'text-slate-500'}`}
           >
             Sign Up
           </button>
@@ -96,7 +100,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
               required
             />
           </div>
@@ -108,7 +112,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
               minLength={6}
               required
             />
@@ -122,24 +126,36 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
           </div>
 
           {!isLogin && (
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Username</label>
-              <input
-                type="text"
-                value={alias}
-                onChange={(e) => setAlias(e.target.value)}
-                placeholder="Choose a unique Username"
-                className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-                maxLength={50}
-                required={!isLogin}
-              />
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Username</label>
+                <input
+                  type="text"
+                  value={alias}
+                  onChange={(e) => setAlias(e.target.value)}
+                  placeholder="Choose a unique Username"
+                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                  maxLength={50}
+                  required={!isLogin}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Avatar Image URL (Optional)</label>
+                <input
+                  type="url"
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  placeholder="Link to a player/club icon"
+                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-sm"
+                />
+              </div>
             </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${isLogin ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-blue-600 hover:bg-blue-500'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            className={`w-full text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${isLogin ? 'bg-red-600 hover:bg-red-500' : 'bg-rose-600 hover:bg-rose-500'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {loading ? 'Processing...' : (
               isLogin ? <><LogIn size={18} /> Sign In</> : <><UserPlus size={18} /> Create Account</>
