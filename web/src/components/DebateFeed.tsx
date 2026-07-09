@@ -4,14 +4,13 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { ThumbsUp, Clock, MessageSquare, Trash2 } from "lucide-react";
 
-export default function DebateFeed() {
+export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { currentUserAlias?: string | null, currentUserAvatar?: string | null }) {
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   const fetchPredictions = async () => {
     const { data } = await supabase
@@ -36,9 +35,6 @@ export default function DebateFeed() {
   };
 
   useEffect(() => {
-    // Get current user alias for delete permissions
-    setCurrentUser(localStorage.getItem('pitchsense_alias'));
-
     // Load previously liked IDs from local storage
     const storedLikes = localStorage.getItem('pitchsense_liked_predictions');
     if (storedLikes) {
@@ -92,13 +88,10 @@ export default function DebateFeed() {
     if (!replyContent.trim()) return;
     setSubmittingReply(true);
 
-    const currentUser = localStorage.getItem("pitchsense_alias") || "UnknownUser";
-    const currentAvatar = localStorage.getItem("pitchsense_avatar_url") || null;
-
     const { error } = await supabase.from("replies").insert({
       prediction_id: predictionId,
-      alias: currentUser,
-      avatar_url: currentAvatar,
+      alias: currentUserAlias || "UnknownUser",
+      avatar_url: currentUserAvatar || null,
       content: replyContent.trim(),
     });
 
@@ -231,7 +224,7 @@ export default function DebateFeed() {
                         <span className="text-slate-500 text-[10px]">
                           {new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
-                        {currentUser && r.alias === currentUser && (
+                        {currentUserAlias && r.alias === currentUserAlias && (
                           <button 
                             onClick={() => handleDeleteReply(p.id, r.id)}
                             className="ml-auto text-slate-500 hover:text-red-400 transition-colors p-1"
@@ -251,7 +244,7 @@ export default function DebateFeed() {
                         type="text" 
                         value={replyContent}
                         onChange={(e) => setReplyContent(e.target.value)}
-                        placeholder={currentUser ? `Replying as ${currentUser}...` : "Write a reply..."}
+                        placeholder={currentUserAlias ? `Replying as ${currentUserAlias}...` : "Write a reply..."}
                         className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500 shadow-inner"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handleReplySubmit(p.id);
