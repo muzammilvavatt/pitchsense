@@ -83,17 +83,8 @@ export default function ProfilePage() {
     );
   }
 
-  if (!stats && history.length === 0 && !isOwner) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold text-white">User not found</h2>
-          <p className="text-slate-400">This user hasn't made any predictions yet.</p>
-          <a href="/" className="text-emerald-400 hover:underline">Return Home</a>
-        </div>
-      </div>
-    );
-  }
+  // Render the profile even if empty
+
 
   // Fallback stats for owners with no predictions
   const displayStats = stats || {
