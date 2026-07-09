@@ -61,6 +61,8 @@ def fetch_hot_matches():
                     matches.append({
                         "home_team": teams["home"]["name"],
                         "away_team": teams["away"]["name"],
+                        "home_logo": teams["home"]["logo"],
+                        "away_logo": teams["away"]["logo"],
                         "kickoff": fixture["date"],
                         "is_knockout": is_knockout
                     })
@@ -76,12 +78,31 @@ def fetch_hot_matches():
 
 def save_matches_to_supabase(matches):
     print(f"Saving {len(matches)} Hot Matches to Supabase...")
+    
+    # Get existing matches
+    existing = supabase.table("matches").select("id, home_team, away_team").execute()
+    existing_matches = existing.data or []
+
     for match in matches:
         try:
-            supabase.table("matches").insert(match).execute()
-            print(f"Added Hot Match: {match['home_team']} vs {match['away_team']}")
+            # Find if match exists
+            db_match = next((m for m in existing_matches if m["home_team"] == match["home_team"] and m["away_team"] == match["away_team"]), None)
+            
+            if db_match:
+                # Update existing match with logos
+                supabase.table("matches").update({
+                    "home_logo": match["home_logo"],
+                    "away_logo": match["away_logo"],
+                    "kickoff": match["kickoff"],
+                    "is_knockout": match["is_knockout"]
+                }).eq("id", db_match["id"]).execute()
+                print(f"Updated Match with Logos: {match['home_team']} vs {match['away_team']}")
+            else:
+                # Insert new match
+                supabase.table("matches").insert(match).execute()
+                print(f"Added New Match: {match['home_team']} vs {match['away_team']}")
         except Exception as e:
-            print(f"Failed to insert match (might already exist): {e}")
+            print(f"Failed to insert/update match: {e}")
 
 if __name__ == "__main__":
     hot_data = fetch_hot_matches()

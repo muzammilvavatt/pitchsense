@@ -70,11 +70,30 @@ export default function DebateFeed() {
             <div key={p.id} className="glass-card p-5 hover:border-slate-600 transition-colors">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <span className="font-bold text-blue-400">{p.alias}</span>
-                  <span className="text-slate-400 mx-2">predicted</span>
-                  <span className="font-bold text-white bg-slate-800 px-2 py-1 rounded text-sm">
-                    {p.prediction} ({p.score_prediction})
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-2">
+                      {match.home_logo ? (
+                        <img src={match.home_logo} className="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 object-contain p-1" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs shadow-inner z-10">
+                          {match.home_team?.charAt(0)}
+                        </div>
+                      )}
+                      {match.away_logo ? (
+                        <img src={match.away_logo} className="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 object-contain p-1" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center font-bold text-xs shadow-inner">
+                          {match.away_team?.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white text-lg">
+                        {match.home_team} vs {match.away_team}
+                      </h3>
+                      <p className="text-xs text-slate-400">Match Debate</p>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex items-center text-xs text-slate-500 gap-1">
                   <Clock size={12} /> {timeAgo}
@@ -82,7 +101,11 @@ export default function DebateFeed() {
               </div>
               
               <div className="text-sm text-slate-400 mb-2">
-                Fixture: {match.home_team} vs {match.away_team}
+                <span className="font-bold text-blue-400">{p.alias}</span>
+                <span className="mx-2">predicted</span>
+                <span className="font-bold text-white bg-slate-800 px-2 py-1 rounded text-sm">
+                  {p.prediction} ({p.score_prediction})
+                </span>
               </div>
 
               <p className="text-slate-200 bg-slate-900/50 p-3 rounded-lg border border-slate-800 italic mb-4">

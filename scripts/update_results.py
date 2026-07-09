@@ -105,10 +105,17 @@ def update_database_results(api_results):
             pred_response = supabase.table("predictions").select("*").eq("match_id", db_match["id"]).execute()
             predictions = pred_response.data
             
+            exact_score = f"{matched_api_game['home_goals']}-{matched_api_game['away_goals']}"
+            
             for pred in predictions:
                 is_correct = (pred["prediction"] == actual_winner)
-                supabase.table("predictions").update({"is_correct": is_correct}).eq("id", pred["id"]).execute()
-                print(f"  - Scored prediction by {pred['alias']}: {'Correct' if is_correct else 'Incorrect'}")
+                is_exact_score = (pred["score_prediction"] == exact_score)
+                
+                supabase.table("predictions").update({
+                    "is_correct": is_correct,
+                    "is_exact_score": is_exact_score
+                }).eq("id", pred["id"]).execute()
+                print(f"  - Scored prediction by {pred['alias']}: {'Correct' if is_correct else 'Incorrect'}, Exact Score: {is_exact_score}")
 
 if __name__ == "__main__":
     print("Looking for completed matches...")

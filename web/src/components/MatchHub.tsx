@@ -118,6 +118,31 @@ export default function MatchHub({ alias }: { alias: string }) {
               <span className="text-sm text-slate-400 bg-slate-900 px-3 py-1 rounded-full">{kickoff}</span>
             </div>
 
+              <div className="flex justify-between items-center px-4 md:px-8 mb-6 relative">
+                {/* VS Badge */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 border-2 border-slate-700 text-slate-400 font-black italic rounded-full w-10 h-10 flex items-center justify-center text-sm z-10 shadow-xl shadow-black/50">
+                  VS
+                </div>
+                
+                <div className="text-center w-5/12 flex flex-col items-center gap-2">
+                  {match.home_logo ? (
+                    <img src={match.home_logo} alt={match.home_team} className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-lg" />
+                  ) : (
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-500 shadow-inner">H</div>
+                  )}
+                  <h3 className="text-xl md:text-2xl font-black text-white leading-tight">{match.home_team}</h3>
+                </div>
+                
+                <div className="text-center w-5/12 flex flex-col items-center gap-2">
+                  {match.away_logo ? (
+                    <img src={match.away_logo} alt={match.away_team} className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-lg" />
+                  ) : (
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-500 shadow-inner">A</div>
+                  )}
+                  <h3 className="text-xl md:text-2xl font-black text-white leading-tight">{match.away_team}</h3>
+                </div>
+              </div>
+
             <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* AI Analysis */}
               <div className="space-y-4">

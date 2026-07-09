@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Info, X, Trophy, Brain, Target, Heart } from "lucide-react";
+import { Info, X, Trophy, Brain, Target, Heart, Crosshair } from "lucide-react";
 
 export default function HowItWorksModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,6 +48,13 @@ export default function HowItWorksModal() {
                     <div>
                       <span className="font-bold text-white">+4 Points (Mastermind Bonus)</span>
                       <p className="text-slate-400 text-xs mt-0.5">If you disagree with the AI Analyst's prediction and you turn out to be right, you earn double points for outsmarting the machine!</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Crosshair className="text-orange-400 shrink-0 mt-0.5" size={18} />
+                    <div>
+                      <span className="font-bold text-white">+3 Points (Sniper Bonus)</span>
+                      <p className="text-slate-400 text-xs mt-0.5">Correctly guess the EXACT final scoreline (e.g. 2-1).</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">

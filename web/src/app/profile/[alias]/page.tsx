@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Trophy, Target, Brain, Heart, ArrowLeft } from "lucide-react";
+import { Trophy, Target, Brain, Heart, ArrowLeft, Crosshair } from "lucide-react";
 import Link from "next/link";
 
 export default function ProfilePage() {
@@ -29,6 +29,7 @@ export default function ProfilePage() {
         alias: decodedAlias,
         correct_predictions: 0,
         mastermind_predictions: 0,
+        sniper_predictions: 0,
         total_likes: 0,
         total_score: 0
       });
@@ -70,26 +71,31 @@ export default function ProfilePage() {
           </div>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-700/50 bg-slate-900/50">
-          <div className="p-6 flex flex-col items-center justify-center gap-2 text-center">
-            <Trophy className="text-yellow-400" size={28} />
-            <span className="text-3xl font-black text-white">{stats.total_score}</span>
-            <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Score</span>
+        <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-y md:divide-y-0 divide-slate-700/50 bg-slate-900/50">
+          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
+            <Trophy className="text-yellow-400" size={24} />
+            <span className="text-2xl font-black text-white">{stats.total_score}</span>
+            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Score</span>
           </div>
-          <div className="p-6 flex flex-col items-center justify-center gap-2 text-center">
-            <Target className="text-emerald-400" size={28} />
-            <span className="text-3xl font-black text-white">{stats.correct_predictions}</span>
-            <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Correct</span>
+          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
+            <Target className="text-emerald-400" size={24} />
+            <span className="text-2xl font-black text-white">{stats.correct_predictions}</span>
+            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Correct</span>
           </div>
-          <div className="p-6 flex flex-col items-center justify-center gap-2 text-center">
-            <Brain className="text-purple-400" size={28} />
-            <span className="text-3xl font-black text-white">{stats.mastermind_predictions}</span>
-            <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Masterminds</span>
+          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
+            <Brain className="text-purple-400" size={24} />
+            <span className="text-2xl font-black text-white">{stats.mastermind_predictions}</span>
+            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Masterminds</span>
           </div>
-          <div className="p-6 flex flex-col items-center justify-center gap-2 text-center">
-            <Heart className="text-pink-400" size={28} />
-            <span className="text-3xl font-black text-white">{stats.total_likes}</span>
-            <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Total Likes</span>
+          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
+            <Crosshair className="text-orange-400" size={24} />
+            <span className="text-2xl font-black text-white">{stats.sniper_predictions || 0}</span>
+            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Snipers</span>
+          </div>
+          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
+            <Heart className="text-pink-400" size={24} />
+            <span className="text-2xl font-black text-white">{stats.total_likes}</span>
+            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Likes</span>
           </div>
         </div>
       </div>
@@ -113,12 +119,30 @@ export default function ProfilePage() {
                 <div className="absolute top-0 right-0 bg-red-500/20 text-red-400 text-xs font-bold px-3 py-1 rounded-bl-lg">LOSS</div>
               )}
               
-              <div className="flex items-center justify-between mb-4 mt-2">
-                <div className="font-bold text-lg">
-                  {pred.matches.home_team} vs {pred.matches.away_team}
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 mt-2 gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {pred.matches.home_logo ? (
+                      <img src={pred.matches.home_logo} className="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 object-contain p-1" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs shadow-inner z-10">
+                        {pred.matches.home_team?.charAt(0)}
+                      </div>
+                    )}
+                    {pred.matches.away_logo ? (
+                      <img src={pred.matches.away_logo} className="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 object-contain p-1" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center font-bold text-xs shadow-inner">
+                        {pred.matches.away_team?.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="font-bold text-lg">
+                    {pred.matches.home_team} vs {pred.matches.away_team}
+                  </div>
                 </div>
-                <div className="text-sm font-medium bg-blue-900/30 px-3 py-1 rounded-full text-blue-300 border border-blue-800/50">
-                  Pick: {pred.prediction}
+                <div className="text-sm font-medium bg-blue-900/30 px-3 py-1 rounded-full text-blue-300 border border-blue-800/50 self-start md:self-auto">
+                  Pick: {pred.prediction} ({pred.score_prediction})
                 </div>
               </div>
               
