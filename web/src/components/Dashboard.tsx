@@ -85,8 +85,8 @@ export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: strin
 
       {/* Main Content Area */}
       <div className="animate-fade-in">
-        {activeTab === "hub" && <MatchHub alias={alias} avatarUrl={avatarUrl} />}
-        {activeTab === "debate" && <DebateFeed currentUserAlias={alias} currentUserAvatar={avatarUrl} />}
+        {activeTab === "hub" && <MatchHub alias={alias} avatarUrl={localAvatar} />}
+        {activeTab === "debate" && <DebateFeed currentUserAlias={alias} currentUserAvatar={localAvatar} />}
         {activeTab === "leaderboard" && <Leaderboard />}
       </div>
     </div>
