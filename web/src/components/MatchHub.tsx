@@ -11,7 +11,7 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
   const [loading, setLoading] = useState(true);
 
   // Form states per match
-  const [predictions, setPredictions] = useState<Record<string, { winner: string, score: string, justification: string }>>({});
+  const [predictions, setPredictions] = useState<Record<string, { winner: string, score: string, justification: string, locked?: boolean }>>({});
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
