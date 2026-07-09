@@ -29,7 +29,20 @@ export default function Leaderboard() {
       if (data) setLeaders(data);
       setLoading(false);
     }
+    
     fetchLeaderboard();
+
+    // Subscribe to realtime changes on predictions table to auto-update likes on the leaderboard
+    const channel = supabase
+      .channel("public:predictions_leaderboard")
+      .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, () => {
+        fetchLeaderboard();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   if (loading) return <div className="text-center py-10 text-slate-400">Loading rankings...</div>;
