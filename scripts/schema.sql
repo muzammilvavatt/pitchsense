@@ -41,6 +41,7 @@ CREATE INDEX idx_machine_insights_match_id ON machine_insights(match_id);
 CREATE OR REPLACE VIEW leaderboard AS
 SELECT 
     alias,
+    MAX(avatar_url) AS avatar_url,
     COUNT(*) FILTER (WHERE is_correct = TRUE AND countered_ai = FALSE AND is_exact_score = FALSE) AS correct_predictions,
     COUNT(*) FILTER (WHERE is_correct = TRUE AND countered_ai = TRUE) AS mastermind_predictions,
     COUNT(*) FILTER (WHERE is_exact_score = TRUE) AS sniper_predictions,
