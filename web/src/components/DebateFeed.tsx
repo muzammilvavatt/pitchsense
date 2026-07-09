@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { ThumbsUp, Clock, MessageSquare, Trash2 } from "lucide-react";
 import { getPrestigeBadge, PrestigeBadge } from "@/lib/badges";
 
-export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { currentUserAlias?: string | null, currentUserAvatar?: string | null }) {
+export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGuest, onLoginClick }: { currentUserAlias?: string | null, currentUserAvatar?: string | null, isGuest?: boolean, onLoginClick?: () => void }) {
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
@@ -104,6 +104,10 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
   };
 
   const handleUpvote = async (id: string, currentLikes: number) => {
+    if (isGuest) {
+      onLoginClick?.();
+      return;
+    }
     if (!currentUserAlias) return;
 
     const isLiked = likedIds.has(id);
@@ -138,6 +142,10 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
   };
 
   const handleReplySubmit = async (predictionId: string) => {
+    if (isGuest) {
+      onLoginClick?.();
+      return;
+    }
     if (!replyContent.trim()) return;
     setSubmittingReply(true);
 
@@ -278,8 +286,12 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                   <div className="flex items-center gap-4 md:gap-6 text-slate-500">
                     <button
                       onClick={() => {
-                        setReplyingTo(replyingTo === p.id ? null : p.id);
-                        setReplyContent("");
+                        if (isGuest) {
+                          onLoginClick?.();
+                        } else {
+                          setReplyingTo(replyingTo === p.id ? null : p.id);
+                          setReplyContent("");
+                        }
                       }}
                       className={`flex items-center gap-1.5 text-xs md:text-sm font-medium transition-colors group ${
                         replyingTo === p.id ? 'text-blue-400' : 'hover:text-blue-400'

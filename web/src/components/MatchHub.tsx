@@ -6,7 +6,7 @@ import { Bot, User, CheckCircle2, AlertCircle, Share2, Copy } from "lucide-react
 import ReactMarkdown from "react-markdown";
 import SeasonBanner from "./SeasonBanner";
 
-export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUrl?: string | null }) {
+export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { alias: string, avatarUrl?: string | null, isGuest?: boolean, onLoginClick?: () => void }) {
   const [matches, setMatches] = useState<any[]>([]);
   const [insights, setInsights] = useState<Record<string, { insight: string, predictedWinner: string }>>({});
   const [loading, setLoading] = useState(true);
@@ -77,6 +77,11 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
   };
 
   const submitPrediction = async (matchId: string) => {
+    if (isGuest) {
+      onLoginClick?.();
+      return;
+    }
+
     const pred = predictions[matchId];
     if (!pred || !pred.winner || !pred.score || !pred.justification) return;
 

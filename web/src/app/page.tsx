@@ -10,6 +10,7 @@ export default function Home() {
   const [alias, setAlias] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
 
   useEffect(() => {
     // Check if the user already has an alias configured
@@ -75,8 +76,20 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto animate-fade-in">
-      {!alias ? (
-        <AliasSetup onAliasSet={setAlias} />
+      {showAuth && !alias ? (
+        <div className="relative">
+          <button 
+            onClick={() => setShowAuth(false)}
+            className="absolute top-4 left-4 z-50 text-slate-400 hover:text-white flex items-center gap-2 bg-slate-900/80 px-4 py-2 rounded-lg border border-slate-700"
+          >
+            ← Back to App
+          </button>
+          <AliasSetup onAliasSet={(newAlias, newAvatar) => {
+            setAlias(newAlias);
+            if (newAvatar !== undefined) setAvatarUrl(newAvatar);
+            setShowAuth(false);
+          }} />
+        </div>
       ) : (
         <>
           <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -101,9 +114,11 @@ export default function Home() {
             </div>
           </header>
           <Dashboard
-            alias={alias}
+            alias={alias || "Guest"}
             avatarUrl={avatarUrl}
             onLogout={handleLogout}
+            isGuest={!alias}
+            onLoginClick={() => setShowAuth(true)}
           />
         </>
       )}
