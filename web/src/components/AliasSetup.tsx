@@ -11,9 +11,26 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [alias, setAlias] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setErrorMsg('Please select a valid image file.');
+        return;
+      }
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +70,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
         password,
         options: {
           data: { 
-            alias: alias.trim(),
-            avatar_url: avatarUrl.trim() || null
+            alias: trimmedAlias
           }
         }
       });
@@ -62,9 +78,35 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
       if (error) {
         setErrorMsg(error.message);
       } else if (data.session) {
-        // Only log them in if Supabase returned a valid authentication session
-        const userAlias = data.user?.user_metadata?.alias || alias.trim();
-        onAliasSet(userAlias);
+        let finalAvatarUrl = null;
+
+        // If they selected a file, upload it now that they are authenticated
+        if (avatarFile && data.user) {
+          const fileExt = avatarFile.name.split('.').pop();
+          const fileName = `${data.user.id}-${Date.now()}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(fileName, avatarFile);
+            
+          if (!uploadError) {
+            const { data: { publicUrl } } = supabase.storage
+              .from('avatars')
+              .getPublicUrl(fileName);
+              
+            finalAvatarUrl = publicUrl;
+            
+            // Update auth metadata
+            await supabase.auth.updateUser({
+              data: { avatar_url: publicUrl }
+            });
+          } else {
+            console.error("Failed to upload avatar:", uploadError);
+          }
+        }
+
+        // Log them in
+        onAliasSet(trimmedAlias);
       } else {
         // If there is no session, they used an existing email or need to verify their email
         setErrorMsg('Sign up pending! If you already have an account, please switch to Sign In. Otherwise, check your email for a confirmation link.');
@@ -157,14 +199,29 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Profile Picture URL (Optional)</label>
-                <input
-                  type="url"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="https://example.com/photo.jpg"
-                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-                />
+                <label className="block text-sm font-medium text-slate-400 mb-1">Profile Picture (Optional)</label>
+                <div className="flex items-center gap-4">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-slate-800 border-2 border-slate-700 flex-shrink-0 flex items-center justify-center">
+                    {avatarPreview ? (
+                      <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-slate-500 font-bold text-xl">
+                        {alias ? alias.charAt(0).toUpperCase() : '?'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <label className="cursor-pointer bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-300 font-medium transition-colors inline-block text-center w-full">
+                      Choose Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           )}
