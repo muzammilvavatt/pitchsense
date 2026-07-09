@@ -58,20 +58,29 @@ export default function DebateFeed() {
   }, []);
 
   const handleUpvote = async (id: string, currentLikes: number) => {
-    if (likedIds.has(id)) return; // Prevent multiple likes
+    const isLiked = likedIds.has(id);
+    const newLikedIds = new Set(likedIds);
+    let newLikesCount = currentLikes;
+
+    if (isLiked) {
+      newLikedIds.delete(id);
+      newLikesCount = Math.max(0, currentLikes - 1);
+    } else {
+      newLikedIds.add(id);
+      newLikesCount = currentLikes + 1;
+    }
 
     // Update local state and storage
-    const newLikedIds = new Set(likedIds).add(id);
     setLikedIds(newLikedIds);
     localStorage.setItem('pitchsense_liked_predictions', JSON.stringify(Array.from(newLikedIds)));
 
     // Optimistic UI update
-    setPredictions(current => current.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p));
+    setPredictions(current => current.map(p => p.id === id ? { ...p, likes: newLikesCount } : p));
     
     // DB update
     await supabase
       .from("predictions")
-      .update({ likes: currentLikes + 1 })
+      .update({ likes: newLikesCount })
       .eq("id", id);
   };
 
@@ -178,10 +187,9 @@ export default function DebateFeed() {
                 </button>
                 <button
                   onClick={() => handleUpvote(p.id, p.likes || 0)}
-                  disabled={likedIds.has(p.id)}
                   className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all shadow-sm ${
                     likedIds.has(p.id) 
-                      ? 'bg-emerald-900/40 text-emerald-400 cursor-default border border-emerald-500/30' 
+                      ? 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-900/60' 
                       : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 active:scale-95'
                   }`}
                 >
