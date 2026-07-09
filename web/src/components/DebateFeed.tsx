@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { ThumbsUp, Clock, MessageSquare } from "lucide-react";
+import { ThumbsUp, Clock, MessageSquare, Trash2 } from "lucide-react";
 
 export default function DebateFeed() {
   const [predictions, setPredictions] = useState<any[]>([]);
@@ -11,6 +11,7 @@ export default function DebateFeed() {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   const fetchPredictions = async () => {
     const { data } = await supabase
@@ -35,6 +36,9 @@ export default function DebateFeed() {
   };
 
   useEffect(() => {
+    // Get current user alias for delete permissions
+    setCurrentUser(localStorage.getItem('pitchsense_alias'));
+
     // Load previously liked IDs from local storage
     const storedLikes = localStorage.getItem('pitchsense_liked_predictions');
     if (storedLikes) {
@@ -104,6 +108,18 @@ export default function DebateFeed() {
       fetchPredictions();
     }
     setSubmittingReply(false);
+  };
+
+  const handleDeleteReply = async (predictionId: string, replyId: string) => {
+    const { error } = await supabase.from("replies").delete().eq("id", replyId);
+    if (!error) {
+      setPredictions(current => current.map(p => {
+        if (p.id === predictionId) {
+          return { ...p, replies: p.replies.filter((r: any) => r.id !== replyId) };
+        }
+        return p;
+      }));
+    }
   };
 
   if (loading) return <div className="text-center py-10 text-slate-400">Loading debate...</div>;
@@ -215,6 +231,15 @@ export default function DebateFeed() {
                         <span className="text-slate-500 text-[10px]">
                           {new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
+                        {currentUser && r.alias === currentUser && (
+                          <button 
+                            onClick={() => handleDeleteReply(p.id, r.id)}
+                            className="ml-auto text-slate-500 hover:text-red-400 transition-colors p-1"
+                            title="Delete reply"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        )}
                       </div>
                       <p className="text-slate-300 text-sm md:text-[15px] ml-7">{r.content}</p>
                     </div>
