@@ -1,0 +1,44 @@
+name: Automate PitchSense Backend
+
+on:
+  schedule:
+    # Run fetch_matches.py every day at 06:00 UTC (to get new fixtures)
+    - cron: '0 6 * * *'
+    # Run update_results.py every day at 23:00 UTC (to score finished fixtures)
+    - cron: '0 23 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  run-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          cd scripts
+          pip install -r requirements.txt
+
+      - name: Run Fetch Matches
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: |
+          cd scripts
+          python fetch_matches.py
+
+      - name: Run Update Results
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: |
+          cd scripts
+          python update_results.py
