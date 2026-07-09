@@ -174,13 +174,13 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
               <h3 className="font-bold text-lg md:text-xl">
                 {match.home_team} <span className="text-slate-500 font-normal mx-1 md:mx-2 text-sm md:text-base">vs</span> {match.away_team}
               </h3>
-              <div className="flex items-center gap-3 self-end sm:self-auto">
-                <span className="text-xs md:text-sm text-slate-400 bg-slate-900 px-3 py-1 rounded-full whitespace-nowrap">{kickoff}</span>
+              <div className="flex items-center justify-between w-full sm:w-auto gap-3 mt-1 sm:mt-0">
+                <span className="text-xs md:text-sm text-slate-400 bg-slate-900 px-3 py-1.5 rounded-full whitespace-nowrap border border-slate-700/50">{kickoff}</span>
                 <button
                   onClick={() => handleShare(match)}
-                  className="flex items-center gap-2 text-slate-300 bg-slate-700/50 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition-colors"
+                  className="flex items-center gap-2 text-slate-300 bg-slate-700/80 hover:bg-slate-600 px-4 py-1.5 rounded-full text-sm transition-colors border border-slate-600/50 font-medium shadow-sm"
                 >
-                  <Share2 size={16} /> Share
+                  <Share2 size={14} /> Share
                 </button>
               </div>
             </div>
