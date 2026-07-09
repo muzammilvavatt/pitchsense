@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import AliasSetup from "@/components/AliasSetup";
 import Dashboard from "@/components/Dashboard";
+import HowItWorksModal from "@/components/HowItWorksModal";
 
 export default function Home() {
   const [alias, setAlias] = useState<string | null>(null);
@@ -50,7 +51,19 @@ export default function Home() {
       {!alias ? (
         <AliasSetup onAliasSet={setAlias} />
       ) : (
-        <Dashboard alias={alias} onLogout={handleLogout} />
+        <>
+          <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 uppercase drop-shadow-sm">
+                PitchSense
+              </h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <HowItWorksModal />
+            </div>
+          </header>
+          <Dashboard alias={alias} onLogout={handleLogout} />
+        </>
       )}
     </main>
   );

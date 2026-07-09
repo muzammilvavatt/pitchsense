@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Trophy, Target, Heart, Brain } from "lucide-react";
+import Link from "next/link";
 
 export default function Leaderboard() {
   const [leaders, setLeaders] = useState<any[]>([]);
@@ -60,7 +61,11 @@ export default function Leaderboard() {
                 leaders.map((leader, idx) => (
                   <tr key={leader.alias} className="hover:bg-slate-800/30 transition-colors group">
                     <td className="p-4 font-bold text-slate-500 group-hover:text-white">#{idx + 1}</td>
-                    <td className="p-4 font-bold text-blue-400">{leader.alias}</td>
+                    <td className="p-4 font-bold">
+                      <Link href={`/profile/${leader.alias}`} className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">
+                        {leader.alias}
+                      </Link>
+                    </td>
                     <td className="p-4 text-slate-300">{leader.correct_predictions || 0}</td>
                     <td className="p-4 font-bold text-purple-400">{leader.mastermind_predictions || 0}</td>
                     <td className="p-4 text-slate-300">{leader.total_likes || 0}</td>

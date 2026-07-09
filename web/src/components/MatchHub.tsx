@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Bot, User, CheckCircle2, AlertCircle } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 export default function MatchHub({ alias }: { alias: string }) {
   const [matches, setMatches] = useState<any[]>([]);
@@ -124,8 +125,8 @@ export default function MatchHub({ alias }: { alias: string }) {
                   <Bot size={20} /> Machine Insight
                 </div>
                 {insights[match.id] ? (
-                  <div className="text-slate-300 leading-relaxed text-sm bg-blue-950/20 p-4 rounded-lg border border-blue-900/30 whitespace-pre-wrap font-sans">
-                    {insights[match.id].insight}
+                  <div className="text-slate-300 leading-relaxed text-sm bg-blue-950/20 p-4 rounded-lg border border-blue-900/30 font-sans prose prose-invert prose-sm max-w-none">
+                    <ReactMarkdown>{insights[match.id].insight}</ReactMarkdown>
                   </div>
                 ) : (
                   <p className="text-slate-500 italic text-sm">No AI insights available for this fixture.</p>
