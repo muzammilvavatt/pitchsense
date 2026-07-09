@@ -112,6 +112,12 @@ export default function ProfilePage() {
     // Dispatch a global event so the Dashboard immediately updates!
     window.dispatchEvent(new CustomEvent("avatarUpdate", { detail: newAvatarUrl }));
     
+    // Sync to Supabase auth metadata so it persists across devices
+    await supabase.auth.updateUser({
+      data: { avatar_url: newAvatarUrl }
+    });
+
+    
     // Update all previous predictions in DB
     await supabase
       .from("predictions")
