@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LogOut, Trophy, MessageSquare, LayoutDashboard } from "lucide-react";
 import MatchHub from "./MatchHub";
 import DebateFeed from "./DebateFeed";
