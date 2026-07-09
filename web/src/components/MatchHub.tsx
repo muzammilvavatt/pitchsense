@@ -124,11 +124,28 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
         </div>
       )}
 
-      {matches.map((match) => {
-        const pred = predictions[match.id] || { winner: "", score: "", justification: "" };
-        const kickoff = new Date(match.kickoff).toLocaleString();
+      {(() => {
+        const groupedMatches = matches.reduce((acc, match) => {
+          const league = match.league || "Other Matches";
+          if (!acc[league]) acc[league] = [];
+          acc[league].push(match);
+          return acc;
+        }, {} as Record<string, any[]>);
 
-        return (
+        return Object.entries(groupedMatches).map(([league, leagueMatches]) => (
+          <div key={league} className="space-y-6 mt-8">
+            <div className="flex items-center gap-4 mb-2 pb-2">
+              <h2 className="text-xl md:text-2xl font-black text-white bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-emerald-200">
+                {league}
+              </h2>
+              <div className="h-px bg-slate-700 flex-grow"></div>
+            </div>
+
+            {(leagueMatches as any[]).map((match: any) => {
+              const pred = predictions[match.id] || { winner: "", score: "", justification: "" };
+              const kickoff = new Date(match.kickoff).toLocaleString();
+
+              return (
           <div key={match.id} className="glass-card overflow-hidden">
             <div className="bg-slate-800/80 p-4 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
               <h3 className="font-bold text-lg md:text-xl">
@@ -217,20 +234,25 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
                       onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
                       className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm min-h-[100px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                     />
-                    <button
-                      onClick={() => submitPrediction(match.id)}
-                      disabled={!pred.winner || !pred.score || !pred.justification || submitting === match.id}
-                      className="w-full bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 disabled:hover:bg-emerald-900 text-white font-bold py-3 rounded-lg transition-all active:scale-[0.98] border border-emerald-600/50"
-                    >
-                      {submitting === match.id ? "Locking in..." : "Submit Prediction"}
-                    </button>
+                            <button
+                              onClick={() => submitPrediction(match.id)}
+                              disabled={!pred.winner || !pred.score || !pred.justification || submitting === match.id}
+                              className="w-full bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 disabled:hover:bg-emerald-900 text-white font-bold py-3 rounded-lg transition-all active:scale-[0.98] border border-emerald-600/50"
+                            >
+                              {submitting === match.id ? "Locking in..." : "Submit Prediction"}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
+                );
+              })}
             </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+          ));
+        })()}
+      </div>
+    );
+  }
+
+

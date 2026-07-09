@@ -64,7 +64,8 @@ def fetch_hot_matches():
                         "home_logo": teams["home"]["logo"],
                         "away_logo": teams["away"]["logo"],
                         "kickoff": fixture["date"],
-                        "is_knockout": is_knockout
+                        "is_knockout": is_knockout,
+                        "league": HOT_LEAGUES[league_id]
                     })
                     
                     # Stop once we have found 10 hot matches to save database space
@@ -94,9 +95,10 @@ def save_matches_to_supabase(matches):
                     "home_logo": match["home_logo"],
                     "away_logo": match["away_logo"],
                     "kickoff": match["kickoff"],
-                    "is_knockout": match["is_knockout"]
+                    "is_knockout": match["is_knockout"],
+                    "league": match["league"]
                 }).eq("id", db_match["id"]).execute()
-                print(f"Updated Match with Logos: {match['home_team']} vs {match['away_team']}")
+                print(f"Updated Match with Logos and League: {match['home_team']} vs {match['away_team']}")
             else:
                 # Insert new match
                 supabase.table("matches").insert(match).execute()
