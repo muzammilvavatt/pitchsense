@@ -80,8 +80,14 @@ export default function Home() {
           <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3 group cursor-default">
               <div className="bg-slate-800 p-2 rounded-xl shadow-lg border border-slate-700 group-hover:scale-105 transition-transform duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16l-4-3 1.5-5h5L16 13z" />
+                  <path d="M8 13l-6 2" />
+                  <path d="M16 13l6 2" />
+                  <path d="M9.5 8L6 3" />
+                  <path d="M14.5 8l3.5-5" />
+                  <path d="M12 16v6" />
                 </svg>
               </div>
               <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white flex items-center gap-1">
