@@ -251,7 +251,7 @@ export default function DebateFeed() {
                         type="text" 
                         value={replyContent}
                         onChange={(e) => setReplyContent(e.target.value)}
-                        placeholder="Write a reply..."
+                        placeholder={currentUser ? `Replying as ${currentUser}...` : "Write a reply..."}
                         className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500 shadow-inner"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handleReplySubmit(p.id);
