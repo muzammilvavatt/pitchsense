@@ -6,7 +6,7 @@ import { Bot, User, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function MatchHub({ alias }: { alias: string }) {
   const [matches, setMatches] = useState<any[]>([]);
-  const [insights, setInsights] = useState<Record<string, string>>({});
+  const [insights, setInsights] = useState<Record<string, { insight: string, predictedWinner: string }>>({});
   const [loading, setLoading] = useState(true);
 
   // Form states per match
@@ -34,9 +34,9 @@ export default function MatchHub({ alias }: { alias: string }) {
           .in("match_id", matchIds);
         
         if (insightData) {
-          const insightMap: Record<string, string> = {};
+          const insightMap: Record<string, { insight: string, predictedWinner: string }> = {};
           insightData.forEach((i: any) => {
-            insightMap[i.match_id] = i.insight;
+            insightMap[i.match_id] = { insight: i.insight, predictedWinner: i.predicted_winner };
           });
           setInsights(insightMap);
         }
@@ -63,6 +63,10 @@ export default function MatchHub({ alias }: { alias: string }) {
     setSubmitting(matchId);
     setSuccessMsg(null);
 
+    const aiPredictedWinner = insights[matchId]?.predictedWinner || "";
+    // If the user's winner is different from the AI's winner (and AI has a prediction), they are countering
+    const counteredAi = aiPredictedWinner ? (pred.winner !== aiPredictedWinner) : false;
+
     const { error } = await supabase
       .from("predictions")
       .insert({
@@ -70,7 +74,8 @@ export default function MatchHub({ alias }: { alias: string }) {
         match_id: matchId,
         prediction: pred.winner,
         score_prediction: pred.score,
-        justification: pred.justification
+        justification: pred.justification,
+        countered_ai: counteredAi
       });
 
     setSubmitting(null);
@@ -119,9 +124,9 @@ export default function MatchHub({ alias }: { alias: string }) {
                   <Bot size={20} /> Machine Insight
                 </div>
                 {insights[match.id] ? (
-                  <p className="text-slate-300 leading-relaxed text-sm bg-blue-950/20 p-4 rounded-lg border border-blue-900/30">
-                    {insights[match.id]}
-                  </p>
+                  <div className="text-slate-300 leading-relaxed text-sm bg-blue-950/20 p-4 rounded-lg border border-blue-900/30 whitespace-pre-wrap font-sans">
+                    {insights[match.id].insight}
+                  </div>
                 ) : (
                   <p className="text-slate-500 italic text-sm">No AI insights available for this fixture.</p>
                 )}
@@ -130,7 +135,7 @@ export default function MatchHub({ alias }: { alias: string }) {
               {/* Human Prediction Form */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-emerald-400 font-medium pb-2 border-b border-slate-700">
-                  <User size={20} /> Your Analysis
+                  <User size={20} /> Counter or Support the AI
                 </div>
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
@@ -142,7 +147,7 @@ export default function MatchHub({ alias }: { alias: string }) {
                       <option value="">Select Winner</option>
                       <option value={match.home_team}>{match.home_team}</option>
                       <option value={match.away_team}>{match.away_team}</option>
-                      <option value="Draw">Draw</option>
+                      {!match.is_knockout && <option value="Draw">Draw</option>}
                     </select>
                     <input
                       type="text"
@@ -153,17 +158,17 @@ export default function MatchHub({ alias }: { alias: string }) {
                     />
                   </div>
                   <textarea
-                    placeholder="Tactical Justification (Why?)"
+                    placeholder="Provide your tactical counter-argument or supporting evidence here..."
                     value={pred.justification}
                     onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-md p-3 text-sm min-h-[100px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-md p-3 text-sm min-h-[120px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                   />
                   <button
                     onClick={() => submitPrediction(match.id)}
                     disabled={!pred.winner || !pred.score || !pred.justification || submitting === match.id}
                     className="w-full bg-slate-700 hover:bg-emerald-600 disabled:opacity-50 disabled:hover:bg-slate-700 text-white font-medium py-2 rounded-md transition-colors"
                   >
-                    {submitting === match.id ? "Submitting..." : "Submit Prediction"}
+                    {submitting === match.id ? "Submitting..." : "Submit Your Argument"}
                   </button>
                 </div>
               </div>

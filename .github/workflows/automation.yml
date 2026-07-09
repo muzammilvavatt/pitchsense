@@ -2,10 +2,8 @@ name: Automate PitchSense Backend
 
 on:
   schedule:
-    # Run fetch_matches.py every day at 06:00 UTC (to get new fixtures)
-    - cron: '0 6 * * *'
-    # Run update_results.py every day at 23:00 UTC (to score finished fixtures)
-    - cron: '0 23 * * *'
+    # Runs every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
@@ -33,6 +31,15 @@ jobs:
         run: |
           cd scripts
           python fetch_matches.py
+
+      - name: Generate AI Insights
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          cd scripts
+          python generate_ai_insights.py
 
       - name: Run Update Results
         env:

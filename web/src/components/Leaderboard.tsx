@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Trophy, Target, Heart } from "lucide-react";
+import { Trophy, Target, Heart, Brain } from "lucide-react";
 
 export default function Leaderboard() {
   const [leaders, setLeaders] = useState<any[]>([]);
@@ -41,6 +41,9 @@ export default function Leaderboard() {
                   <div className="flex items-center gap-1"><Target size={14}/> Correct</div>
                 </th>
                 <th className="p-4 font-medium">
+                  <div className="flex items-center gap-1 text-purple-400"><Brain size={14}/> Mastermind (4x)</div>
+                </th>
+                <th className="p-4 font-medium">
                   <div className="flex items-center gap-1"><Heart size={14}/> Likes</div>
                 </th>
                 <th className="p-4 font-medium text-right">Total Score</th>
@@ -49,7 +52,7 @@ export default function Leaderboard() {
             <tbody className="divide-y divide-slate-800/50">
               {leaders.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500">
+                  <td colSpan={6} className="p-8 text-center text-slate-500">
                     Leaderboard is empty. Start predicting!
                   </td>
                 </tr>
@@ -59,6 +62,7 @@ export default function Leaderboard() {
                     <td className="p-4 font-bold text-slate-500 group-hover:text-white">#{idx + 1}</td>
                     <td className="p-4 font-bold text-blue-400">{leader.alias}</td>
                     <td className="p-4 text-slate-300">{leader.correct_predictions || 0}</td>
+                    <td className="p-4 font-bold text-purple-400">{leader.mastermind_predictions || 0}</td>
                     <td className="p-4 text-slate-300">{leader.total_likes || 0}</td>
                     <td className="p-4 text-right font-bold text-emerald-400 text-lg">
                       {leader.total_score || 0}

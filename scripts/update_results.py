@@ -45,15 +45,24 @@ def fetch_recent_results():
                         "home_team": teams["home"]["name"],
                         "away_team": teams["away"]["name"],
                         "home_goals": goals["home"],
-                        "away_goals": goals["away"]
+                        "away_goals": goals["away"],
+                        "home_penalties": item["score"]["penalty"]["home"] if item["score"]["penalty"]["home"] is not None else 0,
+                        "away_penalties": item["score"]["penalty"]["away"] if item["score"]["penalty"]["away"] is not None else 0
                     })
     return finished_matches
 
-def determine_winner(home_team, away_team, home_goals, away_goals):
+def determine_winner(home_team, away_team, home_goals, away_goals, home_penalties, away_penalties):
     if home_goals > away_goals:
         return home_team
     elif away_goals > home_goals:
         return away_team
+    
+    # If tied in regular/extra time, check penalties
+    if home_penalties > away_penalties:
+        return home_team
+    elif away_penalties > home_penalties:
+        return away_team
+        
     return "Draw"
 
 def update_database_results(api_results):
@@ -73,12 +82,18 @@ def update_database_results(api_results):
         )
         
         if matched_api_game:
+            # Format score string
             score_string = f"{matched_api_game['home_goals']}-{matched_api_game['away_goals']}"
+            if matched_api_game['home_penalties'] > 0 or matched_api_game['away_penalties'] > 0:
+                score_string += f" (PEN: {matched_api_game['home_penalties']}-{matched_api_game['away_penalties']})"
+
             actual_winner = determine_winner(
                 matched_api_game["home_team"], 
                 matched_api_game["away_team"], 
                 matched_api_game["home_goals"], 
-                matched_api_game["away_goals"]
+                matched_api_game["away_goals"],
+                matched_api_game["home_penalties"],
+                matched_api_game["away_penalties"]
             )
             
             print(f"Match Finished: {db_match['home_team']} vs {db_match['away_team']} -> {score_string} (Winner: {actual_winner})")

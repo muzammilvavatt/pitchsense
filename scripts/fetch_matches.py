@@ -53,10 +53,16 @@ def fetch_hot_matches():
                 
                 # Filter: Only keep matches from our Hot Leagues list
                 if league_id in HOT_LEAGUES:
+                    # Determine if this is a knockout match based on the round name
+                    round_name = item["league"]["round"].lower()
+                    knockout_keywords = ["round of", "quarter", "semi", "final", "knockout"]
+                    is_knockout = any(keyword in round_name for keyword in knockout_keywords)
+
                     matches.append({
                         "home_team": teams["home"]["name"],
                         "away_team": teams["away"]["name"],
-                        "kickoff": fixture["date"]
+                        "kickoff": fixture["date"],
+                        "is_knockout": is_knockout
                     })
                     
                     # Stop once we have found 10 hot matches to save database space
