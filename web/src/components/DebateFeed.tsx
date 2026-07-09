@@ -43,14 +43,20 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
   };
 
   useEffect(() => {
-    // Load previously liked IDs from local storage
-    const storageKey = currentUserAlias ? `pitchsense_liked_predictions_${currentUserAlias}` : 'pitchsense_liked_predictions';
-    const storedLikes = localStorage.getItem(storageKey);
-    if (storedLikes) {
-      setLikedIds(new Set(JSON.parse(storedLikes)));
-    } else {
-      setLikedIds(new Set());
-    }
+    const fetchLikes = async () => {
+      if (currentUserAlias) {
+        const { data } = await supabase
+          .from('prediction_likes')
+          .select('prediction_id')
+          .eq('alias', currentUserAlias);
+        if (data) {
+          setLikedIds(new Set(data.map(d => d.prediction_id)));
+        }
+      } else {
+        setLikedIds(new Set());
+      }
+    };
+    fetchLikes();
     
     fetchPredictions(sortBy);
     
@@ -75,6 +81,8 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
   };
 
   const handleUpvote = async (id: string, currentLikes: number) => {
+    if (!currentUserAlias) return;
+
     const isLiked = likedIds.has(id);
     const newLikedIds = new Set(likedIds);
     let newLikesCount = currentLikes;
@@ -82,24 +90,28 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
     if (isLiked) {
       newLikedIds.delete(id);
       newLikesCount = Math.max(0, currentLikes - 1);
+      
+      // DB update
+      await supabase
+        .from("prediction_likes")
+        .delete()
+        .eq("prediction_id", id)
+        .eq("alias", currentUserAlias);
     } else {
       newLikedIds.add(id);
       newLikesCount = currentLikes + 1;
+      
+      // DB update
+      await supabase
+        .from("prediction_likes")
+        .insert({ prediction_id: id, alias: currentUserAlias });
     }
 
-    // Update local state and storage
+    // Update local state
     setLikedIds(newLikedIds);
-    const storageKey = currentUserAlias ? `pitchsense_liked_predictions_${currentUserAlias}` : 'pitchsense_liked_predictions';
-    localStorage.setItem(storageKey, JSON.stringify(Array.from(newLikedIds)));
 
     // Optimistic UI update
     setPredictions(current => current.map(p => p.id === id ? { ...p, likes: newLikesCount } : p));
-    
-    // DB update
-    await supabase
-      .from("predictions")
-      .update({ likes: newLikesCount })
-      .eq("id", id);
   };
 
   const handleReplySubmit = async (predictionId: string) => {
