@@ -134,12 +134,12 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
   if (loading) return <div className="text-center py-10 text-slate-400">Loading debate...</div>;
 
   return (
-    <div className="space-y-4 max-w-3xl mx-auto">
-      <div className="flex justify-between items-center mb-2 border-b border-slate-800/50 pb-3">
+    <div className="max-w-3xl mx-auto glass-card overflow-hidden">
+      <div className="flex justify-between items-center p-4 border-b border-slate-800/80 bg-slate-900/40">
         <h2 className="text-lg font-bold text-white hidden md:flex items-center gap-2">
           <MessageSquare className="text-blue-500" size={18} /> Match Debates
         </h2>
-        <div className="flex bg-slate-900/80 rounded-lg p-1 border border-slate-800 ml-auto md:ml-0">
+        <div className="flex bg-slate-950/80 rounded-lg p-1 border border-slate-800 ml-auto md:ml-0">
           <button 
             onClick={() => setSortBy("top")}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${sortBy === "top" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"}`}
@@ -155,15 +155,17 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
         </div>
       </div>
 
+      <div className="flex flex-col">
       {predictions.length === 0 ? (
-        <div className="glass-card p-10 text-center text-slate-400">No predictions yet.</div>
+        <div className="p-10 text-center text-slate-400">No predictions yet.</div>
       ) : (
-        predictions.map((p) => {
+        predictions.map((p, index) => {
           const match = p.matches || {};
           const timeAgo = new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const isLastPost = index === predictions.length - 1;
 
           return (
-            <div key={p.id} className="glass-card p-4 hover:border-slate-500/50 transition-colors flex flex-col">
+            <div key={p.id} className={`p-4 md:p-5 hover:bg-slate-800/30 transition-colors flex flex-col ${!isLastPost ? 'border-b border-slate-800/80' : ''}`}>
               
               {/* PARENT POST */}
               <div className="flex gap-3 md:gap-4">
@@ -218,14 +220,14 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                     </span>
                   </div>
 
-                  <div className="bg-slate-900/50 p-3 md:p-4 rounded-xl border border-slate-800/80 mb-3">
-                    <p className={`text-white text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
+                  <div className="mb-2">
+                    <p className={`text-slate-200 text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
                       {p.justification}
                     </p>
                     {p.justification?.length > 180 && !expandedPosts.has(p.id) && (
                       <button 
                         onClick={() => toggleExpand(p.id)}
-                        className="text-blue-400 text-sm font-bold mt-2 hover:underline"
+                        className="text-blue-400 text-sm font-bold mt-1 hover:underline"
                       >
                         Read more
                       </button>
@@ -348,6 +350,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
           );
         })
       )}
+      </div>
     </div>
   );
 }
