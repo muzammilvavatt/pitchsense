@@ -161,21 +161,55 @@ export default function ProfilePage() {
             </div>
             
             {isEditingAvatar && (
-              <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <input 
-                  type="url" 
-                  value={newAvatarUrl}
-                  onChange={(e) => setNewAvatarUrl(e.target.value)}
-                  placeholder="Paste image URL here..."
-                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
-                />
-                <button 
-                  onClick={saveAvatar}
-                  disabled={savingAvatar}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
-                >
-                  {savingAvatar ? "Saving..." : "Save"}
-                </button>
+              <div className="mt-6 p-4 bg-slate-900/80 rounded-xl border border-slate-700">
+                <h3 className="text-white font-bold mb-3 text-sm">Choose an Avatar:</h3>
+                <div className="flex flex-wrap gap-3 mb-4">
+                  {[
+                    "https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=0ea5e9",
+                    "https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=10b981",
+                    "https://api.dicebear.com/7.x/bottts/svg?seed=Oliver&backgroundColor=f59e0b",
+                    "https://api.dicebear.com/7.x/bottts/svg?seed=Sophie&backgroundColor=ec4899",
+                    "https://api.dicebear.com/7.x/notionists/svg?seed=Jack&backgroundColor=6366f1",
+                    "https://api.dicebear.com/7.x/notionists/svg?seed=Mia&backgroundColor=14b8a6",
+                    "https://api.dicebear.com/7.x/adventurer/svg?seed=Leo&backgroundColor=8b5cf6",
+                    "https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe&backgroundColor=f43f5e"
+                  ].map((url, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setNewAvatarUrl(url)}
+                      className={`w-12 h-12 rounded-full overflow-hidden border-2 transition-all hover:scale-110 ${
+                        newAvatarUrl === url ? "border-emerald-400 scale-110 shadow-[0_0_15px_rgba(52,211,153,0.5)]" : "border-slate-700 hover:border-slate-500"
+                      }`}
+                    >
+                      <img src={url} alt={`Avatar option ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-slate-800">
+                  <input 
+                    type="url" 
+                    value={newAvatarUrl}
+                    onChange={(e) => setNewAvatarUrl(e.target.value)}
+                    placeholder="Or paste a custom image URL..."
+                    className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  />
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setIsEditingAvatar(false)}
+                      className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={saveAvatar}
+                      disabled={savingAvatar || !newAvatarUrl}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
+                    >
+                      {savingAvatar ? "Saving..." : "Save"}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
