@@ -130,11 +130,11 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
 
         return (
           <div key={match.id} className="glass-card overflow-hidden">
-            <div className="bg-slate-800/80 p-4 border-b border-slate-700/50 flex justify-between items-center">
-              <h3 className="font-bold text-lg md:text-xl truncate">
+            <div className="bg-slate-800/80 p-4 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <h3 className="font-bold text-lg md:text-xl">
                 {match.home_team} <span className="text-slate-500 font-normal mx-1 md:mx-2 text-sm md:text-base">vs</span> {match.away_team}
               </h3>
-              <span className="text-xs md:text-sm text-slate-400 bg-slate-900 px-3 py-1 rounded-full whitespace-nowrap ml-2">{kickoff}</span>
+              <span className="text-xs md:text-sm text-slate-400 bg-slate-900 px-3 py-1 rounded-full whitespace-nowrap">{kickoff}</span>
             </div>
 
             <div className="flex justify-between items-center px-2 md:px-8 py-6 mb-2 mt-4 mx-4 relative bg-slate-900/30 rounded-2xl border border-slate-800/50">
