@@ -200,7 +200,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
       ) : (
         predictions.map((p, index) => {
           const match = p.matches || {};
-          const timeAgo = new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const timeAgo = new Date(p.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
           const isLastPost = index === predictions.length - 1;
 
           return (
@@ -333,7 +333,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                               {r.alias} {userBadges[r.alias]?.emoji}
                             </span>
                             <span className="text-slate-500 text-[10px] md:text-[11px]">
-                              {new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(r.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                             </span>
                             {currentUserAlias && r.alias === currentUserAlias && (
                               <button 
