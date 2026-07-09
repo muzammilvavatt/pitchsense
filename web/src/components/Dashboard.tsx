@@ -96,14 +96,15 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
           {onToggleTheme && (
             <button
               onClick={onToggleTheme}
-              className={`flex items-center justify-center p-2 rounded-lg transition-colors ${
+              className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full font-bold text-sm transition-all shadow-md hover:scale-105 border ${
                 theme === "worldcup" 
-                  ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/50" 
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+                  ? "bg-emerald-600 text-white border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]" 
+                  : "bg-slate-800 text-slate-300 border-slate-700 hover:text-white hover:bg-slate-700 hover:border-slate-500"
               }`}
               title="Toggle World Cup Theme"
             >
-              <Palette size={20} />
+              <Palette size={16} className={theme === "worldcup" ? "text-white" : "text-emerald-400"} />
+              {theme === "worldcup" ? "Stadium Mode" : "Dark Mode"}
             </button>
           )}
           
