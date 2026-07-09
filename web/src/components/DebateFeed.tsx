@@ -184,9 +184,11 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                     </span>
                   </div>
 
-                  <p className="text-slate-200 text-[14px] md:text-[15px] leading-relaxed mb-3 whitespace-pre-wrap">
-                    {p.justification}
-                  </p>
+                  <div className="bg-slate-900/50 p-3 md:p-4 rounded-xl border border-slate-800/80 mb-3">
+                    <p className="text-white text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap">
+                      {p.justification}
+                    </p>
+                  </div>
 
                   {/* Action Bar */}
                   <div className="flex items-center gap-4 md:gap-6 text-slate-500">
