@@ -5,6 +5,7 @@ import { LogOut, Trophy, MessageSquare, LayoutDashboard } from "lucide-react";
 import MatchHub from "./MatchHub";
 import DebateFeed from "./DebateFeed";
 import Leaderboard from "./Leaderboard";
+import Link from "next/link";
 
 type Tab = "hub" | "debate" | "leaderboard";
 
@@ -16,18 +17,19 @@ export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: strin
       {/* Header */}
       <header className="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-4 z-40 shadow-xl shadow-slate-900/50">
         <div className="flex w-full md:w-auto justify-between items-center">
-          <div className="flex items-center gap-3">
+          <Link href={`/profile/${alias}`} className="flex items-center gap-3 group">
             {avatarUrl ? (
-              <img src={avatarUrl} alt={alias} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700 shadow-lg" />
+              <img src={avatarUrl} alt={alias} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700 shadow-lg group-hover:border-blue-400 transition-colors" />
             ) : (
               <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white shadow-lg text-lg">
                 {alias.charAt(0).toUpperCase()}
               </div>
             )}
             <div>
-              <h2 className="font-bold text-xl leading-tight text-white tracking-wide">{alias}</h2>
+              <h2 className="font-bold text-xl leading-tight text-white tracking-wide group-hover:text-blue-400 transition-colors">{alias}</h2>
+              <p className="text-xs text-blue-400 group-hover:underline mt-0.5">View Profile</p>
             </div>
-          </div>
+          </Link>
           {/* Mobile logout button */}
           <div className="md:hidden">
             <button onClick={onLogout} className="text-slate-400 hover:text-white p-2">

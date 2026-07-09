@@ -1,169 +1,183 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Trophy, Target, Brain, Heart, ArrowLeft, Crosshair } from "lucide-react";
+import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Calendar } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function ProfilePage() {
-  const { alias } = useParams();
-  const router = useRouter();
+  const params = useParams();
+  const alias = decodeURIComponent(params.alias as string);
   
   const [stats, setStats] = useState<any>(null);
-  const [predictions, setPredictions] = useState<any[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchProfile() {
-      const decodedAlias = decodeURIComponent(alias as string);
-      
+    const fetchProfile = async () => {
       // Fetch stats from leaderboard view
-      const { data: leaderData } = await supabase
+      const { data: lbData } = await supabase
         .from("leaderboard")
         .select("*")
-        .eq("alias", decodedAlias)
+        .eq("alias", alias)
         .single();
       
-      setStats(leaderData || {
-        alias: decodedAlias,
-        correct_predictions: 0,
-        mastermind_predictions: 0,
-        sniper_predictions: 0,
-        total_likes: 0,
-        total_score: 0
-      });
-
-      // Fetch predictions history with match data
-      const { data: predData } = await supabase
+      // Fetch most recent prediction to grab avatar_url (if available)
+      const { data: recentPreds } = await supabase
         .from("predictions")
-        .select("*, matches(*)")
-        .eq("alias", decodedAlias)
+        .select("avatar_url, created_at, prediction, score_prediction, justification, likes, countered_ai, matches(home_team, away_team)")
+        .eq("alias", alias)
         .order("created_at", { ascending: false });
 
-      if (predData) setPredictions(predData);
+      if (lbData) {
+        setStats({
+          ...lbData,
+          avatar_url: recentPreds && recentPreds.length > 0 ? recentPreds[0].avatar_url : null
+        });
+      }
+      
+      if (recentPreds) {
+        setHistory(recentPreds);
+      }
       
       setLoading(false);
-    }
-    
-    if (alias) {
-      fetchProfile();
-    }
+    };
+
+    fetchProfile();
   }, [alias]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-slate-400">Loading profile...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  if (!stats && history.length === 0) {
+    return (
+      <div className="min-h-screen p-8 max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
+        <h1 className="text-3xl font-bold text-white mb-4">Pundit Not Found</h1>
+        <p className="text-slate-400 mb-8">This user hasn't made any predictions yet or doesn't exist.</p>
+        <Link href="/" className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold">
+          Go Back Home
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto animate-fade-in">
-      <Link href="/" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-8 transition-colors">
+    <main className="min-h-screen p-4 md:p-8 max-w-5xl mx-auto pb-24">
+      <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8">
         <ArrowLeft size={20} /> Back to Dashboard
       </Link>
-      
-      {/* Profile Header & Stats */}
-      <div className="glass-card overflow-hidden mb-8">
-        <div className="bg-gradient-to-r from-blue-900/40 to-indigo-900/40 p-8 flex flex-col md:flex-row items-center gap-6 border-b border-slate-700/50">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-500 flex items-center justify-center font-black text-4xl text-white shadow-lg">
-            {stats.alias.charAt(0).toUpperCase()}
+
+      <div className="glass-card p-6 md:p-10 mb-8">
+        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+          <div className="relative">
+            {stats?.avatar_url ? (
+              <img src={stats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-slate-700 shadow-2xl" />
+            ) : (
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white shadow-2xl text-5xl">
+                {alias.charAt(0).toUpperCase()}
+              </div>
+            )}
+            
+            {/* Top Pundit Badge Overlay */}
+            {stats?.total_score >= 10 && (
+              <div className="absolute -bottom-2 -right-2 bg-yellow-500 text-black font-black text-xs px-3 py-1.5 rounded-full border-2 border-slate-900 shadow-lg flex items-center gap-1">
+                <Trophy size={14} /> VIP
+              </div>
+            )}
           </div>
-          <div className="text-center md:text-left">
-            <h1 className="text-3xl font-black text-white">{stats.alias}</h1>
-            <p className="text-emerald-400 font-bold mt-1 text-lg">{stats.total_score} Total Points</p>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-y md:divide-y-0 divide-slate-700/50 bg-slate-900/50">
-          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
-            <Trophy className="text-yellow-400" size={24} />
-            <span className="text-2xl font-black text-white">{stats.total_score}</span>
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Score</span>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
-            <Target className="text-emerald-400" size={24} />
-            <span className="text-2xl font-black text-white">{stats.correct_predictions}</span>
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Correct</span>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
-            <Brain className="text-purple-400" size={24} />
-            <span className="text-2xl font-black text-white">{stats.mastermind_predictions}</span>
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Masterminds</span>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
-            <Crosshair className="text-orange-400" size={24} />
-            <span className="text-2xl font-black text-white">{stats.sniper_predictions || 0}</span>
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Snipers</span>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center gap-2 text-center">
-            <Heart className="text-pink-400" size={24} />
-            <span className="text-2xl font-black text-white">{stats.total_likes}</span>
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Likes</span>
+
+          <div className="text-center md:text-left flex-1">
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">{alias}</h1>
+            <p className="text-slate-400 text-lg flex items-center justify-center md:justify-start gap-2">
+              <Trophy className="text-yellow-400" size={20} />
+              <span className="font-bold text-emerald-400">{stats?.total_score || 0} Total Points</span>
+            </p>
+
+            {/* Badges Container */}
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-6">
+              {stats?.correct_predictions > 0 && (
+                <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
+                  <Target size={16} className="text-emerald-400" />
+                  <span className="text-slate-300 font-medium">Accurate ({stats.correct_predictions})</span>
+                </div>
+              )}
+              {stats?.mastermind_predictions > 0 && (
+                <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
+                  <Brain size={16} className="text-purple-400" />
+                  <span className="text-slate-300 font-medium">Mastermind ({stats.mastermind_predictions})</span>
+                </div>
+              )}
+              {stats?.sniper_predictions > 0 && (
+                <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
+                  <Crosshair size={16} className="text-orange-400" />
+                  <span className="text-slate-300 font-medium">Sniper ({stats.sniper_predictions})</span>
+                </div>
+              )}
+              {stats?.total_likes > 0 && (
+                <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
+                  <Heart size={16} className="text-pink-400" />
+                  <span className="text-slate-300 font-medium">Respected ({stats.total_likes})</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Prediction History */}
-      <h2 className="text-xl font-bold text-white mb-4">Tactical History</h2>
-      
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+          <Calendar className="text-blue-400" /> Prediction History
+        </h2>
+      </div>
+
       <div className="space-y-4">
-        {predictions.length === 0 ? (
-          <p className="text-slate-500 text-center py-8 bg-slate-900/30 rounded-2xl border border-slate-800">
-            No predictions made yet.
-          </p>
-        ) : (
-          predictions.map((pred) => (
-            <div key={pred.id} className="glass-card p-5 relative overflow-hidden">
-              {/* Correctness Indicator */}
-              {pred.is_correct === true && (
-                <div className="absolute top-0 right-0 bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-bl-lg">WIN</div>
-              )}
-              {pred.is_correct === false && (
-                <div className="absolute top-0 right-0 bg-red-500/20 text-red-400 text-xs font-bold px-3 py-1 rounded-bl-lg">LOSS</div>
-              )}
-              
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 mt-2 gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex -space-x-2">
-                    {pred.matches.home_logo ? (
-                      <img src={pred.matches.home_logo} className="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 object-contain p-1" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs shadow-inner z-10">
-                        {pred.matches.home_team?.charAt(0)}
-                      </div>
-                    )}
-                    {pred.matches.away_logo ? (
-                      <img src={pred.matches.away_logo} className="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 object-contain p-1" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center font-bold text-xs shadow-inner">
-                        {pred.matches.away_team?.charAt(0)}
-                      </div>
-                    )}
+        {history.length > 0 ? (
+          history.map((pred, i) => (
+            <div key={i} className="glass-card p-5 transition-transform hover:scale-[1.01]">
+              <div className="flex flex-col md:flex-row justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{new Date(pred.created_at).toLocaleDateString()}</span>
                   </div>
-                  <div className="font-bold text-lg">
+                  <h3 className="font-bold text-lg text-white mb-2">
                     {pred.matches.home_team} vs {pred.matches.away_team}
+                  </h3>
+                  <div className="flex items-center gap-2 text-sm mb-4">
+                    <span className="text-slate-400">Predicted:</span>
+                    <span className="font-bold text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-900/50">
+                      {pred.prediction} ({pred.score_prediction})
+                    </span>
+                    {pred.countered_ai && (
+                      <span className="flex items-center gap-1 text-xs font-bold text-purple-400 bg-purple-950/30 px-2 py-0.5 rounded border border-purple-900/50 ml-2">
+                        <Brain size={12} /> Countered AI
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-slate-300 text-sm italic border-l-2 border-slate-700 pl-3 py-1 bg-slate-900/30 rounded-r-lg">
+                    "{pred.justification}"
+                  </p>
+                </div>
+                <div className="flex items-center md:items-start justify-between md:flex-col gap-4 min-w-[100px] border-t md:border-t-0 md:border-l border-slate-800 pt-4 md:pt-0 md:pl-4">
+                  <div className="flex items-center gap-1.5 text-slate-400">
+                    <Heart size={16} className={pred.likes > 0 ? "text-pink-500 fill-pink-500" : ""} /> 
+                    <span className="font-bold">{pred.likes || 0}</span>
                   </div>
                 </div>
-                <div className="text-sm font-medium bg-blue-900/30 px-3 py-1 rounded-full text-blue-300 border border-blue-800/50 self-start md:self-auto">
-                  Pick: {pred.prediction} ({pred.score_prediction})
-                </div>
-              </div>
-              
-              {pred.countered_ai && (
-                <div className="text-xs text-purple-400 font-bold mb-3 flex items-center gap-1">
-                  <Brain size={12} /> Countered AI
-                </div>
-              )}
-              
-              <div className="bg-slate-900/50 p-4 rounded-xl text-slate-300 text-sm border border-slate-800 italic">
-                "{pred.justification}"
-              </div>
-              
-              <div className="mt-4 flex items-center justify-between text-xs text-slate-500 font-medium">
-                <div>Result: {pred.matches.result || "Pending"}</div>
-                <div className="flex items-center gap-1"><Heart size={14} className="text-pink-500" /> {pred.likes} Likes</div>
               </div>
             </div>
           ))
+        ) : (
+          <div className="text-center p-8 bg-slate-900/50 rounded-xl border border-slate-800">
+            <p className="text-slate-400">No predictions made yet.</p>
+          </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

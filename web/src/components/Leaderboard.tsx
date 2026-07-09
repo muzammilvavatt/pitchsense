@@ -5,8 +5,18 @@ import { supabase } from "@/lib/supabase";
 import { Trophy, Target, Heart, Brain, Crosshair } from "lucide-react";
 import Link from "next/link";
 
+interface LeaderboardRow {
+  alias: string;
+  avatar_url?: string;
+  total_score: number;
+  correct_predictions: number;
+  mastermind_predictions: number;
+  sniper_predictions: number;
+  total_likes: number;
+}
+
 export default function Leaderboard() {
-  const [leaders, setLeaders] = useState<any[]>([]);
+  const [leaders, setLeaders] = useState<LeaderboardRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,8 +52,15 @@ export default function Leaderboard() {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
                     <span className="font-black text-slate-500 text-lg">#{idx + 1}</span>
-                    <Link href={`/profile/${leader.alias}`} className="font-bold text-blue-400 text-lg">
-                      {leader.alias}
+                    <Link href={`/profile/${leader.alias}`} className="flex items-center gap-2 group-hover:opacity-80 transition-opacity">
+                      {leader.avatar_url ? (
+                        <img src={leader.avatar_url} alt={leader.alias} className="w-8 h-8 rounded-full object-cover border-2 border-slate-700" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white text-xs">
+                          {leader.alias.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="font-bold text-blue-400 text-lg group-hover:underline">{leader.alias}</span>
                     </Link>
                   </div>
                   <div className="font-black text-emerald-400 text-xl">{leader.total_score || 0} pts</div>
@@ -105,8 +122,15 @@ export default function Leaderboard() {
                   <tr key={leader.alias} className="hover:bg-slate-800/30 transition-colors group">
                     <td className="p-4 font-bold text-slate-500 group-hover:text-white">#{idx + 1}</td>
                     <td className="p-4 font-bold">
-                      <Link href={`/profile/${leader.alias}`} className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">
-                        {leader.alias}
+                      <Link href={`/profile/${leader.alias}`} className="flex items-center gap-2 group/link">
+                        {leader.avatar_url ? (
+                          <img src={leader.avatar_url} alt={leader.alias} className="w-6 h-6 rounded-full object-cover border border-slate-600 group-hover/link:border-blue-400 transition-colors" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white text-[10px]">
+                            {leader.alias.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="text-blue-400 group-hover/link:text-blue-300 group-hover/link:underline transition-colors">{leader.alias}</span>
                       </Link>
                     </td>
                     <td className="p-4 text-slate-300">{leader.correct_predictions || 0}</td>
