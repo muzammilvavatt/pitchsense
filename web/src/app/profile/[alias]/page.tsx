@@ -46,7 +46,7 @@ export default function ProfilePage() {
       }
       
       const currentUser = localStorage.getItem("pitchsense_alias");
-      if (currentUser === alias) {
+      if (currentUser && currentUser.toLowerCase() === alias.toLowerCase()) {
         setIsOwner(true);
       }
       
