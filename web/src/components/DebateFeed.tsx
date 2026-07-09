@@ -15,13 +15,18 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
 
   const fetchPredictions = async (currentSort: "top" | "recent") => {
+    // Only fetch predictions from the last 72 hours to keep the feed fresh
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setHours(threeDaysAgo.getHours() - 72);
+
     let query = supabase
       .from("predictions")
       .select(`
         id, alias, prediction, score_prediction, justification, likes, created_at,
         matches ( home_team, away_team ),
         replies ( id, alias, avatar_url, content, created_at )
-      `);
+      `)
+      .gte('created_at', threeDaysAgo.toISOString());
       
     if (currentSort === "top") {
       query = query.order("likes", { ascending: false }).order("created_at", { ascending: false });
