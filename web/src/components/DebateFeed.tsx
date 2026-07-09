@@ -7,6 +7,7 @@ import { ThumbsUp, Clock } from "lucide-react";
 export default function DebateFeed() {
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
 
   const fetchPredictions = async () => {
     const { data } = await supabase
@@ -23,18 +24,19 @@ export default function DebateFeed() {
   };
 
   useEffect(() => {
+    // Load previously liked IDs from local storage
+    const storedLikes = localStorage.getItem('pitchsense_liked_predictions');
+    if (storedLikes) {
+      setLikedIds(new Set(JSON.parse(storedLikes)));
+    }
+    
     fetchPredictions();
-
-    // Subscribe to realtime updates for likes
+    
+    // Subscribe to new predictions
     const channel = supabase
       .channel("public:predictions")
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "predictions" }, payload => {
-        setPredictions(current => 
-          current.map(p => p.id === payload.new.id ? { ...p, likes: payload.new.likes } : p)
-        );
-      })
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "predictions" }, payload => {
-        // Simple re-fetch on new insert to get the joined match data easily
+      .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, payload => {
+        // Simple refetch to keep it easy
         fetchPredictions();
       })
       .subscribe();
@@ -45,6 +47,13 @@ export default function DebateFeed() {
   }, []);
 
   const handleUpvote = async (id: string, currentLikes: number) => {
+    if (likedIds.has(id)) return; // Prevent multiple likes
+
+    // Update local state and storage
+    const newLikedIds = new Set(likedIds).add(id);
+    setLikedIds(newLikedIds);
+    localStorage.setItem('pitchsense_liked_predictions', JSON.stringify(Array.from(newLikedIds)));
+
     // Optimistic UI update
     setPredictions(current => current.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p));
     
@@ -122,9 +131,14 @@ export default function DebateFeed() {
               <div className="flex justify-end border-t border-slate-800/50 pt-3">
                 <button
                   onClick={() => handleUpvote(p.id, p.likes || 0)}
-                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 shadow-sm hover:text-emerald-400"
+                  disabled={likedIds.has(p.id)}
+                  className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all shadow-sm ${
+                    likedIds.has(p.id) 
+                      ? 'bg-emerald-900/40 text-emerald-400 cursor-default border border-emerald-500/30' 
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 active:scale-95'
+                  }`}
                 >
-                  <ThumbsUp size={14} className="text-emerald-500" /> 
+                  <ThumbsUp size={14} className={likedIds.has(p.id) ? 'text-emerald-400' : 'text-emerald-500'} /> 
                   <span>{p.likes || 0}</span>
                 </button>
               </div>
