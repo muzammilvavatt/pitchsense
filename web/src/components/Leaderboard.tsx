@@ -42,11 +42,11 @@ export default function Leaderboard() {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
                     <span className="font-black text-slate-500 text-lg">#{idx + 1}</span>
-                    <Link href={`/profile/${leader.alias}`} className="font-bold text-rose-400 text-lg">
+                    <Link href={`/profile/${leader.alias}`} className="font-bold text-blue-400 text-lg">
                       {leader.alias}
                     </Link>
                   </div>
-                  <div className="font-black text-red-500 text-xl">{leader.total_score || 0} pts</div>
+                  <div className="font-black text-emerald-400 text-xl">{leader.total_score || 0} pts</div>
                 </div>
                 <div className="grid grid-cols-4 gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
                   <div className="text-center">
@@ -105,7 +105,7 @@ export default function Leaderboard() {
                   <tr key={leader.alias} className="hover:bg-slate-800/30 transition-colors group">
                     <td className="p-4 font-bold text-slate-500 group-hover:text-white">#{idx + 1}</td>
                     <td className="p-4 font-bold">
-                      <Link href={`/profile/${leader.alias}`} className="text-rose-400 hover:text-rose-300 hover:underline transition-colors">
+                      <Link href={`/profile/${leader.alias}`} className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">
                         {leader.alias}
                       </Link>
                     </td>
@@ -113,7 +113,7 @@ export default function Leaderboard() {
                     <td className="p-4 font-bold text-purple-400">{leader.mastermind_predictions || 0}</td>
                     <td className="p-4 font-bold text-orange-400">{leader.sniper_predictions || 0}</td>
                     <td className="p-4 text-slate-300">{leader.total_likes || 0}</td>
-                    <td className="p-4 text-right font-black text-red-500 text-xl">
+                    <td className="p-4 text-right font-black text-emerald-400 text-xl">
                       {leader.total_score || 0}
                     </td>
                   </tr>

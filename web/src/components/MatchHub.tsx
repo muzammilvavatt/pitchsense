@@ -119,7 +119,7 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
   return (
     <div className="space-y-6">
       {successMsg && (
-        <div className="bg-red-500/20 border border-red-500 text-red-400 p-4 rounded-lg flex items-center gap-3 animate-fade-in">
+        <div className="bg-emerald-500/20 border border-emerald-500 text-emerald-400 p-4 rounded-lg flex items-center gap-3 animate-fade-in">
           <CheckCircle2 size={20} /> {successMsg}
         </div>
       )}
@@ -165,11 +165,11 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
             <div className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
               {/* AI Analysis */}
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-rose-400 font-medium pb-2 border-b border-slate-700">
+                <div className="flex items-center gap-2 text-blue-400 font-medium pb-2 border-b border-slate-700">
                   <Bot size={18} /> Machine Insight
                 </div>
                 {insights[match.id] ? (
-                  <div className="text-slate-300 leading-relaxed text-sm bg-rose-950/20 p-4 rounded-xl border border-rose-900/30 font-sans prose prose-invert prose-sm max-w-none shadow-inner">
+                  <div className="text-slate-300 leading-relaxed text-sm bg-blue-950/20 p-4 rounded-xl border border-blue-900/30 font-sans prose prose-invert prose-sm max-w-none shadow-inner">
                     <ReactMarkdown>{insights[match.id].insight}</ReactMarkdown>
                   </div>
                 ) : (
@@ -179,13 +179,13 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
 
               {/* Human Prediction Form */}
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-red-400 font-medium pb-2 border-b border-slate-700">
+                <div className="flex items-center gap-2 text-emerald-400 font-medium pb-2 border-b border-slate-700">
                   <User size={18} /> Your Prediction
                 </div>
                 
                 {pred.locked ? (
                   <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6 text-center space-y-2 shadow-inner">
-                    <CheckCircle2 className="mx-auto text-red-400 mb-2" size={32} />
+                    <CheckCircle2 className="mx-auto text-emerald-400 mb-2" size={32} />
                     <h4 className="text-white font-bold text-lg">Prediction Locked</h4>
                     <p className="text-slate-400 text-sm">You predicted <span className="font-bold text-white">{pred.winner} ({pred.score})</span>.</p>
                     <p className="text-slate-500 text-xs mt-2 italic">Waiting for full time...</p>
@@ -196,7 +196,7 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
                       <select
                         value={pred.winner}
                         onChange={(e) => handlePredictionChange(match.id, "winner", e.target.value)}
-                        className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm focus:ring-1 focus:ring-red-500 outline-none w-full"
+                        className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm focus:ring-1 focus:ring-emerald-500 outline-none w-full"
                       >
                         <option value="">Select Winner</option>
                         <option value={match.home_team}>{match.home_team}</option>
@@ -208,19 +208,19 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
                         placeholder="Score (e.g. 2-1)"
                         value={pred.score}
                         onChange={(e) => handlePredictionChange(match.id, "score", e.target.value)}
-                        className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm focus:ring-1 focus:ring-red-500 outline-none w-full"
+                        className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm focus:ring-1 focus:ring-emerald-500 outline-none w-full"
                       />
                     </div>
                     <textarea
                       placeholder="Provide your tactical justification here..."
                       value={pred.justification}
                       onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm min-h-[100px] focus:ring-1 focus:ring-red-500 outline-none resize-none"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm min-h-[100px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                     />
                     <button
                       onClick={() => submitPrediction(match.id)}
                       disabled={!pred.winner || !pred.score || !pred.justification || submitting === match.id}
-                      className="w-full bg-red-700 hover:bg-red-600 disabled:opacity-50 disabled:hover:bg-red-900 text-white font-bold py-3 rounded-lg transition-all active:scale-[0.98] border border-red-600/50"
+                      className="w-full bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 disabled:hover:bg-emerald-900 text-white font-bold py-3 rounded-lg transition-all active:scale-[0.98] border border-emerald-600/50"
                     >
                       {submitting === match.id ? "Locking in..." : "Submit Prediction"}
                     </button>

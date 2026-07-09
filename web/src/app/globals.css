@@ -17,24 +17,20 @@
 
 body {
   color: var(--foreground);
-  background: #000000; /* Pure Black */
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(217, 119, 6, 0.1), transparent 40%),
-    radial-gradient(circle at 85% 30%, rgba(251, 191, 36, 0.1), transparent 40%),
-    radial-gradient(circle at 50% 100%, rgba(245, 158, 11, 0.05), transparent 50%);
+  background: #09090b; /* Zinc 950 */
   background-attachment: fixed;
   font-family: var(--font-sans), sans-serif;
   min-height: 100vh;
 }
 
 .glass-card {
-  background: rgba(10, 10, 10, 0.75); /* Very dark gray */
+  background: rgba(24, 24, 27, 0.75); /* Zinc 900 */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(251, 191, 36, 0.1); /* Subtle gold border */
-  border-top: 1px solid rgba(251, 191, 36, 0.2); /* Gold highlight */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* Clean white border */
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 1.25rem;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 /* Animations */

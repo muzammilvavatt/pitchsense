@@ -59,8 +59,8 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
       <div className="text-center mb-10">
-        <h1 className="text-5xl font-light tracking-[0.2em] mb-4 text-white uppercase drop-shadow-md flex items-center justify-center">
-          PITCH<span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-300">SENSE</span>
+        <h1 className="text-5xl font-black mb-4 text-white tracking-tight flex items-center justify-center gap-2">
+          PitchSense<span className="text-emerald-500">.</span>
         </h1>
         <p className="text-slate-400 text-lg max-w-md mx-auto">
           The ultimate platform for tactical football debates and live match predictions.
@@ -72,14 +72,14 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
           <button 
             type="button"
             onClick={() => { setIsLogin(true); setErrorMsg(''); }}
-            className={`flex-1 font-semibold text-center pb-2 ${isLogin ? 'text-red-400 border-b-2 border-red-400' : 'text-slate-500'}`}
+            className={`flex-1 font-semibold text-center pb-2 ${isLogin ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-slate-500'}`}
           >
             Sign In
           </button>
           <button 
             type="button"
             onClick={() => { setIsLogin(false); setErrorMsg(''); }}
-            className={`flex-1 font-semibold text-center pb-2 ${!isLogin ? 'text-rose-400 border-b-2 border-rose-400' : 'text-slate-500'}`}
+            className={`flex-1 font-semibold text-center pb-2 ${!isLogin ? 'text-white border-b-2 border-white' : 'text-slate-500'}`}
           >
             Sign Up
           </button>
@@ -100,7 +100,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
               required
             />
           </div>
@@ -112,7 +112,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
               minLength={6}
               required
             />
@@ -134,7 +134,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
                   value={alias}
                   onChange={(e) => setAlias(e.target.value)}
                   placeholder="Choose a unique Username"
-                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
                   maxLength={50}
                   required={!isLogin}
                 />
@@ -146,7 +146,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
                   value={avatarUrl}
                   onChange={(e) => setAvatarUrl(e.target.value)}
                   placeholder="Link to a player/club icon"
-                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all text-sm"
+                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-sm"
                 />
               </div>
             </div>
@@ -155,7 +155,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${isLogin ? 'bg-red-600 hover:bg-red-500' : 'bg-rose-600 hover:bg-rose-500'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            className={`w-full text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${isLogin ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-slate-700 hover:bg-slate-600 border border-slate-600'} ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {loading ? 'Processing...' : (
               isLogin ? <><LogIn size={18} /> Sign In</> : <><UserPlus size={18} /> Create Account</>

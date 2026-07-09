@@ -59,13 +59,13 @@ export default function Home() {
         <>
           <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3 group cursor-default">
-              <div className="bg-gradient-to-tr from-yellow-500 to-amber-300 p-2 rounded-xl shadow-lg shadow-yellow-600/20 group-hover:scale-105 transition-transform duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <div className="bg-slate-800 p-2 rounded-xl shadow-lg border border-slate-700 group-hover:scale-105 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-5xl font-light tracking-[0.2em] text-white uppercase drop-shadow-md">
-                PITCH<span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-300">SENSE</span>
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white flex items-center gap-1">
+                PitchSense<span className="text-emerald-500">.</span>
               </h1>
             </div>
             <div className="flex items-center gap-4">

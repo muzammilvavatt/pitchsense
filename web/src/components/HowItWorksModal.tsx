@@ -15,7 +15,7 @@ export default function HowItWorksModal() {
 
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity">
-          <div className="bg-zinc-950 border border-yellow-600/30 rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-in fade-in zoom-in duration-200">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-in fade-in zoom-in duration-200">
             <button 
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
@@ -24,7 +24,7 @@ export default function HowItWorksModal() {
             </button>
             
             <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-2">
-              <Trophy className="text-yellow-500" /> PitchSense Rules
+              <Trophy className="text-emerald-400" /> PitchSense Rules
             </h2>
             
             <div className="space-y-6 text-slate-300 text-sm leading-relaxed">
@@ -33,11 +33,11 @@ export default function HowItWorksModal() {
                 <p>Welcome to PitchSense. Your goal is to outsmart the AI Analyst and other human pundits to climb the global leaderboard. Predict match outcomes, justify your tactics, and earn points.</p>
               </section>
 
-              <section className="bg-zinc-900/80 p-4 rounded-xl border border-yellow-900/30">
+              <section className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
                 <h3 className="font-bold text-white text-base mb-3">Scoring System</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
-                    <Target className="text-yellow-500 shrink-0 mt-0.5" size={18} />
+                    <Target className="text-emerald-400 shrink-0 mt-0.5" size={18} />
                     <div>
                       <span className="font-bold text-white">+2 Points (Correct Prediction)</span>
                       <p className="text-slate-400 text-xs mt-0.5">Guess the correct advancing winner.</p>
@@ -76,7 +76,7 @@ export default function HowItWorksModal() {
             <div className="mt-8">
               <button 
                 onClick={() => setIsOpen(false)}
-                className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-3 rounded-xl transition-colors"
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors"
               >
                 Got it, let's play!
               </button>

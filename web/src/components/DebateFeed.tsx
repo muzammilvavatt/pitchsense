@@ -104,13 +104,13 @@ export default function DebateFeed() {
                 {p.avatar_url ? (
                   <img src={p.avatar_url} alt={p.alias} className="w-5 h-5 rounded-full object-cover border border-slate-600" />
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-red-600 to-rose-400 flex items-center justify-center text-[10px] font-bold text-white">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center text-[10px] font-bold text-white">
                     {p.alias.charAt(0).toUpperCase()}
                   </div>
                 )}
-                <span className="font-bold text-red-400">{p.alias}</span>
+                <span className="font-bold text-blue-400">{p.alias}</span>
                 <span className="text-slate-500">picked</span>
-                <span className="font-bold text-white bg-red-950/80 border border-red-900/50 px-2 py-0.5 rounded shadow-inner">
+                <span className="font-bold text-white bg-slate-800 border border-slate-700 px-2 py-0.5 rounded shadow-inner">
                   {p.prediction} <span className="text-slate-400 font-normal">({p.score_prediction})</span>
                 </span>
               </div>
@@ -122,9 +122,9 @@ export default function DebateFeed() {
               <div className="flex justify-end border-t border-slate-800/50 pt-3">
                 <button
                   onClick={() => handleUpvote(p.id, p.likes || 0)}
-                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 shadow-sm hover:text-rose-400"
+                  className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 shadow-sm hover:text-emerald-400"
                 >
-                  <ThumbsUp size={14} className="text-rose-500" /> 
+                  <ThumbsUp size={14} className="text-emerald-500" /> 
                   <span>{p.likes || 0}</span>
                 </button>
               </div>

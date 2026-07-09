@@ -20,7 +20,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: strin
             {avatarUrl ? (
               <img src={avatarUrl} alt={alias} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700 shadow-lg" />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-red-600 to-rose-400 flex items-center justify-center font-bold text-white shadow-lg text-lg">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white shadow-lg text-lg">
                 {alias.charAt(0).toUpperCase()}
               </div>
             )}
@@ -29,13 +29,11 @@ export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: strin
             </div>
           </div>
           {/* Mobile logout button */}
-          <button
-            onClick={onLogout}
-            className="md:hidden text-slate-400 hover:text-red-400 transition-colors p-2 bg-slate-800/50 rounded-full"
-            title="Log Out"
-          >
-            <LogOut size={18} />
-          </button>
+          <div className="md:hidden">
+            <button onClick={onLogout} className="text-slate-400 hover:text-white p-2">
+              <LogOut size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Navigation Tabs */}
@@ -46,7 +44,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: strin
               activeTab === "hub" ? "bg-slate-800 text-white shadow-md border border-slate-700" : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            <LayoutDashboard size={16} className={activeTab === "hub" ? "text-red-400" : ""} /> Hub
+            <LayoutDashboard size={16} className={activeTab === "hub" ? "text-blue-400" : ""} /> Hub
           </button>
           <button
             onClick={() => setActiveTab("debate")}
@@ -54,7 +52,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: strin
               activeTab === "debate" ? "bg-slate-800 text-white shadow-md border border-slate-700" : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            <MessageSquare size={16} className={activeTab === "debate" ? "text-rose-400" : ""} /> Debate
+            <MessageSquare size={16} className={activeTab === "debate" ? "text-emerald-400" : ""} /> Debate
           </button>
           <button
             onClick={() => setActiveTab("leaderboard")}
@@ -62,7 +60,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout }: { alias: strin
               activeTab === "leaderboard" ? "bg-slate-800 text-white shadow-md border border-slate-700" : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            <Trophy size={16} className={activeTab === "leaderboard" ? "text-orange-400" : ""} /> Ranks
+            <Trophy size={16} className={activeTab === "leaderboard" ? "text-yellow-400" : ""} /> Ranks
           </button>
         </div>
 
