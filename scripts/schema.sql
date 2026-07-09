@@ -45,3 +45,16 @@ SELECT
 FROM predictions
 GROUP BY alias
 ORDER BY total_score DESC, correct_predictions DESC, total_likes DESC;
+
+-- Replies Table
+CREATE TABLE replies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    prediction_id UUID NOT NULL REFERENCES predictions(id) ON DELETE CASCADE,
+    alias VARCHAR(100) NOT NULL,
+    avatar_url TEXT,
+    content TEXT NOT NULL,
+    likes INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_replies_prediction_id ON replies(prediction_id);

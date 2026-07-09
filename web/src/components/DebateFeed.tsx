@@ -2,24 +2,35 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { ThumbsUp, Clock } from "lucide-react";
+import { ThumbsUp, Clock, MessageSquare } from "lucide-react";
 
 export default function DebateFeed() {
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [submittingReply, setSubmittingReply] = useState(false);
 
   const fetchPredictions = async () => {
     const { data } = await supabase
       .from("predictions")
       .select(`
         id, alias, prediction, score_prediction, justification, likes, created_at,
-        matches ( home_team, away_team )
+        matches ( home_team, away_team ),
+        replies ( id, alias, avatar_url, content, created_at )
       `)
       .order("created_at", { ascending: false })
       .limit(50);
     
-    if (data) setPredictions(data);
+    if (data) {
+      // Sort replies by creation time for each prediction
+      const sortedData = data.map(p => ({
+        ...p,
+        replies: p.replies ? p.replies.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) : []
+      }));
+      setPredictions(sortedData);
+    }
     setLoading(false);
   };
 
@@ -62,6 +73,28 @@ export default function DebateFeed() {
       .from("predictions")
       .update({ likes: currentLikes + 1 })
       .eq("id", id);
+  };
+
+  const handleReplySubmit = async (predictionId: string) => {
+    if (!replyContent.trim()) return;
+    setSubmittingReply(true);
+
+    const currentUser = localStorage.getItem("pitchsense_alias") || "UnknownUser";
+    const currentAvatar = localStorage.getItem("pitchsense_avatar_url") || null;
+
+    const { error } = await supabase.from("replies").insert({
+      prediction_id: predictionId,
+      alias: currentUser,
+      avatar_url: currentAvatar,
+      content: replyContent.trim(),
+    });
+
+    if (!error) {
+      setReplyingTo(null);
+      setReplyContent("");
+      fetchPredictions();
+    }
+    setSubmittingReply(false);
   };
 
   if (loading) return <div className="text-center py-10 text-slate-400">Loading debate...</div>;
@@ -128,7 +161,21 @@ export default function DebateFeed() {
                 "{p.justification}"
               </p>
 
-              <div className="flex justify-end border-t border-slate-800/50 pt-3">
+              <div className="flex justify-end border-t border-slate-800/50 pt-3 gap-3">
+                <button
+                  onClick={() => {
+                    setReplyingTo(replyingTo === p.id ? null : p.id);
+                    setReplyContent("");
+                  }}
+                  className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all shadow-sm ${
+                    replyingTo === p.id 
+                      ? 'bg-blue-900/40 text-blue-400 cursor-default border border-blue-500/30' 
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-blue-400 active:scale-95'
+                  }`}
+                >
+                  <MessageSquare size={14} className={replyingTo === p.id ? 'text-blue-400' : 'text-blue-500'} />
+                  <span>{p.replies?.length || 0}</span>
+                </button>
                 <button
                   onClick={() => handleUpvote(p.id, p.likes || 0)}
                   disabled={likedIds.has(p.id)}
@@ -142,6 +189,52 @@ export default function DebateFeed() {
                   <span>{p.likes || 0}</span>
                 </button>
               </div>
+
+              {/* Replies Section */}
+              {(p.replies?.length > 0 || replyingTo === p.id) && (
+                <div className="mt-4 pl-4 md:pl-6 border-l-2 border-slate-800/80 space-y-3">
+                  {p.replies?.map((r: any) => (
+                    <div key={r.id} className="bg-slate-900/50 p-3 rounded-lg border border-slate-800/50">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        {r.avatar_url ? (
+                          <img src={r.avatar_url} alt={r.alias} className="w-5 h-5 rounded-full object-cover border border-slate-700 bg-white" />
+                        ) : (
+                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-700">
+                            ⚽
+                          </div>
+                        )}
+                        <span className="font-bold text-blue-400 text-xs">{r.alias}</span>
+                        <span className="text-slate-500 text-[10px]">
+                          {new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <p className="text-slate-300 text-sm md:text-[15px] ml-7">{r.content}</p>
+                    </div>
+                  ))}
+                  
+                  {replyingTo === p.id && (
+                    <div className="mt-3 flex gap-2 ml-7">
+                      <input 
+                        type="text" 
+                        value={replyContent}
+                        onChange={(e) => setReplyContent(e.target.value)}
+                        placeholder="Write a reply..."
+                        className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500 shadow-inner"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleReplySubmit(p.id);
+                        }}
+                      />
+                      <button 
+                        onClick={() => handleReplySubmit(p.id)}
+                        disabled={submittingReply || !replyContent.trim()}
+                        className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-colors disabled:opacity-50 shadow-md"
+                      >
+                        Reply
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })
