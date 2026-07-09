@@ -49,8 +49,22 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
               </div>
             </Link>
           )}
-          {/* Mobile logout/login button */}
-          <div className="md:hidden">
+          {/* Mobile actions (Theme Toggle + Auth) */}
+          <div className="md:hidden flex items-center gap-2">
+            {onToggleTheme && (
+              <button
+                onClick={onToggleTheme}
+                className={`relative flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
+                  theme === "worldcup" 
+                    ? "bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.3)] ring-1 ring-emerald-500/50" 
+                    : "bg-slate-800 text-slate-400 ring-1 ring-slate-700"
+                }`}
+                title="Toggle Theme"
+              >
+                <Palette size={18} />
+              </button>
+            )}
+            
             {isGuest ? (
               <button onClick={onLoginClick} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-md transition-colors">
                 Sign In
