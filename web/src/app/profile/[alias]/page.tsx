@@ -133,12 +133,14 @@ export default function ProfilePage() {
 
             {/* Badges Container */}
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-6">
-              <button
-                onClick={() => setIsEditingAvatar(!isEditingAvatar)}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors shadow-md"
-              >
-                Edit Avatar
-              </button>
+              {isOwner && (
+                <button
+                  onClick={() => setIsEditingAvatar(!isEditingAvatar)}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors shadow-md"
+                >
+                  Edit Avatar
+                </button>
+              )}
               {displayStats?.correct_predictions > 0 && (
                 <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
                   <Target size={16} className="text-emerald-400" />

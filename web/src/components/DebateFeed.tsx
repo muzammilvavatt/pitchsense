@@ -129,143 +129,173 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
           const timeAgo = new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
           return (
-            <div key={p.id} className="glass-card p-4 md:p-5 hover:border-slate-500/50 transition-colors">
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 md:gap-3">
-                    <div className="flex -space-x-2 shrink-0">
+            <div key={p.id} className="glass-card p-4 hover:border-slate-500/50 transition-colors flex flex-col">
+              
+              {/* PARENT POST */}
+              <div className="flex gap-3 md:gap-4">
+                {/* Left Column: Avatar & Thread Line */}
+                <div className="w-10 md:w-12 flex flex-col items-center shrink-0">
+                  {p.avatar_url ? (
+                    <img src={p.avatar_url} alt={p.alias} className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-slate-600 bg-white z-10" />
+                  ) : (
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-base md:text-lg border border-slate-600 z-10">
+                      ⚽
+                    </div>
+                  )}
+                  {(p.replies?.length > 0 || replyingTo === p.id) && (
+                    <div className="w-0.5 grow bg-slate-800/80 my-1.5 rounded-full min-h-[20px]"></div>
+                  )}
+                </div>
+
+                {/* Right Column: Content */}
+                <div className="flex-1 min-w-0 pb-3">
+                  <div className="flex justify-between items-start mb-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-white text-[15px] md:text-base hover:underline cursor-pointer">{p.alias}</span>
+                      <span className="text-slate-500 text-xs flex items-center gap-1">
+                        <Clock size={12} /> {timeAgo}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Match Context Badge */}
+                  <div className="inline-flex items-center gap-2 bg-slate-900/40 border border-slate-700/50 px-2.5 py-1 rounded-md mb-2.5 mt-0.5">
+                    <div className="flex -space-x-1.5 shrink-0">
                       {match.home_logo ? (
-                        <img src={match.home_logo} className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-slate-700 bg-slate-800 object-contain p-0.5" />
+                        <img src={match.home_logo} className="w-4 h-4 rounded-full bg-slate-800 object-contain p-0.5" />
                       ) : (
-                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-[10px] md:text-xs shadow-inner z-10">
-                          {match.home_team?.charAt(0)}
-                        </div>
+                        <div className="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center text-[8px] font-bold z-0">H</div>
                       )}
                       {match.away_logo ? (
-                        <img src={match.away_logo} className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-slate-700 bg-slate-800 object-contain p-0.5" />
+                        <img src={match.away_logo} className="w-4 h-4 rounded-full bg-slate-800 object-contain p-0.5 z-10" />
                       ) : (
-                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center font-bold text-[10px] md:text-xs shadow-inner">
-                          {match.away_team?.charAt(0)}
-                        </div>
+                        <div className="w-4 h-4 rounded-full bg-slate-700 flex items-center justify-center text-[8px] font-bold z-10">A</div>
                       )}
                     </div>
-                    <div className="truncate pr-2">
-                      <h3 className="font-bold text-white text-sm md:text-lg truncate">
-                        {match.home_team} vs {match.away_team}
-                      </h3>
-                      <p className="text-[10px] md:text-xs text-slate-400">Match Debate</p>
-                    </div>
+                    <span className="text-[11px] md:text-xs text-slate-400 font-medium">
+                      {match.home_team} vs {match.away_team}
+                    </span>
+                  </div>
+
+                  <div className="mb-2">
+                    <span className="text-slate-400 text-[13px] md:text-sm">Picked </span>
+                    <span className="font-bold text-emerald-400 text-[13px] md:text-sm">
+                      {p.prediction} <span className="text-emerald-500/70 font-normal">({p.score_prediction})</span>
+                    </span>
+                  </div>
+
+                  <p className="text-slate-200 text-[14px] md:text-[15px] leading-relaxed mb-3 whitespace-pre-wrap">
+                    {p.justification}
+                  </p>
+
+                  {/* Action Bar */}
+                  <div className="flex items-center gap-4 md:gap-6 text-slate-500">
+                    <button
+                      onClick={() => {
+                        setReplyingTo(replyingTo === p.id ? null : p.id);
+                        setReplyContent("");
+                      }}
+                      className={`flex items-center gap-1.5 text-xs md:text-sm font-medium transition-colors group ${
+                        replyingTo === p.id ? 'text-blue-400' : 'hover:text-blue-400'
+                      }`}
+                    >
+                      <div className={`p-1.5 md:p-2 rounded-full transition-colors ${replyingTo === p.id ? 'bg-blue-900/30' : 'group-hover:bg-blue-900/30'}`}>
+                        <MessageSquare size={16} />
+                      </div>
+                      <span>{p.replies?.length || 0}</span>
+                    </button>
+                    <button
+                      onClick={() => handleUpvote(p.id, p.likes || 0)}
+                      className={`flex items-center gap-1.5 text-xs md:text-sm font-medium transition-colors group ${
+                        likedIds.has(p.id) ? 'text-emerald-400' : 'hover:text-emerald-400'
+                      }`}
+                    >
+                      <div className={`p-1.5 md:p-2 rounded-full transition-colors ${likedIds.has(p.id) ? 'bg-emerald-900/30' : 'group-hover:bg-emerald-900/30'}`}>
+                        <ThumbsUp size={16} className={likedIds.has(p.id) ? 'fill-emerald-400 text-emerald-400' : ''} /> 
+                      </div>
+                      <span>{p.likes || 0}</span>
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center text-[10px] md:text-xs text-slate-500 gap-1 shrink-0 bg-slate-900/50 px-2 py-1 rounded-full">
-                  <Clock size={12} /> {timeAgo}
-                </div>
-              </div>
-              
-              <div className="text-xs md:text-sm text-slate-300 mb-3 flex flex-wrap items-center gap-1.5">
-                {p.avatar_url ? (
-                  <img src={p.avatar_url} alt={p.alias} className="w-5 h-5 rounded-full object-cover border border-slate-600 bg-white" />
-                ) : (
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-600">
-                    ⚽
-                  </div>
-                )}
-                <span className="font-bold text-blue-400">{p.alias}</span>
-                <span className="text-slate-500">picked</span>
-                <span className="font-bold text-white bg-slate-800 border border-slate-700 px-2 py-0.5 rounded shadow-inner">
-                  {p.prediction} <span className="text-slate-400 font-normal">({p.score_prediction})</span>
-                </span>
               </div>
 
-              <p className="text-slate-200 bg-slate-900/40 p-3 md:p-4 rounded-xl border border-slate-800/80 italic mb-3 text-sm md:text-base leading-relaxed">
-                "{p.justification}"
-              </p>
-
-              <div className="flex justify-end border-t border-slate-800/50 pt-3 gap-3">
-                <button
-                  onClick={() => {
-                    setReplyingTo(replyingTo === p.id ? null : p.id);
-                    setReplyContent("");
-                  }}
-                  className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all shadow-sm ${
-                    replyingTo === p.id 
-                      ? 'bg-blue-900/40 text-blue-400 cursor-default border border-blue-500/30' 
-                      : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-blue-400 active:scale-95'
-                  }`}
-                >
-                  <MessageSquare size={14} className={replyingTo === p.id ? 'text-blue-400' : 'text-blue-500'} />
-                  <span>{p.replies?.length || 0}</span>
-                </button>
-                <button
-                  onClick={() => handleUpvote(p.id, p.likes || 0)}
-                  className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all shadow-sm ${
-                    likedIds.has(p.id) 
-                      ? 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-900/60' 
-                      : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 active:scale-95'
-                  }`}
-                >
-                  <ThumbsUp size={14} className={likedIds.has(p.id) ? 'text-emerald-400' : 'text-emerald-500'} /> 
-                  <span>{p.likes || 0}</span>
-                </button>
-              </div>
-
-              {/* Replies Section */}
+              {/* REPLIES SECTION */}
               {(p.replies?.length > 0 || replyingTo === p.id) && (
-                <div className="mt-4 pl-4 md:pl-6 border-l-2 border-slate-800/80 space-y-3">
-                  {p.replies?.map((r: any) => (
-                    <div key={r.id} className="bg-slate-900/50 p-3 rounded-lg border border-slate-800/50">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        {(r.avatar_url && r.avatar_url !== "null" && r.avatar_url !== "undefined") ? (
-                          <img src={r.avatar_url} alt={r.alias} className="w-5 h-5 rounded-full object-cover border border-slate-700 bg-white" />
+                <div className="flex flex-col mt-1">
+                  {p.replies?.map((r: any, idx: number) => {
+                    const isLast = idx === p.replies.length - 1 && replyingTo !== p.id;
+                    return (
+                      <div key={r.id} className="flex gap-3 md:gap-4">
+                        {/* Avatar Column */}
+                        <div className="w-10 md:w-12 flex flex-col items-center shrink-0">
+                          {(r.avatar_url && r.avatar_url !== "null" && r.avatar_url !== "undefined") ? (
+                            <img src={r.avatar_url} alt={r.alias} className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-slate-700 bg-white z-10" />
+                          ) : (
+                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-700 z-10">
+                              ⚽
+                            </div>
+                          )}
+                          {!isLast && (
+                            <div className="w-0.5 grow bg-slate-800/80 my-1.5 rounded-full min-h-[20px]"></div>
+                          )}
+                        </div>
+
+                        {/* Reply Content */}
+                        <div className="flex-1 min-w-0 pb-3">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="font-bold text-white text-[13px] md:text-[14px] hover:underline cursor-pointer">{r.alias}</span>
+                            <span className="text-slate-500 text-[10px] md:text-[11px]">
+                              {new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            {currentUserAlias && r.alias === currentUserAlias && (
+                              <button 
+                                onClick={() => handleDeleteReply(p.id, r.id)}
+                                className="ml-auto text-slate-500 hover:text-red-400 transition-colors p-1"
+                                title="Delete reply"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            )}
+                          </div>
+                          <p className="text-slate-300 text-[13px] md:text-[14px] leading-relaxed whitespace-pre-wrap">{r.content}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  
+                  {replyingTo === p.id && (
+                    <div className="flex gap-3 md:gap-4 pt-1">
+                      {/* Current User Avatar */}
+                      <div className="w-10 md:w-12 flex flex-col items-center shrink-0">
+                        {(currentUserAvatar && currentUserAvatar !== "null" && currentUserAvatar !== "undefined") ? (
+                          <img src={currentUserAvatar} alt={currentUserAlias || ""} className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-slate-700 bg-white" />
                         ) : (
-                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-700">
+                          <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-700">
                             ⚽
                           </div>
                         )}
-                        <span className="font-bold text-blue-400 text-xs">{r.alias}</span>
-                        <span className="text-slate-500 text-[10px]">
-                          {new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                        {currentUserAlias && r.alias === currentUserAlias && (
-                          <button 
-                            onClick={() => handleDeleteReply(p.id, r.id)}
-                            className="ml-auto text-slate-500 hover:text-red-400 transition-colors p-1"
-                            title="Delete reply"
-                          >
-                            <Trash2 size={12} />
-                          </button>
-                        )}
                       </div>
-                      <p className="text-slate-300 text-sm md:text-[15px] ml-7">{r.content}</p>
-                    </div>
-                  ))}
-                  
-                  {replyingTo === p.id && (
-                    <div className="mt-3 flex items-center gap-2 ml-7">
-                      {(currentUserAvatar && currentUserAvatar !== "null" && currentUserAvatar !== "undefined") ? (
-                        <img src={currentUserAvatar} alt={currentUserAlias || ""} className="w-6 h-6 rounded-full object-cover border border-slate-700 bg-white shrink-0" />
-                      ) : (
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[12px] border border-slate-700 shrink-0">
-                          ⚽
-                        </div>
-                      )}
-                      <input 
-                        type="text" 
-                        value={replyContent}
-                        onChange={(e) => setReplyContent(e.target.value)}
-                        placeholder={currentUserAlias ? `Replying as ${currentUserAlias}...` : "Write a reply..."}
-                        className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500 shadow-inner"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleReplySubmit(p.id);
-                        }}
-                      />
-                      <button 
-                        onClick={() => handleReplySubmit(p.id)}
-                        disabled={submittingReply || !replyContent.trim()}
-                        className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-colors disabled:opacity-50 shadow-md"
-                      >
-                        Reply
-                      </button>
+                      
+                      {/* Input Field */}
+                      <div className="flex-1 min-w-0 flex items-center gap-2">
+                        <input 
+                          type="text" 
+                          value={replyContent}
+                          onChange={(e) => setReplyContent(e.target.value)}
+                          placeholder={currentUserAlias ? `Replying as ${currentUserAlias}...` : "Write a reply..."}
+                          className="flex-1 bg-slate-900/50 border border-slate-700 rounded-full px-4 py-1.5 md:py-2 text-[13px] md:text-sm text-white focus:outline-none focus:border-blue-500 shadow-inner"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleReplySubmit(p.id);
+                          }}
+                        />
+                        <button 
+                          onClick={() => handleReplySubmit(p.id)}
+                          disabled={submittingReply || !replyContent.trim()}
+                          className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 md:py-2 rounded-full text-[13px] md:text-sm font-bold transition-colors disabled:opacity-50 shadow-md"
+                        >
+                          Reply
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
