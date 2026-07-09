@@ -94,6 +94,7 @@ DROP VIEW IF EXISTS leaderboard;
 CREATE VIEW leaderboard WITH (security_invoker = true) AS
 SELECT 
     alias,
+    MAX(avatar_url) AS avatar_url,
     COUNT(*) FILTER (WHERE is_correct = TRUE) AS correct_predictions,
     SUM(likes) AS total_likes,
     (COUNT(*) FILTER (WHERE is_correct = TRUE) * 2) + COALESCE(SUM(likes), 0) AS total_score
