@@ -17,18 +17,12 @@
 
 body {
   color: var(--foreground);
-  background: #09090b; /* Zinc 950 */
-  background-attachment: fixed;
-  font-family: var(--font-sans), sans-serif;
-  min-height: 100vh;
-  transition: background-image 0.5s ease-in-out;
-}
-
-body.theme-worldcup {
   background-image: linear-gradient(rgba(9, 9, 11, 0.74), rgba(9, 9, 11, 0.74)), url('/bg-worldcup.png');
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
+  font-family: var(--font-sans), sans-serif;
+  min-height: 100vh;
 }
 
 .glass-card {

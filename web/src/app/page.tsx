@@ -11,29 +11,6 @@ export default function Home() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "worldcup">("dark");
-
-  useEffect(() => {
-    // Check initial theme from localStorage
-    const savedTheme = localStorage.getItem("pitchsense_theme");
-    if (savedTheme === "worldcup") {
-      setTheme("worldcup");
-      document.body.classList.add("theme-worldcup");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    setTheme(prev => {
-      const newTheme = prev === "dark" ? "worldcup" : "dark";
-      localStorage.setItem("pitchsense_theme", newTheme);
-      if (newTheme === "worldcup") {
-        document.body.classList.add("theme-worldcup");
-      } else {
-        document.body.classList.remove("theme-worldcup");
-      }
-      return newTheme;
-    });
-  };
 
   useEffect(() => {
     // Check if the user already has an alias configured
@@ -142,8 +119,6 @@ export default function Home() {
             onLogout={handleLogout}
             isGuest={!alias}
             onLoginClick={() => setShowAuth(true)}
-            theme={theme}
-            onToggleTheme={toggleTheme}
           />
         </>
       )}
