@@ -21,11 +21,18 @@ export default function ProfilePage() {
   const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
-    // Set owner on mount to avoid hydration mismatch
-    const currentUser = localStorage.getItem("pitchsense_alias");
-    if (currentUser && currentUser.toLowerCase() === alias.toLowerCase()) {
-      setIsOwner(true);
-    }
+    const checkOwner = async () => {
+      let currentUser = localStorage.getItem("pitchsense_alias");
+      if (!currentUser) {
+        const { data } = await supabase.auth.getSession();
+        currentUser = data.session?.user?.user_metadata?.alias;
+      }
+      
+      if (currentUser && currentUser.toLowerCase() === alias.toLowerCase()) {
+        setIsOwner(true);
+      }
+    };
+    checkOwner();
 
     const fetchProfile = async () => {
       // Fetch stats from leaderboard view
