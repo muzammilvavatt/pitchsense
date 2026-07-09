@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Bot, User, CheckCircle2, AlertCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import SeasonBanner from "./SeasonBanner";
 
 export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUrl?: string | null }) {
   const [matches, setMatches] = useState<any[]>([]);
@@ -123,6 +124,8 @@ export default function MatchHub({ alias, avatarUrl }: { alias: string, avatarUr
           <CheckCircle2 size={20} /> {successMsg}
         </div>
       )}
+
+      <SeasonBanner />
 
       {(() => {
         const groupedMatches = matches.reduce((acc, match) => {
