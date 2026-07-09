@@ -13,12 +13,20 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isOwner, setIsOwner] = useState(false);
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [savingAvatar, setSavingAvatar] = useState(false);
+  
+  // Safely compute isOwner for client-side rendering
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
+    // Set owner on mount to avoid hydration mismatch
+    const currentUser = localStorage.getItem("pitchsense_alias");
+    if (currentUser && currentUser.toLowerCase() === alias.toLowerCase()) {
+      setIsOwner(true);
+    }
+
     const fetchProfile = async () => {
       // Fetch stats from leaderboard view
       const { data: lbData } = await supabase
@@ -43,11 +51,6 @@ export default function ProfilePage() {
       
       if (recentPreds) {
         setHistory(recentPreds);
-      }
-      
-      const currentUser = localStorage.getItem("pitchsense_alias");
-      if (currentUser && currentUser.toLowerCase() === alias.toLowerCase()) {
-        setIsOwner(true);
       }
       
       setLoading(false);
