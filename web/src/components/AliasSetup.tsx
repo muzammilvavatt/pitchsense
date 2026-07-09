@@ -36,11 +36,11 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
         return;
       }
 
-      // Pre-flight check: see if the alias is already taken
+      // Pre-flight check: see if the alias is already taken (case-insensitive)
       const { data: existingProfile } = await supabase
         .from('profiles')
         .select('alias')
-        .eq('alias', trimmedAlias)
+        .ilike('alias', trimmedAlias)
         .maybeSingle();
 
       if (existingProfile) {
@@ -61,10 +61,13 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
       
       if (error) {
         setErrorMsg(error.message);
-      } else if (data.user) {
-        // Automatically set the alias if sign up succeeds without email confirmation
-        const userAlias = data.user.user_metadata?.alias || alias.trim();
+      } else if (data.session) {
+        // Only log them in if Supabase returned a valid authentication session
+        const userAlias = data.user?.user_metadata?.alias || alias.trim();
         onAliasSet(userAlias);
+      } else {
+        // If there is no session, they used an existing email or need to verify their email
+        setErrorMsg('Sign up pending! If you already have an account, please switch to Sign In. Otherwise, check your email for a confirmation link.');
       }
     }
     setLoading(false);
