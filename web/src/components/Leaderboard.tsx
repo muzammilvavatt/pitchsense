@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Trophy, Target, Heart, Brain, Crosshair } from "lucide-react";
 import Link from "next/link";
+import { getPrestigeBadge, PrestigeBadge } from "@/lib/badges";
 
 interface LeaderboardRow {
   alias: string;
@@ -18,6 +19,7 @@ interface LeaderboardRow {
 export default function Leaderboard() {
   const [leaders, setLeaders] = useState<LeaderboardRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userBadges, setUserBadges] = useState<Record<string, PrestigeBadge | null>>({});
 
   useEffect(() => {
     async function fetchLeaderboard() {
@@ -29,7 +31,23 @@ export default function Leaderboard() {
       if (data) setLeaders(data);
       setLoading(false);
     }
-    
+    async function fetchBadges() {
+      const { data } = await supabase.from('prize_winners').select('alias, rank');
+      if (data) {
+        const aliasRanks: Record<string, { rank: number }[]> = {};
+        data.forEach(row => {
+          if (!aliasRanks[row.alias]) aliasRanks[row.alias] = [];
+          aliasRanks[row.alias].push({ rank: row.rank });
+        });
+        const badges: Record<string, PrestigeBadge | null> = {};
+        Object.keys(aliasRanks).forEach(alias => {
+          badges[alias] = getPrestigeBadge(aliasRanks[alias]);
+        });
+        setUserBadges(badges);
+      }
+    }
+
+    fetchBadges();
     fetchLeaderboard();
 
     // Subscribe to realtime changes on predictions table to auto-update likes on the leaderboard
@@ -73,7 +91,9 @@ export default function Leaderboard() {
                           ⚽
                         </div>
                       )}
-                      <span className="font-bold text-blue-400 text-lg group-hover:underline">{leader.alias}</span>
+                      <span className={`font-bold text-lg group-hover:underline ${userBadges[leader.alias]?.colorClass || 'text-blue-400'}`}>
+                        {leader.alias} {userBadges[leader.alias]?.emoji}
+                      </span>
                     </Link>
                   </div>
                   <div className="font-black text-emerald-400 text-xl">{leader.total_score || 0} pts</div>
@@ -143,7 +163,9 @@ export default function Leaderboard() {
                             ⚽
                           </div>
                         )}
-                        <span className="text-blue-400 group-hover/link:text-blue-300 group-hover/link:underline transition-colors">{leader.alias}</span>
+                        <span className={`group-hover/link:underline transition-colors ${userBadges[leader.alias]?.colorClass || 'text-blue-400 group-hover/link:text-blue-300'}`}>
+                          {leader.alias} {userBadges[leader.alias]?.emoji}
+                        </span>
                       </Link>
                     </td>
                     <td className="p-4 text-slate-300">{leader.correct_predictions || 0}</td>

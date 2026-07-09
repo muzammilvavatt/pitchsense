@@ -52,7 +52,7 @@ export default function SeasonBanner() {
         </div>
         <div>
           <h3 className="text-emerald-400 font-bold text-lg">{season.name}</h3>
-          <p className="text-slate-400 text-sm">Finish 1st on the Leaderboard to claim the grand prize!</p>
+          <p className="text-slate-400 text-sm">Compete for the #1 spot to earn exclusive Prestige Badges for your profile!</p>
         </div>
       </div>
       <div className="bg-slate-950/50 px-4 py-2 rounded-lg border border-slate-800 flex items-center gap-2 whitespace-nowrap">

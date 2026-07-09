@@ -5,7 +5,6 @@ import { supabase } from "@/lib/supabase";
 import AliasSetup from "@/components/AliasSetup";
 import Dashboard from "@/components/Dashboard";
 import HowItWorksModal from "@/components/HowItWorksModal";
-import PrizeClaimModal from "@/components/PrizeClaimModal";
 
 export default function Home() {
   const [alias, setAlias] = useState<string | null>(null);
@@ -104,7 +103,6 @@ export default function Home() {
             avatarUrl={avatarUrl}
             onLogout={handleLogout}
           />
-          <PrizeClaimModal alias={alias} />
         </>
       )}
     </main>

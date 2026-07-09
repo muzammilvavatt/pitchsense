@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { ThumbsUp, Clock, MessageSquare, Trash2 } from "lucide-react";
+import { getPrestigeBadge, PrestigeBadge } from "@/lib/badges";
 
 export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { currentUserAlias?: string | null, currentUserAvatar?: string | null }) {
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [userBadges, setUserBadges] = useState<Record<string, PrestigeBadge | null>>({});
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
@@ -61,7 +63,23 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
         setLikedIds(new Set());
       }
     };
+    const fetchBadges = async () => {
+      const { data } = await supabase.from('prize_winners').select('alias, rank');
+      if (data) {
+        const aliasRanks: Record<string, { rank: number }[]> = {};
+        data.forEach(row => {
+          if (!aliasRanks[row.alias]) aliasRanks[row.alias] = [];
+          aliasRanks[row.alias].push({ rank: row.rank });
+        });
+        const badges: Record<string, PrestigeBadge | null> = {};
+        Object.keys(aliasRanks).forEach(alias => {
+          badges[alias] = getPrestigeBadge(aliasRanks[alias]);
+        });
+        setUserBadges(badges);
+      }
+    };
     fetchLikes();
+    fetchBadges();
     
     fetchPredictions(sortBy);
     
@@ -208,7 +226,9 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                 <div className="flex-1 min-w-0 pb-3">
                   <div className="flex justify-between items-start mb-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-white text-[15px] md:text-base hover:underline cursor-pointer">{p.alias}</span>
+                      <span className={`font-bold text-[15px] md:text-base hover:underline cursor-pointer ${userBadges[p.alias]?.colorClass || 'text-white'}`}>
+                        {p.alias} {userBadges[p.alias]?.emoji}
+                      </span>
                       <span className="text-slate-500 text-xs flex items-center gap-1">
                         <Clock size={12} /> {timeAgo}
                       </span>
@@ -309,7 +329,9 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
                         {/* Reply Content */}
                         <div className="flex-1 min-w-0 pb-3">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="font-bold text-white text-[13px] md:text-[14px] hover:underline cursor-pointer">{r.alias}</span>
+                            <span className={`font-bold text-[13px] md:text-[14px] hover:underline cursor-pointer ${userBadges[r.alias]?.colorClass || 'text-white'}`}>
+                              {r.alias} {userBadges[r.alias]?.emoji}
+                            </span>
                             <span className="text-slate-500 text-[10px] md:text-[11px]">
                               {new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
