@@ -44,9 +44,12 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
 
   useEffect(() => {
     // Load previously liked IDs from local storage
-    const storedLikes = localStorage.getItem('pitchsense_liked_predictions');
+    const storageKey = currentUserAlias ? `pitchsense_liked_predictions_${currentUserAlias}` : 'pitchsense_liked_predictions';
+    const storedLikes = localStorage.getItem(storageKey);
     if (storedLikes) {
       setLikedIds(new Set(JSON.parse(storedLikes)));
+    } else {
+      setLikedIds(new Set());
     }
     
     fetchPredictions(sortBy);
@@ -62,7 +65,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [sortBy]);
+  }, [sortBy, currentUserAlias]);
 
   const toggleExpand = (id: string) => {
     const newSet = new Set(expandedPosts);
@@ -86,7 +89,8 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar }: { cu
 
     // Update local state and storage
     setLikedIds(newLikedIds);
-    localStorage.setItem('pitchsense_liked_predictions', JSON.stringify(Array.from(newLikedIds)));
+    const storageKey = currentUserAlias ? `pitchsense_liked_predictions_${currentUserAlias}` : 'pitchsense_liked_predictions';
+    localStorage.setItem(storageKey, JSON.stringify(Array.from(newLikedIds)));
 
     // Optimistic UI update
     setPredictions(current => current.map(p => p.id === id ? { ...p, likes: newLikesCount } : p));
