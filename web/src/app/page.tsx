@@ -12,6 +12,26 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check if the user already has an alias configured
+    const storedAlias = localStorage.getItem("pitchsense_alias");
+    if (storedAlias) {
+      setAlias(storedAlias);
+    }
+    const avatarStr = localStorage.getItem("pitchsense_avatar_url");
+    if (avatarStr) setAvatarUrl(avatarStr);
+    
+    // Listen for global avatar updates from the Profile page
+    const handleAvatarUpdate = (e: any) => {
+      setAvatarUrl(e.detail);
+    };
+    window.addEventListener("avatarUpdate", handleAvatarUpdate);
+    
+    setLoading(false);
+    
+    return () => window.removeEventListener("avatarUpdate", handleAvatarUpdate);
+  }, []);
+
+  useEffect(() => {
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {

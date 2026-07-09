@@ -64,6 +64,9 @@ export default function ProfilePage() {
     // Update local storage
     localStorage.setItem("pitchsense_avatar_url", newAvatarUrl);
     
+    // Dispatch a global event so the Dashboard immediately updates!
+    window.dispatchEvent(new CustomEvent("avatarUpdate", { detail: newAvatarUrl }));
+    
     // Update all previous predictions in DB
     await supabase
       .from("predictions")
@@ -106,10 +109,10 @@ export default function ProfilePage() {
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
           <div className="relative">
             {displayStats?.avatar_url ? (
-              <img src={displayStats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-slate-700 shadow-2xl" />
+              <img src={displayStats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-slate-700 shadow-2xl bg-white" />
             ) : (
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white shadow-2xl text-5xl">
-                {alias.charAt(0).toUpperCase()}
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-2xl text-6xl border-4 border-slate-700">
+                ⚽
               </div>
             )}
             
@@ -167,14 +170,14 @@ export default function ProfilePage() {
                 <h3 className="text-white font-bold mb-3 text-sm">Choose an Avatar:</h3>
                 <div className="flex flex-wrap gap-3 mb-4">
                   {[
-                    "https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=0ea5e9",
-                    "https://api.dicebear.com/7.x/bottts/svg?seed=Aneka&backgroundColor=10b981",
-                    "https://api.dicebear.com/7.x/bottts/svg?seed=Oliver&backgroundColor=f59e0b",
-                    "https://api.dicebear.com/7.x/bottts/svg?seed=Sophie&backgroundColor=ec4899",
-                    "https://api.dicebear.com/7.x/notionists/svg?seed=Jack&backgroundColor=6366f1",
-                    "https://api.dicebear.com/7.x/notionists/svg?seed=Mia&backgroundColor=14b8a6",
-                    "https://api.dicebear.com/7.x/adventurer/svg?seed=Leo&backgroundColor=8b5cf6",
-                    "https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe&backgroundColor=f43f5e"
+                    "https://api.dicebear.com/7.x/micah/svg?seed=Messi&backgroundColor=0ea5e9",
+                    "https://api.dicebear.com/7.x/micah/svg?seed=Ronaldo&backgroundColor=10b981",
+                    "https://api.dicebear.com/7.x/micah/svg?seed=Zidane&backgroundColor=f59e0b",
+                    "https://api.dicebear.com/7.x/micah/svg?seed=Pele&backgroundColor=ec4899",
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Maradona&backgroundColor=6366f1",
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Henry&backgroundColor=14b8a6",
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Ronaldinho&backgroundColor=8b5cf6",
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Kaka&backgroundColor=f43f5e"
                   ].map((url, idx) => (
                     <button
                       key={idx}
