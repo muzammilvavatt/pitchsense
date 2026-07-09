@@ -80,17 +80,27 @@ export default function ProfilePage() {
     );
   }
 
-  if (!stats && history.length === 0) {
+  if (!stats && history.length === 0 && !isOwner) {
     return (
-      <div className="min-h-screen p-8 max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
-        <h1 className="text-3xl font-bold text-white mb-4">Pundit Not Found</h1>
-        <p className="text-slate-400 mb-8">This user hasn't made any predictions yet or doesn't exist.</p>
-        <Link href="/" className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold">
-          Go Back Home
-        </Link>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold text-white">User not found</h2>
+          <p className="text-slate-400">This user hasn't made any predictions yet.</p>
+          <a href="/" className="text-emerald-400 hover:underline">Return Home</a>
+        </div>
       </div>
     );
   }
+
+  // Fallback stats for owners with no predictions
+  const displayStats = stats || {
+    total_score: 0,
+    correct_predictions: 0,
+    mastermind_predictions: 0,
+    sniper_predictions: 0,
+    total_likes: 0,
+    avatar_url: typeof window !== 'undefined' ? localStorage.getItem("pitchsense_avatar_url") : null
+  };
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-5xl mx-auto pb-24">
@@ -101,8 +111,8 @@ export default function ProfilePage() {
       <div className="glass-card p-6 md:p-10 mb-8">
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
           <div className="relative">
-            {stats?.avatar_url ? (
-              <img src={stats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-slate-700 shadow-2xl" />
+            {displayStats?.avatar_url ? (
+              <img src={displayStats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-slate-700 shadow-2xl" />
             ) : (
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-blue-500 to-emerald-400 flex items-center justify-center font-bold text-white shadow-2xl text-5xl">
                 {alias.charAt(0).toUpperCase()}
@@ -110,7 +120,7 @@ export default function ProfilePage() {
             )}
             
             {/* Top Pundit Badge Overlay */}
-            {stats?.total_score >= 10 && (
+            {displayStats?.total_score >= 10 && (
               <div className="absolute -bottom-2 -right-2 bg-yellow-500 text-black font-black text-xs px-3 py-1.5 rounded-full border-2 border-slate-900 shadow-lg flex items-center gap-1">
                 <Trophy size={14} /> VIP
               </div>
@@ -121,7 +131,7 @@ export default function ProfilePage() {
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">{alias}</h1>
             <p className="text-slate-400 text-lg flex items-center justify-center md:justify-start gap-2">
               <Trophy className="text-yellow-400" size={20} />
-              <span className="font-bold text-emerald-400">{stats?.total_score || 0} Total Points</span>
+              <span className="font-bold text-emerald-400">{displayStats?.total_score || 0} Total Points</span>
             </p>
 
             {/* Badges Container */}
@@ -134,28 +144,28 @@ export default function ProfilePage() {
                   Edit Avatar
                 </button>
               )}
-              {stats?.correct_predictions > 0 && (
+              {displayStats?.correct_predictions > 0 && (
                 <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
                   <Target size={16} className="text-emerald-400" />
-                  <span className="text-slate-300 font-medium">Accurate ({stats.correct_predictions})</span>
+                  <span className="text-slate-300 font-medium">Accurate ({displayStats.correct_predictions})</span>
                 </div>
               )}
-              {stats?.mastermind_predictions > 0 && (
+              {displayStats?.mastermind_predictions > 0 && (
                 <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
                   <Brain size={16} className="text-purple-400" />
-                  <span className="text-slate-300 font-medium">Mastermind ({stats.mastermind_predictions})</span>
+                  <span className="text-slate-300 font-medium">Mastermind ({displayStats.mastermind_predictions})</span>
                 </div>
               )}
-              {stats?.sniper_predictions > 0 && (
+              {displayStats?.sniper_predictions > 0 && (
                 <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
                   <Crosshair size={16} className="text-orange-400" />
-                  <span className="text-slate-300 font-medium">Sniper ({stats.sniper_predictions})</span>
+                  <span className="text-slate-300 font-medium">Sniper ({displayStats.sniper_predictions})</span>
                 </div>
               )}
-              {stats?.total_likes > 0 && (
+              {displayStats?.total_likes > 0 && (
                 <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
                   <Heart size={16} className="text-pink-400" />
-                  <span className="text-slate-300 font-medium">Respected ({stats.total_likes})</span>
+                  <span className="text-slate-300 font-medium">Respected ({displayStats.total_likes})</span>
                 </div>
               )}
             </div>
