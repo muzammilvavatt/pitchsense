@@ -32,7 +32,47 @@ export default function Leaderboard() {
           <h3 className="font-bold text-lg">Top Pundits</h3>
         </div>
         
-        <div className="overflow-x-auto">
+        {/* Mobile View (Cards) */}
+        <div className="md:hidden flex flex-col divide-y divide-slate-800/50">
+          {leaders.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">Leaderboard is empty. Start predicting!</div>
+          ) : (
+            leaders.map((leader, idx) => (
+              <div key={leader.alias} className="p-4 flex flex-col gap-3 bg-slate-900/20">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <span className="font-black text-slate-500 text-lg">#{idx + 1}</span>
+                    <Link href={`/profile/${leader.alias}`} className="font-bold text-blue-400 text-lg">
+                      {leader.alias}
+                    </Link>
+                  </div>
+                  <div className="font-black text-emerald-400 text-xl">{leader.total_score || 0} pts</div>
+                </div>
+                <div className="grid grid-cols-4 gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                  <div className="text-center">
+                    <div className="text-xs text-slate-500 mb-1"><Target size={14} className="mx-auto"/></div>
+                    <div className="font-bold text-slate-300">{leader.correct_predictions || 0}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-purple-400 mb-1"><Brain size={14} className="mx-auto"/></div>
+                    <div className="font-bold text-purple-400">{leader.mastermind_predictions || 0}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-orange-400 mb-1"><Crosshair size={14} className="mx-auto"/></div>
+                    <div className="font-bold text-orange-400">{leader.sniper_predictions || 0}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-pink-400 mb-1"><Heart size={14} className="mx-auto text-pink-400"/></div>
+                    <div className="font-bold text-slate-300">{leader.total_likes || 0}</div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View (Table) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-900/50 text-slate-400 text-sm border-b border-slate-800">
@@ -48,7 +88,7 @@ export default function Leaderboard() {
                   <div className="flex items-center gap-1 text-orange-400"><Crosshair size={14}/> Sniper (3x)</div>
                 </th>
                 <th className="p-4 font-medium">
-                  <div className="flex items-center gap-1"><Heart size={14}/> Likes</div>
+                  <div className="flex items-center gap-1 text-pink-400"><Heart size={14}/> Likes</div>
                 </th>
                 <th className="p-4 font-medium text-right">Total Score</th>
               </tr>
@@ -73,7 +113,7 @@ export default function Leaderboard() {
                     <td className="p-4 font-bold text-purple-400">{leader.mastermind_predictions || 0}</td>
                     <td className="p-4 font-bold text-orange-400">{leader.sniper_predictions || 0}</td>
                     <td className="p-4 text-slate-300">{leader.total_likes || 0}</td>
-                    <td className="p-4 text-right font-bold text-emerald-400 text-lg">
+                    <td className="p-4 text-right font-black text-emerald-400 text-xl">
                       {leader.total_score || 0}
                     </td>
                   </tr>
