@@ -21,8 +21,7 @@ export default function Dashboard({ alias, onLogout }: { alias: string, onLogout
               {alias.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h2 className="font-bold text-lg leading-tight text-white">{alias}</h2>
-              <p className="text-xs text-emerald-400 font-medium">Verified Pundit</p>
+              <h2 className="font-bold text-lg leading-tight text-white tracking-wide">{alias}</h2>
             </div>
           </div>
           {/* Mobile logout button */}
