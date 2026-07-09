@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { ArrowRight, LogIn, UserPlus, AlertCircle } from 'lucide-react';
 
 interface AuthScreenProps {
-  onAliasSet: (alias: string) => void;
+  onAliasSet: (alias: string, avatarUrl?: string | null) => void;
 }
 
 export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
@@ -43,7 +43,8 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
         setErrorMsg(error.message);
       } else if (data.user) {
         const userAlias = data.user.user_metadata?.alias || data.user.user_metadata?.full_name || 'UnknownUser';
-        onAliasSet(userAlias);
+        const userAvatar = data.user.user_metadata?.avatar_url || null;
+        onAliasSet(userAlias, userAvatar);
       }
     } else {
       const trimmedAlias = alias.trim();
@@ -106,7 +107,7 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
         }
 
         // Log them in
-        onAliasSet(trimmedAlias);
+        onAliasSet(trimmedAlias, finalAvatarUrl);
       } else {
         // If there is no session, they used an existing email or need to verify their email
         setErrorMsg('Sign up pending! If you already have an account, please switch to Sign In. Otherwise, check your email for a confirmation link.');
