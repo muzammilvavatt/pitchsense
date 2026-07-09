@@ -1,6 +1,6 @@
 import os
 import time
-import google.generativeai as genai
+from google import genai
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
@@ -12,14 +12,11 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY or not GEMINI_API_KEY:
-    print("Please set SUPABASE_URL, SUPABASE_KEY, and GEMINI_API_KEY in your .env file.")
+    print("Please set SUPABASE_URL, SUPABASE_KEY, and GEMINI_API_KEY in your .env file or environment.")
     exit(1)
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Use Gemini 2.5 Flash for the latest model capabilities in 2026
-model = genai.GenerativeModel('gemini-2.5-flash')
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 def generate_tactical_analysis(home_team, away_team):
     """
@@ -45,7 +42,7 @@ def generate_tactical_analysis(home_team, away_team):
     [Your tactical paragraph explaining EXACTLY why you think this will happen based on playstyles, midfield battles, or attacking threat. Keep it under 100 words. Be bold and opinionated.]
     """
     
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
     return response.text.strip()
 
 def process_upcoming_matches():
