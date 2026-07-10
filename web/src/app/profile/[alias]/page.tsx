@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { getDefaultAvatar } from "@/lib/avatar";
 
 export default function ProfilePage() {
   const params = useParams();
@@ -145,9 +146,11 @@ export default function ProfilePage() {
                 className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover border-2 border-[var(--border-lime)] bg-black/40"
               />
             ) : (
-              <div className="w-28 h-28 md:w-36 md:h-36 rounded-3xl bg-gradient-to-br from-[#AEFC00]/20 to-[#3B82F6]/20 flex items-center justify-center text-5xl border-2 border-[var(--border-lime)]">
-                ⚽
-              </div>
+              <img
+                src={getDefaultAvatar(alias)}
+                alt={alias}
+                className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover border-2 border-[var(--border-lime)] bg-black/40 p-2"
+              />
             )}
             {isOwner && (
               <button

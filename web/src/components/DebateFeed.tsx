@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { ThumbsUp, Clock, MessageSquare, Trash2 } from "lucide-react";
 import { getPrestigeBadge, PrestigeBadge } from "@/lib/badges";
+import { getDefaultAvatar } from "@/lib/avatar";
 
 export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGuest, onLoginClick }: { currentUserAlias?: string | null, currentUserAvatar?: string | null, isGuest?: boolean, onLoginClick?: () => void }) {
   const [predictions, setPredictions] = useState<any[]>([]);
@@ -213,9 +214,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                   {p.avatar_url ? (
                     <img src={p.avatar_url} alt={p.alias} className="w-10 h-10 md:w-12 md:h-12 rounded-2xl object-cover border-2 border-[var(--border-lime)] bg-black/40 z-10" />
                   ) : (
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-[#AEFC00]/20 to-[#3B82F6]/20 flex items-center justify-center font-bold text-white text-base md:text-lg border-2 border-[var(--border-lime)] z-10">
-                      ⚽
-                    </div>
+                    <img src={getDefaultAvatar(p.alias)} alt={p.alias} className="w-10 h-10 md:w-12 md:h-12 rounded-2xl object-cover border-2 border-[var(--border-lime)] bg-black/40 z-10 p-1" />
                   )}
                   {(p.replies?.length > 0 || replyingTo === p.id) && (
                     <div className="w-0.5 grow bg-[var(--border-subtle)] my-1.5 rounded-full min-h-[20px]"></div>
@@ -313,12 +312,10 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                       <div key={r.id} className="flex gap-3 md:gap-4">
                         {/* Avatar Column */}
                         <div className="w-10 md:w-12 flex flex-col items-center shrink-0">
-                          {(r.avatar_url && r.avatar_url !== "null" && r.avatar_url !== "undefined") ? (
+                          {r.avatar_url ? (
                             <img src={r.avatar_url} alt={r.alias} className="w-7 h-7 md:w-8 md:h-8 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 z-10" />
                           ) : (
-                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-xl bg-gradient-to-br from-[#AEFC00]/20 to-[#3B82F6]/20 flex items-center justify-center font-bold text-white text-[10px] border border-[var(--border-lime)] z-10">
-                              ⚽
-                            </div>
+                            <img src={getDefaultAvatar(r.alias)} alt={r.alias} className="w-7 h-7 md:w-8 md:h-8 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 z-10 p-1" />
                           )}
                           {!isLast && (
                             <div className="w-0.5 grow bg-[var(--border-subtle)] my-1.5 rounded-full min-h-[20px]"></div>
@@ -357,9 +354,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                         {(currentUserAvatar && currentUserAvatar !== "null" && currentUserAvatar !== "undefined") ? (
                           <img src={currentUserAvatar} alt={currentUserAlias || ""} className="w-7 h-7 md:w-8 md:h-8 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 shadow-[0_0_5px_rgba(174,252,0,0.2)]" />
                         ) : (
-                          <div className="w-7 h-7 md:w-8 md:h-8 rounded-xl bg-gradient-to-br from-[#AEFC00]/20 to-[#3B82F6]/20 flex items-center justify-center font-bold text-white text-[10px] border border-[var(--border-lime)]">
-                            ⚽
-                          </div>
+                          <img src={getDefaultAvatar(currentUserAlias)} alt="You" className="w-7 h-7 md:w-8 md:h-8 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 shadow-[0_0_5px_rgba(174,252,0,0.2)] p-1" />
                         )}
                       </div>
                       

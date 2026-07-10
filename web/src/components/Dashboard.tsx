@@ -6,6 +6,7 @@ import MatchHub from "./MatchHub";
 import DebateFeed from "./DebateFeed";
 import Leaderboard from "./Leaderboard";
 import Link from "next/link";
+import { getDefaultAvatar } from "@/lib/avatar";
 
 type Tab = "hub" | "debate" | "leaderboard" | "profile";
 
@@ -55,7 +56,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
               {localAvatar ? (
                 <img src={localAvatar} alt={alias} className="w-12 h-12 rounded-2xl object-cover border-2 border-[var(--border-lime)] group-hover:border-[#AEFC00] transition-colors bg-white" />
               ) : (
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#AEFC00]/30 to-[#3B82F6]/20 flex items-center justify-center text-2xl border-2 border-[var(--border-lime)] group-hover:border-[#AEFC00] transition-colors">⚽</div>
+                <img src={getDefaultAvatar(alias)} alt={alias} className="w-12 h-12 rounded-2xl object-cover border-2 border-[var(--border-lime)] group-hover:border-[#AEFC00] transition-colors bg-white p-1" />
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-white truncate group-hover:text-[#AEFC00] transition-colors">{alias}</p>
@@ -128,7 +129,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
               {localAvatar ? (
                 <img src={localAvatar} alt={alias} className="w-8 h-8 rounded-xl object-cover border-2 border-[var(--border-lime)] bg-white" />
               ) : (
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#AEFC00]/30 to-[#3B82F6]/20 flex items-center justify-center text-base border-2 border-[var(--border-lime)]">⚽</div>
+                <img src={getDefaultAvatar(alias)} alt={alias} className="w-8 h-8 rounded-xl object-cover border-2 border-[var(--border-lime)] bg-white p-0.5" />
               )}
             </Link>
           )}

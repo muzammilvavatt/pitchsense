@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Trophy, Target, Heart, Brain, Crosshair } from "lucide-react";
 import Link from "next/link";
 import { getPrestigeBadge, PrestigeBadge } from "@/lib/badges";
+import { getDefaultAvatar } from "@/lib/avatar";
 
 interface LeaderboardRow {
   alias: string;
@@ -141,9 +142,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                     {leader.avatar_url ? (
                       <img src={leader.avatar_url} alt={leader.alias} className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover border-2 border-[var(--border-subtle)] group-hover/link:border-[#AEFC00] transition-colors bg-black/40" />
                     ) : (
-                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-[#AEFC00]/20 to-[#3B82F6]/20 flex items-center justify-center font-bold text-white text-xl border-2 border-[var(--border-subtle)] group-hover/link:border-[#AEFC00] transition-colors">
-                        ⚽
-                      </div>
+                      <img src={getDefaultAvatar(leader.alias)} alt={leader.alias} className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover border-2 border-[var(--border-subtle)] group-hover/link:border-[#AEFC00] transition-colors bg-black/40 p-1" />
                     )}
                   </div>
                   <div className="min-w-0">
