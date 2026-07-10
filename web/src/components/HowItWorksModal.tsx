@@ -64,7 +64,7 @@ export default function HowItWorksModal() {
           className="fixed inset-0 z-[100] grid place-items-center p-4 bg-black/70 backdrop-blur-md"
           onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false); }}
         >
-          <div className="bento-card rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative animate-fade-up my-4 max-h-[90vh] overflow-y-auto">
+          <div className="bento-card rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative animate-fade-up my-4 max-h-[90vh] overflow-y-auto modal-scroll">
 
             {/* Close */}
             <button
