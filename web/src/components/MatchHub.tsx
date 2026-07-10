@@ -192,9 +192,9 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
 
               return (
           <div key={match.id} className="bento-card rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5">
-            {/* Match Header */}
-            <div className="p-5 md:p-7 bg-gradient-to-br from-[var(--bg-card-hover)] to-[var(--bg-card)] border-b border-[var(--border-subtle)]">
-              <div className="flex items-center justify-between mb-5">
+            {/* Match Header — also acts as winner picker */}
+            <div className="p-5 md:p-7 border-b border-[var(--border-subtle)]">
+              <div className="flex items-center justify-between mb-4">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">{kickoffDay}</span>
                 <div className="flex items-center gap-2 bg-[#AEFC00]/10 border border-[var(--border-lime)] px-3 py-1 rounded-full animate-lime-pulse">
                   <div className="lime-dot w-1.5 h-1.5"></div>
@@ -202,35 +202,90 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 md:gap-8">
-                {/* Home Team */}
-                <div className="flex-1 flex flex-col items-center gap-3 text-center">
-                  <div className="w-14 h-14 md:w-16 md:h-16 shrink-0 flex items-center justify-center bg-[var(--bg-card)] rounded-2xl border border-[var(--border-medium)] p-2">
+              {!pred.locked && (
+                <p className="text-center text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4">
+                  Tap to pick winner
+                </p>
+              )}
+
+              <div className="flex items-stretch gap-3">
+                {/* Home Team — clickable */}
+                <button
+                  onClick={() => !pred.locked && handlePredictionChange(match.id, "winner", match.home_team)}
+                  disabled={pred.locked}
+                  className={`flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all duration-200 ${
+                    pred.winner === match.home_team
+                      ? 'bg-[#AEFC00]/15 border-[#AEFC00] shadow-[0_0_20px_rgba(174,252,0,0.2)]'
+                      : pred.locked
+                        ? 'border-transparent opacity-40 cursor-default'
+                        : 'border-[var(--border-medium)] hover:border-[#AEFC00]/50 hover:bg-[#AEFC00]/5 cursor-pointer'
+                  }`}
+                >
+                  <div className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center bg-[var(--bg-card)] rounded-2xl border border-[var(--border-medium)] p-2">
                     {match.home_logo ? (
                       <img src={match.home_logo} alt={match.home_team} className="w-full h-full object-contain" />
                     ) : (
                       <span className="font-bold text-[var(--text-muted)] text-xl">H</span>
                     )}
                   </div>
-                  <h3 className="text-sm md:text-base font-bold text-white leading-tight">{match.home_team}</h3>
+                  <div className="text-center">
+                    <p className={`text-sm md:text-base font-black leading-tight ${
+                      pred.winner === match.home_team ? 'text-[#AEFC00]' : 'text-white'
+                    }`}>{match.home_team}</p>
+                    {pred.winner === match.home_team && (
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#AEFC00] mt-0.5 block">✓ Selected</span>
+                    )}
+                  </div>
+                </button>
+
+                {/* Center — vs / Draw */}
+                <div className="flex flex-col items-center justify-center gap-2 shrink-0">
+                  <span className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest">vs</span>
+                  {!match.is_knockout && !pred.locked && (
+                    <button
+                      onClick={() => handlePredictionChange(match.id, "winner", "Draw")}
+                      className={`px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                        pred.winner === "Draw"
+                          ? 'bg-slate-300 text-black border-slate-300 shadow-[0_0_12px_rgba(203,213,225,0.25)]'
+                          : 'border-[var(--border-medium)] text-[var(--text-muted)] hover:border-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Draw
+                    </button>
+                  )}
+                  {!match.is_knockout && pred.locked && pred.winner === "Draw" && (
+                    <span className="px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-300 text-black">Draw ✓</span>
+                  )}
                 </div>
 
-                {/* Center */}
-                <div className="flex flex-col items-center gap-1 shrink-0">
-                  <span className="text-lg font-black text-[var(--text-muted)]">vs</span>
-                </div>
-
-                {/* Away Team */}
-                <div className="flex-1 flex flex-col items-center gap-3 text-center">
-                  <div className="w-14 h-14 md:w-16 md:h-16 shrink-0 flex items-center justify-center bg-[var(--bg-card)] rounded-2xl border border-[var(--border-medium)] p-2">
+                {/* Away Team — clickable */}
+                <button
+                  onClick={() => !pred.locked && handlePredictionChange(match.id, "winner", match.away_team)}
+                  disabled={pred.locked}
+                  className={`flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all duration-200 ${
+                    pred.winner === match.away_team
+                      ? 'bg-blue-500/15 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
+                      : pred.locked
+                        ? 'border-transparent opacity-40 cursor-default'
+                        : 'border-[var(--border-medium)] hover:border-blue-400/50 hover:bg-blue-500/5 cursor-pointer'
+                  }`}
+                >
+                  <div className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center bg-[var(--bg-card)] rounded-2xl border border-[var(--border-medium)] p-2">
                     {match.away_logo ? (
                       <img src={match.away_logo} alt={match.away_team} className="w-full h-full object-contain" />
                     ) : (
                       <span className="font-bold text-[var(--text-muted)] text-xl">A</span>
                     )}
                   </div>
-                  <h3 className="text-sm md:text-base font-bold text-white leading-tight">{match.away_team}</h3>
-                </div>
+                  <div className="text-center">
+                    <p className={`text-sm md:text-base font-black leading-tight ${
+                      pred.winner === match.away_team ? 'text-blue-400' : 'text-white'
+                    }`}>{match.away_team}</p>
+                    {pred.winner === match.away_team && (
+                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 mt-0.5 block">✓ Selected</span>
+                    )}
+                  </div>
+                </button>
               </div>
             </div>
 
@@ -271,54 +326,15 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] ml-1">1. Pick Outcome</label>
-                        <div className="flex bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-2xl overflow-hidden p-1 h-11">
-                          <button
-                            onClick={() => handlePredictionChange(match.id, "winner", match.home_team)}
-                            className={`flex-1 text-xs font-bold py-1 rounded-xl transition-all ${
-                              pred.winner === match.home_team 
-                                ? 'bg-[#AEFC00] text-black shadow-[0_0_10px_rgba(174,252,0,0.3)]' 
-                                : 'text-[var(--text-muted)] hover:text-white hover:bg-white/5'
-                            }`}
-                          >
-                            {match.home_team}
-                          </button>
-                          {!match.is_knockout && (
-                            <button
-                              onClick={() => handlePredictionChange(match.id, "winner", "Draw")}
-                              className={`flex-1 text-xs font-bold py-1 rounded-xl transition-all ${
-                                pred.winner === "Draw" 
-                                  ? 'bg-slate-300 text-black shadow-[0_0_10px_rgba(203,213,225,0.3)]' 
-                                  : 'text-[var(--text-muted)] hover:text-white hover:bg-white/5'
-                              }`}
-                            >
-                              Draw
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handlePredictionChange(match.id, "winner", match.away_team)}
-                            className={`flex-1 text-xs font-bold py-1 rounded-xl transition-all ${
-                              pred.winner === match.away_team 
-                                ? 'bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]' 
-                                : 'text-[var(--text-muted)] hover:text-white hover:bg-white/5'
-                            }`}
-                          >
-                            {match.away_team}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] ml-1">2. Exact Score</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. 2-1"
-                          value={pred.score}
-                          onChange={(e) => handlePredictionChange(match.id, "score", e.target.value)}
-                          className="bento-input h-11 text-sm w-full bg-[var(--bg-base)]"
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] ml-1">Score Prediction</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 2-1"
+                        value={pred.score}
+                        onChange={(e) => handlePredictionChange(match.id, "score", e.target.value)}
+                        className="bento-input h-11 text-sm w-full bg-[var(--bg-base)]"
+                      />
                     </div>
                     <textarea
                       placeholder="Your reasoning... (optional)"
