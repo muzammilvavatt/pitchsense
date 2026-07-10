@@ -57,8 +57,9 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
     fetchLeaderboard();
 
     // Subscribe to realtime changes on predictions table to auto-update likes on the leaderboard
+    const channelName = `public:predictions_leaderboard_${Math.random().toString(36).substring(7)}`;
     const channel = supabase
-      .channel("public:predictions_leaderboard")
+      .channel(channelName)
       .on("postgres_changes", { event: "*", schema: "public", table: "predictions" }, () => {
         fetchLeaderboard();
       })
