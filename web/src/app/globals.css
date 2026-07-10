@@ -17,9 +17,10 @@
 body {
   color: var(--foreground);
   background-color: var(--background);
-  /* A very subtle, deep radial gradient to prevent the solid background from feeling flat */
-  background-image: radial-gradient(circle at top right, rgba(16, 185, 129, 0.05), transparent 40%),
-                    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.05), transparent 40%);
+  /* A massive 90% dark overlay over the worldcup image to provide subtle texture */
+  background-image: linear-gradient(rgba(10, 15, 30, 0.92), rgba(10, 15, 30, 0.92)), url('/bg-worldcup.png');
+  background-size: cover;
+  background-position: center center;
   background-attachment: fixed;
   font-family: var(--font-sans), sans-serif;
   min-height: 100vh;
@@ -43,4 +44,13 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Hide scrollbar completely but allow scrolling */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
