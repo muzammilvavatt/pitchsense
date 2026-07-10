@@ -225,7 +225,7 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                   <Bot size={18} /> Machine Insight
                 </div>
                 {insights[match.id] ? (
-                  <div className="text-slate-300 leading-relaxed text-sm bg-blue-950/20 p-4 rounded-xl border border-blue-900/30 font-sans prose prose-invert prose-sm max-w-none shadow-inner">
+                  <div className="text-slate-200 leading-loose text-base bg-blue-950/20 p-6 rounded-xl border border-blue-900/30 font-sans prose prose-invert prose-base max-w-none shadow-inner tracking-wide">
                     <ReactMarkdown>{insights[match.id].insight}</ReactMarkdown>
                   </div>
                 ) : (

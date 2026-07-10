@@ -262,16 +262,16 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                     </span>
                   </div>
 
-                  <div className="mb-2">
-                    <span className="text-slate-400 text-[13px] md:text-sm">Picked </span>
-                    <span className="font-bold text-emerald-400 text-[13px] md:text-sm">
+                  <div className="mb-4">
+                    <span className="text-slate-400 text-sm md:text-base">Picked </span>
+                    <span className="font-bold text-emerald-400 text-sm md:text-base tracking-wide">
                       {p.prediction} <span className="text-emerald-500/70 font-normal">({p.score_prediction})</span>
                     </span>
                   </div>
 
                   {p.justification && p.justification.trim() !== "" && (
-                    <div className="mb-2 cursor-pointer group" onClick={() => toggleExpand(p.id)}>
-                      <p className={`text-slate-200 text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
+                    <div className="mb-4 cursor-pointer group" onClick={() => toggleExpand(p.id)}>
+                      <p className={`text-slate-200 text-base md:text-lg leading-loose whitespace-pre-wrap tracking-wide ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
                         {p.justification}
                       </p>
                       {p.justification?.length > 120 && !expandedPosts.has(p.id) && (

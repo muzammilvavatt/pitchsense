@@ -73,12 +73,12 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
             )}
           </div>
 
-          <nav className="glass-card overflow-hidden flex flex-col p-2">
+          <nav className="glass-card overflow-hidden flex flex-col p-3 gap-2">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id as Tab)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+                className={`flex items-center gap-4 px-5 py-3.5 rounded-xl text-[15px] font-semibold transition-all ${
                   activeTab === item.id ? "bg-slate-800 text-white shadow-sm border border-slate-700/50" : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 border border-transparent"
                 }`}
               >
