@@ -193,28 +193,28 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
               </div>
             </div>
 
-            <div className="flex justify-between items-center px-6 md:px-16 py-12 mb-4 mt-6 mx-4 md:mx-6 relative bg-gradient-to-r from-emerald-900/40 via-slate-900 to-blue-900/40 rounded-3xl border border-slate-700/50 shadow-inner group-hover:from-emerald-800/40 group-hover:to-blue-800/40 transition-colors duration-500">
+            <div className="flex justify-between items-center px-4 md:px-12 py-8 md:py-12 mb-4 mt-4 md:mt-6 mx-2 md:mx-6 relative bg-gradient-to-r from-emerald-900/40 via-slate-900 to-blue-900/40 rounded-3xl border border-slate-700/50 shadow-inner group-hover:from-emerald-800/40 group-hover:to-blue-800/40 transition-colors duration-500">
               {/* VS Badge */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-400 font-bold italic text-base md:text-xl bg-slate-950 px-4 py-2 rounded-full border border-slate-700 shadow-xl shadow-black/40 z-10">
                 VS
               </div>
               
-              <div className="text-center w-5/12 flex flex-col items-center gap-4 relative z-20">
+              <div className="text-center w-5/12 flex flex-col items-center gap-2 md:gap-4 relative z-20">
                 {match.home_logo ? (
-                  <img src={match.home_logo} alt={match.home_team} className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 transition-transform duration-500" />
+                  <img src={match.home_logo} alt={match.home_team} className="w-16 h-16 md:w-28 md:h-28 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 transition-transform duration-500" />
                 ) : (
-                  <div className="w-20 h-20 md:w-32 md:h-32 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center font-bold text-slate-500 text-3xl shadow-inner">H</div>
+                  <div className="w-16 h-16 md:w-28 md:h-28 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center font-bold text-slate-500 text-2xl md:text-3xl shadow-inner">H</div>
                 )}
-                <h3 className="text-xl md:text-3xl font-black text-white mt-2 drop-shadow-md tracking-tight leading-none">{match.home_team}</h3>
+                <h3 className="text-lg md:text-3xl font-black text-white mt-1 md:mt-2 drop-shadow-md tracking-tight leading-none">{match.home_team}</h3>
               </div>
               
-              <div className="text-center w-5/12 flex flex-col items-center gap-4 relative z-20">
+              <div className="text-center w-5/12 flex flex-col items-center gap-2 md:gap-4 relative z-20">
                 {match.away_logo ? (
-                  <img src={match.away_logo} alt={match.away_team} className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 transition-transform duration-500" />
+                  <img src={match.away_logo} alt={match.away_team} className="w-16 h-16 md:w-28 md:h-28 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 transition-transform duration-500" />
                 ) : (
-                  <div className="w-20 h-20 md:w-32 md:h-32 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center font-bold text-slate-500 text-3xl shadow-inner">A</div>
+                  <div className="w-16 h-16 md:w-28 md:h-28 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center font-bold text-slate-500 text-2xl md:text-3xl shadow-inner">A</div>
                 )}
-                <h3 className="text-xl md:text-3xl font-black text-white mt-2 drop-shadow-md tracking-tight leading-none">{match.away_team}</h3>
+                <h3 className="text-lg md:text-3xl font-black text-white mt-1 md:mt-2 drop-shadow-md tracking-tight leading-none">{match.away_team}</h3>
               </div>
             </div>
 

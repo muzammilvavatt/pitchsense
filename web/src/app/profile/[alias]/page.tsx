@@ -283,6 +283,25 @@ export default function ProfilePage() {
                   ))}
                 </div>
                 
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2 text-sm text-slate-400">
+                    <span className="flex-1 h-px bg-slate-800"></span>
+                    <span>OR UPLOAD CUSTOM</span>
+                    <span className="flex-1 h-px bg-slate-800"></span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="block w-full text-sm text-slate-400
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-full file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-emerald-600 file:text-white
+                      hover:file:bg-emerald-500 transition-all cursor-pointer"
+                  />
+                </div>
+                
                 <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-slate-800">
 
                   <div className="flex gap-2">
