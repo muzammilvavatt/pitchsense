@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
 }
 
 :root {
@@ -17,22 +16,23 @@
 
 body {
   color: var(--foreground);
-  background-image: linear-gradient(rgba(9, 9, 11, 0.74), rgba(9, 9, 11, 0.74)), url('/bg-worldcup.png');
-  background-size: cover;
-  background-position: center center;
+  background-color: var(--background);
+  /* A very subtle, deep radial gradient to prevent the solid background from feeling flat */
+  background-image: radial-gradient(circle at top right, rgba(16, 185, 129, 0.05), transparent 40%),
+                    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.05), transparent 40%);
   background-attachment: fixed;
   font-family: var(--font-sans), sans-serif;
   min-height: 100vh;
 }
 
 .glass-card {
-  background: rgba(24, 24, 27, 0.75); /* Zinc 900 */
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08); /* Clean white border */
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.95); /* Deep solid slate */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05); /* Extremely subtle border */
+  border-top: 1px solid rgba(255, 255, 255, 0.08); /* Slight top highlight */
   border-radius: 1.25rem;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 /* Animations */

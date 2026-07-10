@@ -78,8 +78,8 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id as Tab)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold transition-all ${
-                  activeTab === item.id ? "bg-slate-800 text-white shadow-md border-l-4 border-emerald-500" : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+                  activeTab === item.id ? "bg-slate-800 text-white shadow-sm border border-slate-700/50" : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 border border-transparent"
                 }`}
               >
                 <item.icon size={20} className={activeTab === item.id ? item.color : ""} /> {item.label}
