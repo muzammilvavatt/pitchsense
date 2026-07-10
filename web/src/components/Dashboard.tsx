@@ -1,18 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { LogOut, Trophy, MessageSquare, LayoutDashboard, User, Zap, ChevronRight } from "lucide-react";
 import MatchHub from "./MatchHub";
 import DebateFeed from "./DebateFeed";
 import Leaderboard from "./Leaderboard";
 import Link from "next/link";
-import { getDefaultAvatar } from "@/lib/avatar";
+import { resolveAvatar } from "@/lib/avatar";
 
 type Tab = "hub" | "debate" | "leaderboard" | "profile";
 
 export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLoginClick }: { alias: string, avatarUrl?: string | null, onLogout: () => void, isGuest?: boolean, onLoginClick?: () => void }) {
   const [activeTab, setActiveTab] = useState<Tab>("hub");
   const [localAvatar, setLocalAvatar] = useState<string | null>(null);
+  const mainRef = useRef<HTMLElement>(null);
+
+  const switchTab = useCallback((tab: Tab) => {
+    setActiveTab(tab);
+    // Reset scroll so each tab starts fresh at the top
+    if (mainRef.current) mainRef.current.scrollTo({ top: 0, behavior: "instant" });
+    // Also reset window scroll for mobile (bottom nav)
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   useEffect(() => {
     const storedAvatar = localStorage.getItem("pitchsense_avatar_url");
@@ -53,11 +62,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
             </div>
           ) : (
             <Link href={`/profile/${alias}`} className="group flex items-center gap-3">
-              {localAvatar ? (
-                <img src={localAvatar} alt={alias} className="w-12 h-12 rounded-2xl object-cover border-2 border-[var(--border-lime)] group-hover:border-[#AEFC00] transition-colors bg-white" />
-              ) : (
-                <img src={getDefaultAvatar(alias)} alt={alias} className="w-12 h-12 rounded-2xl object-cover border-2 border-[var(--border-lime)] group-hover:border-[#AEFC00] transition-colors bg-white p-1" />
-              )}
+              <img src={resolveAvatar(localAvatar, alias)} alt={alias} className="w-12 h-12 rounded-2xl object-cover border-2 border-[var(--border-lime)] group-hover:border-[#AEFC00] transition-colors bg-white" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-white truncate group-hover:text-[#AEFC00] transition-colors">{alias}</p>
                 <p className="text-xs text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] transition-colors flex items-center gap-1">View Profile <ChevronRight size={10} /></p>
@@ -72,7 +77,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id as Tab)}
+              onClick={() => switchTab(item.id as Tab)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
                 activeTab === item.id
                   ? "bg-[#AEFC00] text-black shadow-lg"
@@ -126,18 +131,14 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
             <button onClick={onLoginClick} className="btn-lime text-xs px-3 py-1.5 rounded-xl">Sign In</button>
           ) : (
             <Link href={`/profile/${alias}`}>
-              {localAvatar ? (
-                <img src={localAvatar} alt={alias} className="w-8 h-8 rounded-xl object-cover border-2 border-[var(--border-lime)] bg-white" />
-              ) : (
-                <img src={getDefaultAvatar(alias)} alt={alias} className="w-8 h-8 rounded-xl object-cover border-2 border-[var(--border-lime)] bg-white p-0.5" />
-              )}
+              <img src={resolveAvatar(localAvatar, alias)} alt={alias} className="w-8 h-8 rounded-xl object-cover border-2 border-[var(--border-lime)] bg-white" />
             </Link>
           )}
         </div>
       </div>
 
       {/* ── MAIN CONTENT ── */}
-      <main className="flex-1 overflow-y-auto hide-scrollbar pb-20 md:pb-0 pt-[60px] md:pt-0">
+      <main ref={mainRef} className="flex-1 overflow-y-auto hide-scrollbar pb-20 md:pb-0 pt-[60px] md:pt-0">
         <div className="animate-fade-up max-w-3xl mx-auto p-4 md:p-8">
           {activeTab === "hub" && <MatchHub alias={alias} avatarUrl={localAvatar} isGuest={isGuest} onLoginClick={onLoginClick} />}
           {activeTab === "debate" && <DebateFeed currentUserAlias={alias} currentUserAvatar={localAvatar} isGuest={isGuest} onLoginClick={onLoginClick} />}
@@ -159,7 +160,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id as Tab)}
+              onClick={() => switchTab(item.id as Tab)}
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all ${
                 activeTab === item.id
                   ? "text-black bg-[#AEFC00]"

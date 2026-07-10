@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Trophy, Target, Brain, Crosshair, Heart, Crown, Medal, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { getPrestigeBadge, PrestigeBadge } from "@/lib/badges";
-import { getDefaultAvatar } from "@/lib/avatar";
+import { resolveAvatar } from "@/lib/avatar";
 
 interface LeaderboardRow {
   alias: string;
@@ -129,7 +129,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                     idx === 0 ? "text-yellow-400" : idx === 1 ? "text-slate-300" : idx === 2 ? "text-amber-500" : "text-[var(--text-muted)]"
                   }`}>#{idx + 1}</span>
                   <img
-                    src={leader.avatar_url || getDefaultAvatar(leader.alias)}
+                    src={resolveAvatar(leader.avatar_url, leader.alias)}
                     alt={leader.alias}
                     className="w-7 h-7 rounded-lg object-cover border border-[var(--border-medium)] bg-black/40"
                   />
@@ -203,7 +203,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                         style={{ borderColor: cfg.color, boxShadow: `0 0 20px ${cfg.glow}` }}
                       >
                         <img
-                          src={leader.avatar_url || getDefaultAvatar(leader.alias)}
+                          src={resolveAvatar(leader.avatar_url, leader.alias)}
                           alt={leader.alias}
                           className="w-full h-full object-cover"
                         />
@@ -261,7 +261,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
 
                       {/* Avatar */}
                       <img
-                        src={leader.avatar_url || getDefaultAvatar(leader.alias)}
+                        src={resolveAvatar(leader.avatar_url, leader.alias)}
                         alt={leader.alias}
                         className="w-10 h-10 rounded-2xl object-cover border border-[var(--border-medium)] bg-black/40 shrink-0 group-hover:border-[#AEFC00]/50 transition-colors"
                       />
@@ -310,7 +310,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                     i === 0 ? "text-yellow-400" : i === 1 ? "text-slate-300" : i === 2 ? "text-amber-500" : "text-[var(--text-muted)]"
                   }`}>#{i + 1}</span>
                   <img
-                    src={leader.avatar_url || getDefaultAvatar(leader.alias)}
+                    src={resolveAvatar(leader.avatar_url, leader.alias)}
                     alt={leader.alias}
                     className="w-10 h-10 rounded-2xl object-cover border border-[var(--border-medium)] bg-black/40 shrink-0"
                   />

@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getDefaultAvatar } from "@/lib/avatar";
+import { resolveAvatar } from "@/lib/avatar";
 
 export default function ProfilePage() {
   const params = useParams();
@@ -14,9 +14,6 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
-  const [newAvatarUrl, setNewAvatarUrl] = useState("");
-  const [savingAvatar, setSavingAvatar] = useState(false);
 
   const [isOwner, setIsOwner] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -48,23 +45,15 @@ export default function ProfilePage() {
         .eq("alias", alias)
         .order("created_at", { ascending: false });
 
-      const currentLocUser = localStorage.getItem("pitchsense_alias");
-      const localAvatar = (currentLocUser && currentLocUser.toLowerCase() === alias.toLowerCase())
-        ? localStorage.getItem("pitchsense_avatar_url")
-        : null;
-
-      const dbAvatar = recentPreds && recentPreds.length > 0 ? recentPreds[0].avatar_url : null;
-
       if (lbData) {
-        setStats({ ...lbData, avatar_url: localAvatar || dbAvatar });
+        setStats(lbData);
       } else {
         setStats({
           total_score: 0,
           correct_predictions: 0,
           mastermind_predictions: 0,
           sniper_predictions: 0,
-          total_likes: 0,
-          avatar_url: localAvatar || dbAvatar
+          total_likes: 0
         });
       }
 
@@ -74,20 +63,6 @@ export default function ProfilePage() {
 
     fetchProfile();
   }, [alias]);
-
-  // Custom file upload has been removed in favor of lightweight preset SVGs
-
-  const saveAvatar = async () => {
-    setSavingAvatar(true);
-    localStorage.setItem("pitchsense_avatar_url", newAvatarUrl);
-    window.dispatchEvent(new CustomEvent("avatarUpdate", { detail: newAvatarUrl }));
-    await supabase.auth.updateUser({ data: { avatar_url: newAvatarUrl } });
-    await supabase.from("predictions").update({ avatar_url: newAvatarUrl }).eq("alias", alias);
-    await supabase.from("replies").update({ avatar_url: newAvatarUrl }).eq("alias", alias);
-    setStats({ ...stats, avatar_url: newAvatarUrl });
-    setIsEditingAvatar(false);
-    setSavingAvatar(false);
-  };
 
   const handleDeleteAccount = async () => {
     setDeletingAccount(true);
@@ -139,28 +114,11 @@ export default function ProfilePage() {
         <div className="relative flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
           {/* Avatar */}
           <div className="relative shrink-0">
-            {(isEditingAvatar && newAvatarUrl) || displayStats?.avatar_url ? (
-              <img
-                src={(isEditingAvatar && newAvatarUrl) ? newAvatarUrl : displayStats.avatar_url}
-                alt={alias}
-                className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover border-2 border-[var(--border-lime)] bg-black/40"
-              />
-            ) : (
-              <img
-                src={getDefaultAvatar(alias)}
-                alt={alias}
-                className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover border-2 border-[var(--border-lime)] bg-black/40 p-2"
-              />
-            )}
-            {isOwner && (
-              <button
-                onClick={() => setIsEditingAvatar(!isEditingAvatar)}
-                className="absolute -bottom-2 -right-2 bg-[#AEFC00] hover:opacity-90 text-black p-2 rounded-xl shadow-lg transition-all"
-                title="Edit Avatar"
-              >
-                <Edit2 size={15} />
-              </button>
-            )}
+            <img
+              src={resolveAvatar(displayStats?.avatar_url, alias)}
+              alt={alias}
+              className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover border-2 border-[var(--border-lime)] bg-black/40"
+            />
             {displayStats?.total_score >= 10 && (
               <div className="absolute -top-2 -right-2 bg-[#AEFC00] text-black font-black text-[10px] px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg">
                 <Trophy size={11} /> VIP
@@ -211,52 +169,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Avatar Editor */}
-        {isEditingAvatar && (
-          <div className="relative mt-6 pt-6 border-t border-[var(--border-subtle)]">
-            <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4">Choose Avatar</p>
-            <div className="flex flex-wrap justify-center gap-3 mb-6">
-              {[
-                "/avatars/shirt-red-white.svg",
-                "/avatars/shirt-blue-white.svg",
-                "/avatars/shirt-green-white.svg",
-                "/avatars/shirt-white-black.svg",
-                "/avatars/shirt-yellow-blue.svg",
-                "/avatars/shirt-black-gold.svg",
-                "/avatars/shirt-purple-white.svg",
-                "/avatars/shirt-orange-black.svg",
-              ].map((url, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setNewAvatarUrl(url)}
-                  className={`w-14 h-14 rounded-2xl overflow-hidden border-2 transition-all hover:scale-110 ${
-                    newAvatarUrl === url
-                      ? "border-[#AEFC00] scale-110 shadow-[0_0_15px_rgba(174,252,0,0.4)]"
-                      : "border-[var(--border-medium)] hover:border-[var(--border-lime)] bg-black/20"
-                  }`}
-                >
-                  <img src={url} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover p-1" />
-                </button>
-              ))}
-            </div>
 
-            <div className="flex gap-2 pt-4 border-t border-[var(--border-subtle)]">
-              <button
-                onClick={() => setIsEditingAvatar(false)}
-                className="btn-ghost flex-1 py-2.5 rounded-2xl text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveAvatar}
-                disabled={savingAvatar || !newAvatarUrl}
-                className="btn-lime flex-1 py-2.5 rounded-2xl text-sm"
-              >
-                {savingAvatar ? "Saving..." : "Save Avatar"}
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* DELETE CONFIRMATION MODAL */}

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { ThumbsUp, Clock, MessageSquare, Trash2 } from "lucide-react";
 import { getPrestigeBadge, PrestigeBadge } from "@/lib/badges";
-import { getDefaultAvatar } from "@/lib/avatar";
+import { resolveAvatar } from "@/lib/avatar";
 
 export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGuest, onLoginClick }: { currentUserAlias?: string | null, currentUserAvatar?: string | null, isGuest?: boolean, onLoginClick?: () => void }) {
   const [predictions, setPredictions] = useState<any[]>([]);
@@ -215,11 +215,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-4">
                     {/* Avatar */}
-                    {p.avatar_url ? (
-                      <img src={p.avatar_url} alt={p.alias} className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover border-2 border-[var(--border-lime)] bg-black/40 shadow-lg" />
-                    ) : (
-                      <img src={getDefaultAvatar(p.alias)} alt={p.alias} className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover border-2 border-[var(--border-lime)] bg-black/40 p-1 shadow-lg" />
-                    )}
+                    <img src={resolveAvatar(p.avatar_url, p.alias)} alt={p.alias} className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover border-2 border-[var(--border-lime)] bg-black/40 shadow-lg" />
                     
                     {/* User Info */}
                     <div className="flex flex-col">
@@ -329,11 +325,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                     {p.replies?.map((r: any) => (
                       <div key={r.id} className="flex gap-3 md:gap-4">
                         {/* Avatar */}
-                        {r.avatar_url ? (
-                          <img src={r.avatar_url} alt={r.alias} className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 shrink-0" />
-                        ) : (
-                          <img src={getDefaultAvatar(r.alias)} alt={r.alias} className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 shrink-0 p-1" />
-                        )}
+                        <img src={resolveAvatar(r.avatar_url, r.alias)} alt={r.alias} className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 shrink-0" />
                         
                         {/* Reply Content */}
                         <div className="flex-1 min-w-0">
@@ -364,11 +356,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                     {/* Reply Input Box */}
                     {replyingTo === p.id && (
                       <div className="flex gap-3 md:gap-4 mt-2 pt-4 border-t border-[var(--border-subtle)]">
-                        {(currentUserAvatar && currentUserAvatar !== "null" && currentUserAvatar !== "undefined") ? (
-                          <img src={currentUserAvatar} alt={currentUserAlias || ""} className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 shrink-0 shadow-[0_0_5px_rgba(174,252,0,0.2)]" />
-                        ) : (
-                          <img src={getDefaultAvatar(currentUserAlias)} alt="You" className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 shrink-0 shadow-[0_0_5px_rgba(174,252,0,0.2)] p-1" />
-                        )}
+                        <img src={resolveAvatar(currentUserAvatar, currentUserAlias)} alt={currentUserAlias || "You"} className="w-8 h-8 md:w-10 md:h-10 rounded-xl object-cover border border-[var(--border-lime)] bg-black/40 shrink-0 shadow-[0_0_5px_rgba(174,252,0,0.2)]" />
                         <div className="flex-1 flex flex-col md:flex-row gap-2">
                           <input 
                             type="text" 
