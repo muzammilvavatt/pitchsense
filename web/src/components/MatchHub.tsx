@@ -281,7 +281,7 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                               : 'text-[var(--text-muted)] hover:text-white hover:bg-white/5'
                           }`}
                         >
-                          Home
+                          {match.home_team}
                         </button>
                         {!match.is_knockout && (
                           <button
@@ -303,7 +303,7 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                               : 'text-[var(--text-muted)] hover:text-white hover:bg-white/5'
                           }`}
                         >
-                          Away
+                          {match.away_team}
                         </button>
                       </div>
                       <input
