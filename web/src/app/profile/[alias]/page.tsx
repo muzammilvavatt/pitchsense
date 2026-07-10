@@ -52,7 +52,8 @@ export default function ProfilePage() {
         .order("created_at", { ascending: false });
 
       // If it's the owner's profile, always trust their local avatar first
-      const localAvatar = (currentUser && currentUser.toLowerCase() === alias.toLowerCase()) ? localStorage.getItem("pitchsense_avatar_url") : null;
+      const currentLocUser = localStorage.getItem("pitchsense_alias");
+      const localAvatar = (currentLocUser && currentLocUser.toLowerCase() === alias.toLowerCase()) ? localStorage.getItem("pitchsense_avatar_url") : null;
       
       const dbAvatar = recentPreds && recentPreds.length > 0 ? recentPreds[0].avatar_url : null;
 
