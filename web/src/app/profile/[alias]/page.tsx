@@ -51,10 +51,25 @@ export default function ProfilePage() {
         .eq("alias", alias)
         .order("created_at", { ascending: false });
 
+      // If it's the owner's profile, always trust their local avatar first
+      const localAvatar = (currentUser && currentUser.toLowerCase() === alias.toLowerCase()) ? localStorage.getItem("pitchsense_avatar_url") : null;
+      
+      const dbAvatar = recentPreds && recentPreds.length > 0 ? recentPreds[0].avatar_url : null;
+
       if (lbData) {
         setStats({
           ...lbData,
-          avatar_url: recentPreds && recentPreds.length > 0 ? recentPreds[0].avatar_url : null
+          avatar_url: localAvatar || dbAvatar
+        });
+      } else {
+        // Even if lbData is null, we should still set stats so the avatar preview saves!
+        setStats({
+          total_score: 0,
+          correct_predictions: 0,
+          mastermind_predictions: 0,
+          sniper_predictions: 0,
+          total_likes: 0,
+          avatar_url: localAvatar || dbAvatar
         });
       }
       
@@ -175,7 +190,7 @@ export default function ProfilePage() {
     mastermind_predictions: 0,
     sniper_predictions: 0,
     total_likes: 0,
-    avatar_url: typeof window !== 'undefined' ? localStorage.getItem("pitchsense_avatar_url") : null
+    avatar_url: isOwner ? (typeof window !== 'undefined' ? localStorage.getItem("pitchsense_avatar_url") : null) : null
   };
 
   return (
@@ -187,10 +202,10 @@ export default function ProfilePage() {
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm p-6 md:p-10 mb-8">
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
           <div className="relative">
-            {displayStats?.avatar_url ? (
-              <img src={displayStats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-slate-700 shadow-2xl bg-white" />
+            {(isEditingAvatar && newAvatarUrl) || displayStats?.avatar_url ? (
+              <img src={(isEditingAvatar && newAvatarUrl) ? newAvatarUrl : displayStats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-slate-700 shadow-xl bg-slate-900" />
             ) : (
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-2xl text-6xl border-4 border-slate-700">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-xl text-6xl border-4 border-slate-700">
                 ⚽
               </div>
             )}
