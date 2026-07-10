@@ -2,22 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Calendar, Edit2 } from "lucide-react";
+import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
 export default function ProfilePage() {
   const params = useParams();
   const alias = decodeURIComponent(params.alias as string);
-  
+
   const [stats, setStats] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState("");
   const [savingAvatar, setSavingAvatar] = useState(false);
-  
-  // Safely compute isOwner for client-side rendering
+
   const [isOwner, setIsOwner] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
@@ -29,7 +28,6 @@ export default function ProfilePage() {
         const { data } = await supabase.auth.getSession();
         currentUser = data.session?.user?.user_metadata?.alias;
       }
-      
       if (currentUser && currentUser.toLowerCase() === alias.toLowerCase()) {
         setIsOwner(true);
       }
@@ -37,33 +35,28 @@ export default function ProfilePage() {
     checkOwner();
 
     const fetchProfile = async () => {
-      // Fetch stats from leaderboard view
       const { data: lbData } = await supabase
         .from("leaderboard")
         .select("*")
         .eq("alias", alias)
         .single();
-      
-      // Fetch most recent prediction to grab avatar_url (if available)
+
       const { data: recentPreds } = await supabase
         .from("predictions")
         .select("avatar_url, created_at, prediction, score_prediction, justification, likes, countered_ai, matches(home_team, away_team)")
         .eq("alias", alias)
         .order("created_at", { ascending: false });
 
-      // If it's the owner's profile, always trust their local avatar first
       const currentLocUser = localStorage.getItem("pitchsense_alias");
-      const localAvatar = (currentLocUser && currentLocUser.toLowerCase() === alias.toLowerCase()) ? localStorage.getItem("pitchsense_avatar_url") : null;
-      
+      const localAvatar = (currentLocUser && currentLocUser.toLowerCase() === alias.toLowerCase())
+        ? localStorage.getItem("pitchsense_avatar_url")
+        : null;
+
       const dbAvatar = recentPreds && recentPreds.length > 0 ? recentPreds[0].avatar_url : null;
 
       if (lbData) {
-        setStats({
-          ...lbData,
-          avatar_url: localAvatar || dbAvatar
-        });
+        setStats({ ...lbData, avatar_url: localAvatar || dbAvatar });
       } else {
-        // Even if lbData is null, we should still set stats so the avatar preview saves!
         setStats({
           total_score: 0,
           correct_predictions: 0,
@@ -73,11 +66,8 @@ export default function ProfilePage() {
           avatar_url: localAvatar || dbAvatar
         });
       }
-      
-      if (recentPreds) {
-        setHistory(recentPreds);
-      }
-      
+
+      if (recentPreds) setHistory(recentPreds);
       setLoading(false);
     };
 
@@ -87,7 +77,6 @@ export default function ProfilePage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
@@ -96,26 +85,16 @@ export default function ProfilePage() {
         const MAX_SIZE = 150;
         let width = img.width;
         let height = img.height;
-
         if (width > height) {
-          if (width > MAX_SIZE) {
-            height *= MAX_SIZE / width;
-            width = MAX_SIZE;
-          }
+          if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
         } else {
-          if (height > MAX_SIZE) {
-            width *= MAX_SIZE / height;
-            height = MAX_SIZE;
-          }
+          if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
         }
-
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx?.drawImage(img, 0, 0, width, height);
-
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-        setNewAvatarUrl(dataUrl);
+        setNewAvatarUrl(canvas.toDataURL("image/jpeg", 0.8));
       };
       img.src = event.target?.result as string;
     };
@@ -124,30 +103,11 @@ export default function ProfilePage() {
 
   const saveAvatar = async () => {
     setSavingAvatar(true);
-    // Update local storage
     localStorage.setItem("pitchsense_avatar_url", newAvatarUrl);
-    
-    // Dispatch a global event so the Dashboard immediately updates!
     window.dispatchEvent(new CustomEvent("avatarUpdate", { detail: newAvatarUrl }));
-    
-    // Sync to Supabase auth metadata so it persists across devices
-    await supabase.auth.updateUser({
-      data: { avatar_url: newAvatarUrl }
-    });
-
-    
-    // Update all previous predictions in DB
-    await supabase
-      .from("predictions")
-      .update({ avatar_url: newAvatarUrl })
-      .eq("alias", alias);
-      
-    // Update all previous replies in DB
-    await supabase
-      .from("replies")
-      .update({ avatar_url: newAvatarUrl })
-      .eq("alias", alias);
-      
+    await supabase.auth.updateUser({ data: { avatar_url: newAvatarUrl } });
+    await supabase.from("predictions").update({ avatar_url: newAvatarUrl }).eq("alias", alias);
+    await supabase.from("replies").update({ avatar_url: newAvatarUrl }).eq("alias", alias);
     setStats({ ...stats, avatar_url: newAvatarUrl });
     setIsEditingAvatar(false);
     setSavingAvatar(false);
@@ -155,36 +115,30 @@ export default function ProfilePage() {
 
   const handleDeleteAccount = async () => {
     setDeletingAccount(true);
-    // Call the RPC function to delete the auth.users row
     const { error } = await supabase.rpc('delete_my_account');
-    
     if (error) {
       alert("Failed to delete account: " + error.message);
       setDeletingAccount(false);
       return;
     }
-    
-    // Clear local storage and log out
     localStorage.removeItem("pitchsense_alias");
     localStorage.removeItem("pitchsense_avatar_url");
     await supabase.auth.signOut();
-    
-    // Redirect to home
     window.location.href = "/";
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:0ms]"></div>
+          <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:150ms]"></div>
+          <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:300ms]"></div>
+        </div>
       </div>
     );
   }
 
-  // Render the profile even if empty
-
-
-  // Fallback stats for owners with no predictions
   const displayStats = stats || {
     total_score: 0,
     correct_predictions: 0,
@@ -195,167 +149,167 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-5xl mx-auto pb-24">
-      <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8">
-        <ArrowLeft size={20} /> Back to Dashboard
+    <main className="min-h-screen max-w-4xl mx-auto px-4 md:px-8 py-8 pb-24">
+
+      {/* Back Link */}
+      <Link href="/" className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-white transition-colors mb-8 text-sm font-medium group">
+        <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" /> Back to Dashboard
       </Link>
 
-      <div className="premium-glass rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 p-6 md:p-12 mb-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -ml-20 -mb-20"></div>
-        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
-          <div className="relative">
+      {/* HERO PROFILE CARD */}
+      <div className="bento-card rounded-3xl p-6 md:p-10 mb-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#AEFC00]/5 via-transparent to-[#3B82F6]/5 pointer-events-none" />
+
+        <div className="relative flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+          {/* Avatar */}
+          <div className="relative shrink-0">
             {(isEditingAvatar && newAvatarUrl) || displayStats?.avatar_url ? (
-              <img src={(isEditingAvatar && newAvatarUrl) ? newAvatarUrl : displayStats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-white/10 shadow-[0_0_30px_rgba(16,185,129,0.3)] bg-black/40 relative z-10" />
+              <img
+                src={(isEditingAvatar && newAvatarUrl) ? newAvatarUrl : displayStats.avatar_url}
+                alt={alias}
+                className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover border-2 border-[var(--border-lime)] bg-black/40"
+              />
             ) : (
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-[0_0_30px_rgba(16,185,129,0.3)] text-6xl border-4 border-white/10 relative z-10">
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-3xl bg-gradient-to-br from-[#AEFC00]/20 to-[#3B82F6]/20 flex items-center justify-center text-5xl border-2 border-[var(--border-lime)]">
                 ⚽
               </div>
             )}
-            
-            {/* Edit Avatar Overlay */}
             {isOwner && (
-              <button 
+              <button
                 onClick={() => setIsEditingAvatar(!isEditingAvatar)}
-                className="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-blue-600 hover:bg-blue-500 text-white p-2 md:p-3 rounded-full shadow-xl border-2 border-slate-900 transition-colors z-20"
+                className="absolute -bottom-2 -right-2 bg-[#AEFC00] hover:opacity-90 text-black p-2 rounded-xl shadow-lg transition-all"
                 title="Edit Avatar"
               >
-                <Edit2 size={18} />
+                <Edit2 size={15} />
               </button>
             )}
-            
-            {/* Top Pundit Badge Overlay */}
             {displayStats?.total_score >= 10 && (
-              <div className="absolute -bottom-2 -left-2 md:-left-4 bg-yellow-500 text-black font-black text-xs px-3 py-1.5 rounded-full border-2 border-slate-900 shadow-lg flex items-center gap-1">
-                <Trophy size={14} /> VIP
+              <div className="absolute -top-2 -right-2 bg-[#AEFC00] text-black font-black text-[10px] px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                <Trophy size={11} /> VIP
               </div>
             )}
           </div>
 
-          <div className="text-center md:text-left flex-1 relative z-10">
-            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2 drop-shadow-lg">{alias}</h1>
-            <p className="text-slate-400 text-xl flex items-center justify-center md:justify-start gap-2">
-              <Trophy className="text-yellow-400" size={24} />
-              <span className="font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">{displayStats?.total_score || 0} Total Points</span>
-            </p>
+          {/* Info */}
+          <div className="text-center md:text-left flex-1 min-w-0">
+            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-1 truncate">{alias}</h1>
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-5">
+              <Trophy className="text-[#AEFC00]" size={18} />
+              <span className="text-xl font-black text-[#AEFC00]">{displayStats?.total_score || 0}</span>
+              <span className="text-[var(--text-muted)] font-semibold text-sm">total points</span>
+            </div>
 
-            {/* Badges Container */}
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-6">
-              {isOwner && (
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors shadow-md ml-auto md:ml-0"
-                  >
-                    Delete Account
-                  </button>
-              )}
+            {/* Achievement Badges */}
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
               {displayStats?.correct_predictions > 0 && (
-                <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
-                  <Target size={16} className="text-emerald-400" />
-                  <span className="text-slate-300 font-medium">Accurate ({displayStats.correct_predictions})</span>
+                <div className="flex items-center gap-1.5 text-xs font-semibold bg-[#AEFC00]/10 border border-[var(--border-lime)] text-[#AEFC00] px-3 py-1.5 rounded-full">
+                  <Target size={13} /> {displayStats.correct_predictions} Accurate
                 </div>
               )}
               {displayStats?.mastermind_predictions > 0 && (
-                <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
-                  <Brain size={16} className="text-purple-400" />
-                  <span className="text-slate-300 font-medium">Mastermind ({displayStats.mastermind_predictions})</span>
+                <div className="flex items-center gap-1.5 text-xs font-semibold bg-purple-500/10 border border-purple-500/20 text-purple-400 px-3 py-1.5 rounded-full">
+                  <Brain size={13} /> {displayStats.mastermind_predictions} Mastermind
                 </div>
               )}
               {displayStats?.sniper_predictions > 0 && (
-                <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
-                  <Crosshair size={16} className="text-orange-400" />
-                  <span className="text-slate-300 font-medium">Sniper ({displayStats.sniper_predictions})</span>
+                <div className="flex items-center gap-1.5 text-xs font-semibold bg-orange-500/10 border border-orange-500/20 text-orange-400 px-3 py-1.5 rounded-full">
+                  <Crosshair size={13} /> {displayStats.sniper_predictions} Sniper
                 </div>
               )}
               {displayStats?.total_likes > 0 && (
-                <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
-                  <Heart size={16} className="text-pink-400" />
-                  <span className="text-slate-300 font-medium">Respected ({displayStats.total_likes})</span>
+                <div className="flex items-center gap-1.5 text-xs font-semibold bg-pink-500/10 border border-pink-500/20 text-pink-400 px-3 py-1.5 rounded-full">
+                  <Heart size={13} /> {displayStats.total_likes} Liked
                 </div>
               )}
+              {isOwner && (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex items-center gap-1.5 text-xs font-semibold bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1.5 rounded-full hover:bg-red-500/20 transition-colors"
+                >
+                  Delete Account
+                </button>
+              )}
             </div>
-            
-            {isEditingAvatar && (
-              <div className="mt-6 p-4 bg-slate-900/80 rounded-xl border border-slate-700">
-                <h3 className="text-white font-bold mb-3 text-sm">Choose an Avatar:</h3>
-                <div className="flex flex-wrap gap-3 mb-4">
-                  {[
-                    "/avatars/shirt-red-white.svg",
-                    "/avatars/shirt-blue-white.svg",
-                    "/avatars/shirt-green-white.svg",
-                    "/avatars/shirt-white-black.svg",
-                    "/avatars/shirt-yellow-blue.svg",
-                    "/avatars/shirt-black-gold.svg",
-                    "/avatars/shirt-purple-white.svg",
-                    "/avatars/shirt-orange-black.svg",
-                  ].map((url, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setNewAvatarUrl(url)}
-                      className={`w-12 h-12 rounded-full overflow-hidden border-2 transition-all hover:scale-110 ${
-                        newAvatarUrl === url ? "border-emerald-400 scale-110 shadow-[0_0_15px_rgba(52,211,153,0.5)]" : "border-slate-700 hover:border-slate-500"
-                      }`}
-                    >
-                      <img src={url} alt={`Avatar option ${idx + 1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-                
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2 text-sm text-slate-400">
-                    <span className="flex-1 h-px bg-slate-800"></span>
-                    <span>OR UPLOAD CUSTOM</span>
-                    <span className="flex-1 h-px bg-slate-800"></span>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="block w-full text-sm text-slate-400
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-emerald-600 file:text-white
-                      hover:file:bg-emerald-500 transition-all cursor-pointer"
-                  />
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-slate-800">
-
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => setIsEditingAvatar(false)}
-                      className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      onClick={saveAvatar}
-                      disabled={savingAvatar || !newAvatarUrl}
-                      className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
-                    >
-                      {savingAvatar ? "Saving..." : "Save"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Avatar Editor */}
+        {isEditingAvatar && (
+          <div className="relative mt-6 pt-6 border-t border-[var(--border-subtle)]">
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4">Choose Avatar</p>
+            <div className="flex flex-wrap gap-3 mb-5">
+              {[
+                "/avatars/shirt-red-white.svg",
+                "/avatars/shirt-blue-white.svg",
+                "/avatars/shirt-green-white.svg",
+                "/avatars/shirt-white-black.svg",
+                "/avatars/shirt-yellow-blue.svg",
+                "/avatars/shirt-black-gold.svg",
+                "/avatars/shirt-purple-white.svg",
+                "/avatars/shirt-orange-black.svg",
+              ].map((url, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setNewAvatarUrl(url)}
+                  className={`w-12 h-12 rounded-2xl overflow-hidden border-2 transition-all hover:scale-110 ${
+                    newAvatarUrl === url
+                      ? "border-[#AEFC00] scale-110 shadow-[0_0_12px_rgba(174,252,0,0.4)]"
+                      : "border-[var(--border-medium)] hover:border-[var(--border-lime)]"
+                  }`}
+                >
+                  <img src={url} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+
+            <div className="mb-5">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex-1 h-px bg-[var(--border-subtle)]"></div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">or upload custom</span>
+                <div className="flex-1 h-px bg-[var(--border-subtle)]"></div>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="block w-full text-sm text-[var(--text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#AEFC00] file:text-black hover:file:opacity-90 transition-all cursor-pointer"
+              />
+            </div>
+
+            <div className="flex gap-2 pt-4 border-t border-[var(--border-subtle)]">
+              <button
+                onClick={() => setIsEditingAvatar(false)}
+                className="btn-ghost flex-1 py-2.5 rounded-2xl text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveAvatar}
+                disabled={savingAvatar || !newAvatarUrl}
+                className="btn-lime flex-1 py-2.5 rounded-2xl text-sm"
+              >
+                {savingAvatar ? "Saving..." : "Save Avatar"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* DELETE CONFIRMATION MODAL */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-slate-900 border border-red-900/50 p-6 rounded-2xl max-w-md w-full shadow-2xl relative">
-            <h3 className="text-2xl font-black text-white mb-2 text-red-500">Delete Account?</h3>
-            <p className="text-slate-300 mb-6">
-              This action is permanent and irreversible. All your predictions, likes, and replies will be wiped immediately. Are you absolutely sure?
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-up">
+          <div className="bento-card rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-red-500/20">
+            <div className="w-10 h-10 rounded-2xl bg-red-500/20 flex items-center justify-center mb-4">
+              <span className="text-red-400 text-xl">⚠</span>
+            </div>
+            <h3 className="text-xl font-black text-white mb-2">Delete Account?</h3>
+            <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-6">
+              This is permanent and irreversible. All your predictions, likes, and replies will be wiped immediately.
             </p>
-            <div className="flex gap-3 justify-end">
+            <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 rounded-lg font-bold text-slate-300 hover:bg-slate-800 transition-colors"
+                className="btn-ghost flex-1 py-2.5 rounded-2xl text-sm"
                 disabled={deletingAccount}
               >
                 Cancel
@@ -363,60 +317,64 @@ export default function ProfilePage() {
               <button
                 onClick={handleDeleteAccount}
                 disabled={deletingAccount}
-                className="px-4 py-2 rounded-lg font-bold bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="flex-1 py-2.5 rounded-2xl text-sm font-bold bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50"
               >
-                {deletingAccount ? "Deleting..." : "Permanently Delete"}
+                {deletingAccount ? "Deleting..." : "Delete Forever"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Calendar className="text-blue-400" /> Prediction History
-        </h2>
+      {/* PREDICTION HISTORY */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="lime-dot"></div>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text-secondary)]">Prediction History</h2>
+        <div className="h-px bg-[var(--border-subtle)] flex-grow"></div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {history.length > 0 ? (
           history.map((pred, i) => (
-            <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-5 transition-transform hover:scale-[1.01]">
+            <div key={i} className="bento-card rounded-3xl p-5 transition-all hover:-translate-y-0.5">
               <div className="flex flex-col md:flex-row justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{new Date(pred.created_at).toLocaleDateString()}</span>
-                  </div>
-                  <h3 className="font-bold text-lg text-white mb-2">
-                    {pred.matches.home_team} vs {pred.matches.away_team}
+                <div className="flex-1 min-w-0">
+                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">
+                    {new Date(pred.created_at).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                  </span>
+                  <h3 className="font-bold text-base text-white mt-1 mb-3">
+                    {pred.matches.home_team} <span className="text-[var(--text-muted)] font-normal text-sm">vs</span> {pred.matches.away_team}
                   </h3>
-                  <div className="flex items-center gap-2 text-sm mb-4">
-                    <span className="text-slate-400">Predicted:</span>
-                    <span className="font-bold text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-900/50">
-                      {pred.prediction} ({pred.score_prediction})
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="text-xs text-[var(--text-muted)] font-medium">Predicted:</span>
+                    <span className="font-bold text-xs text-[#AEFC00] bg-[#AEFC00]/10 border border-[var(--border-lime)] px-2.5 py-1 rounded-full">
+                      {pred.prediction} · {pred.score_prediction}
                     </span>
                     {pred.countered_ai && (
-                      <span className="flex items-center gap-1 text-xs font-bold text-purple-400 bg-purple-950/30 px-2 py-0.5 rounded border border-purple-900/50 ml-2">
-                        <Brain size={12} /> Countered AI
+                      <span className="flex items-center gap-1 text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-full">
+                        <Brain size={11} /> Countered AI
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-300 text-sm italic border-l-2 border-slate-700 pl-3 py-1 bg-slate-900/30 rounded-r-lg">
-                    "{pred.justification}"
-                  </p>
+                  {pred.justification && (
+                    <p className="text-[var(--text-secondary)] text-sm italic border-l-2 border-[var(--border-lime)] pl-3 py-1 leading-relaxed">
+                      "{pred.justification}"
+                    </p>
+                  )}
                 </div>
-                <div className="flex items-center md:items-start justify-between md:flex-col gap-4 min-w-[100px] border-t md:border-t-0 md:border-l border-slate-800 pt-4 md:pt-0 md:pl-4">
-                  <div className="flex items-center gap-1.5 text-slate-400">
-                    <Heart size={16} className={pred.likes > 0 ? "text-pink-500 fill-pink-500" : ""} /> 
-                    <span className="font-bold">{pred.likes || 0}</span>
+                <div className="flex items-center md:items-end justify-between md:flex-col gap-2 border-t md:border-t-0 md:border-l border-[var(--border-subtle)] pt-3 md:pt-0 md:pl-5 shrink-0">
+                  <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
+                    <Heart size={15} className={pred.likes > 0 ? "text-pink-500 fill-pink-500" : ""} />
+                    <span className="font-bold text-sm text-white">{pred.likes || 0}</span>
                   </div>
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center p-8 bg-slate-900/50 rounded-xl border border-slate-800">
-            <p className="text-slate-400">No predictions made yet.</p>
+          <div className="bento-card rounded-3xl p-12 text-center">
+            <p className="text-[var(--text-secondary)] font-semibold">No predictions yet.</p>
+            <p className="text-[var(--text-muted)] text-sm mt-1">Head to the Hub to make your first call!</p>
           </div>
         )}
       </div>

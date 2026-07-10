@@ -131,7 +131,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                           ⚽
                         </div>
                       )}
-                      <span className={`font-black text-lg uppercase tracking-widest group-hover:underline ${userBadges[leader.alias]?.colorClass || 'text-[#00f3ff]'}`}>
+                      <span className={`font-bold text-lg group-hover:underline ${userBadges[leader.alias]?.colorClass || 'text-white'}`}>
                         {leader.alias} {userBadges[leader.alias]?.emoji}
                       </span>
                     </Link>
