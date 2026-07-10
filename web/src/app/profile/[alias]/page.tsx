@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Calendar } from "lucide-react";
+import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Calendar, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -195,9 +195,20 @@ export default function ProfilePage() {
               </div>
             )}
             
+            {/* Edit Avatar Overlay */}
+            {isOwner && (
+              <button 
+                onClick={() => setIsEditingAvatar(!isEditingAvatar)}
+                className="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-blue-600 hover:bg-blue-500 text-white p-2 md:p-3 rounded-full shadow-xl border-2 border-slate-900 transition-colors z-20"
+                title="Edit Avatar"
+              >
+                <Edit2 size={18} />
+              </button>
+            )}
+            
             {/* Top Pundit Badge Overlay */}
             {displayStats?.total_score >= 10 && (
-              <div className="absolute -bottom-2 -right-2 bg-yellow-500 text-black font-black text-xs px-3 py-1.5 rounded-full border-2 border-slate-900 shadow-lg flex items-center gap-1">
+              <div className="absolute -bottom-2 -left-2 md:-left-4 bg-yellow-500 text-black font-black text-xs px-3 py-1.5 rounded-full border-2 border-slate-900 shadow-lg flex items-center gap-1">
                 <Trophy size={14} /> VIP
               </div>
             )}
@@ -213,20 +224,12 @@ export default function ProfilePage() {
             {/* Badges Container */}
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-6">
               {isOwner && (
-                <>
-                  <button
-                    onClick={() => setIsEditingAvatar(!isEditingAvatar)}
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors shadow-md"
-                  >
-                    Edit Avatar
-                  </button>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     className="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors shadow-md ml-auto md:ml-0"
                   >
                     Delete Account
                   </button>
-                </>
               )}
               {displayStats?.correct_predictions > 0 && (
                 <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
