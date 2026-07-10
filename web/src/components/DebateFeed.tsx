@@ -181,8 +181,8 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
   if (loading) return <div className="text-center py-10 text-slate-400">Loading debate...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
-      <div className="flex justify-between items-center p-4 border-b border-slate-800/80 bg-slate-900/40">
+    <div className="max-w-3xl mx-auto premium-glass rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+      <div className="flex justify-between items-center p-5 border-b border-white/5 bg-black/40">
         <h2 className="text-lg font-bold text-white hidden md:flex items-center gap-2">
           <MessageSquare className="text-blue-500" size={18} /> Match Debates
         </h2>
@@ -212,7 +212,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
           const isLastPost = index === predictions.length - 1;
 
           return (
-            <div key={p.id} className={`p-4 md:p-5 hover:bg-slate-800/30 transition-colors flex flex-col ${!isLastPost ? 'border-b border-slate-800/80' : ''}`}>
+            <div key={p.id} className="p-4 md:p-6 flex gap-3 md:gap-5 hover:bg-white/5 transition-colors border-b border-white/5 group">
               
               {/* PARENT POST */}
               <div className="flex gap-3 md:gap-4">
@@ -244,7 +244,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                   </div>
 
                   {/* Match Context Badge */}
-                  <div className="inline-flex items-center gap-2 bg-slate-900/40 border border-slate-700/50 px-2.5 py-1 rounded-md mb-2.5 mt-0.5">
+                  <div className="inline-flex items-center gap-2 bg-black/40 border border-white/5 px-3 py-1.5 rounded-lg mb-3 mt-1 shadow-inner">
                     <div className="flex -space-x-1.5 shrink-0">
                       {match.home_logo ? (
                         <img src={match.home_logo} className="w-4 h-4 rounded-full bg-slate-800 object-contain p-0.5" />
@@ -385,7 +385,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                           value={replyContent}
                           onChange={(e) => setReplyContent(e.target.value)}
                           placeholder={currentUserAlias ? `Replying as ${currentUserAlias}...` : "Write a reply..."}
-                          className="flex-1 bg-slate-900/50 border border-slate-700 rounded-full px-4 py-1.5 md:py-2 text-[13px] md:text-sm text-white focus:outline-none focus:border-blue-500 shadow-inner"
+                          className="flex-1 bg-black/40 border border-white/10 rounded-full px-5 py-2 md:py-2.5 text-[13px] md:text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 shadow-inner transition-all"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') handleReplySubmit(p.id);
                           }}

@@ -200,13 +200,15 @@ export default function ProfilePage() {
         <ArrowLeft size={20} /> Back to Dashboard
       </Link>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm p-6 md:p-10 mb-8">
+      <div className="premium-glass rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 p-6 md:p-12 mb-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -ml-20 -mb-20"></div>
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
           <div className="relative">
             {(isEditingAvatar && newAvatarUrl) || displayStats?.avatar_url ? (
-              <img src={(isEditingAvatar && newAvatarUrl) ? newAvatarUrl : displayStats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-slate-700 shadow-xl bg-slate-900" />
+              <img src={(isEditingAvatar && newAvatarUrl) ? newAvatarUrl : displayStats.avatar_url} alt={alias} className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-white/10 shadow-[0_0_30px_rgba(16,185,129,0.3)] bg-black/40 relative z-10" />
             ) : (
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-xl text-6xl border-4 border-slate-700">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-[0_0_30px_rgba(16,185,129,0.3)] text-6xl border-4 border-white/10 relative z-10">
                 ⚽
               </div>
             )}
@@ -230,11 +232,11 @@ export default function ProfilePage() {
             )}
           </div>
 
-          <div className="text-center md:text-left flex-1">
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">{alias}</h1>
-            <p className="text-slate-400 text-lg flex items-center justify-center md:justify-start gap-2">
-              <Trophy className="text-yellow-400" size={20} />
-              <span className="font-bold text-emerald-400">{displayStats?.total_score || 0} Total Points</span>
+          <div className="text-center md:text-left flex-1 relative z-10">
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2 drop-shadow-lg">{alias}</h1>
+            <p className="text-slate-400 text-xl flex items-center justify-center md:justify-start gap-2">
+              <Trophy className="text-yellow-400" size={24} />
+              <span className="font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">{displayStats?.total_score || 0} Total Points</span>
             </p>
 
             {/* Badges Container */}

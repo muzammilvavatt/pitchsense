@@ -93,9 +93,9 @@ export default function Home() {
       ) : (
         <>
           <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3 group cursor-default">
-              <div className="bg-slate-800 p-2 rounded-xl shadow-lg border border-slate-700 group-hover:scale-105 transition-transform duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex items-center gap-4 group cursor-default">
+              <div className="premium-glass p-3 rounded-2xl animate-pulse-neon transition-transform duration-500 group-hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 16l-4-3 1.5-5h5L16 13z" />
                   <path d="M8 13l-6 2" />
@@ -105,8 +105,8 @@ export default function Home() {
                   <path d="M12 16v6" />
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white flex items-center gap-1">
-                PitchSense<span className="text-emerald-500">.</span>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-white via-emerald-100 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                PitchSense<span className="text-emerald-400 animate-pulse">.</span>
               </h1>
             </div>
             <div className="flex items-center gap-4">

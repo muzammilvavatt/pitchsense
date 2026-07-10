@@ -26,10 +26,10 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
+    <div className="min-h-screen text-slate-200">
       {/* Mobile Top Header */}
-      <header className="md:hidden sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 p-4 flex justify-between items-center shadow-lg">
-        <h1 className="text-xl font-black italic tracking-tighter bg-gradient-to-br from-emerald-400 to-blue-500 bg-clip-text text-transparent">PitchSense</h1>
+      <header className="md:hidden sticky top-0 z-40 premium-glass p-4 flex justify-between items-center">
+        <h1 className="text-2xl font-black italic tracking-tighter bg-gradient-to-br from-emerald-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">PitchSense</h1>
         {isGuest ? (
           <button onClick={onLoginClick} className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-md transition-colors">
             Sign In
@@ -49,7 +49,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
         
         {/* Left Sidebar (Desktop Only) */}
         <aside className="hidden md:flex flex-col w-64 shrink-0 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div className="premium-glass rounded-2xl p-6">
             {isGuest ? (
               <div className="text-center">
                 <div className="w-16 h-16 mx-auto rounded-full bg-slate-800 flex items-center justify-center text-slate-500 shadow-lg border-2 border-slate-700 mb-3">
@@ -73,7 +73,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
             )}
           </div>
 
-          <nav className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col p-3 gap-2">
+          <nav className="premium-glass rounded-2xl overflow-hidden flex flex-col p-3 gap-2">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -113,8 +113,9 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
           <Leaderboard compact={true} />
           
           {/* Add a quick pitch for PitchSense */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <h3 className="font-bold text-lg mb-2 text-white">About PitchSense</h3>
+          <div className="premium-glass rounded-2xl p-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+            <h3 className="font-black text-lg mb-2 text-white flex items-center gap-2"><Trophy size={18} className="text-emerald-400" /> About PitchSense</h3>
             <p className="text-sm text-slate-400 leading-relaxed">
               Predict scores, debate with AI analysts, and climb the ranks. Only matches kicking off within 24 hours appear in the Hub.
             </p>
@@ -123,7 +124,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 flex justify-around p-2 z-50 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.5)] safe-area-bottom">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 premium-glass flex justify-around p-2 z-50 rounded-t-3xl border-b-0">
         {navItems.map((item) => (
           <button
             key={item.id}

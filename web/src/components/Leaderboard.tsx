@@ -74,8 +74,8 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
 
   if (compact) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
-        <div className="bg-slate-800/80 p-3 border-b border-slate-700 flex items-center gap-2">
+      <div className="premium-glass rounded-2xl overflow-hidden">
+        <div className="bg-black/40 p-3 border-b border-white/5 flex items-center gap-2">
           <Trophy className="text-yellow-400" size={16} />
           <h3 className="font-bold text-sm">Top Pundits</h3>
         </div>
@@ -107,8 +107,8 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
-        <div className="bg-slate-800/80 p-4 border-b border-slate-700 flex items-center gap-2">
+      <div className="premium-glass rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10">
+        <div className="bg-black/40 p-5 border-b border-white/5 flex items-center gap-3">
           <Trophy className="text-yellow-400" size={20} />
           <h3 className="font-bold text-lg">Top Pundits</h3>
         </div>
@@ -116,10 +116,10 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
         {/* Mobile View (Cards) */}
         <div className="md:hidden flex flex-col divide-y divide-slate-800/50">
           {leaders.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">Leaderboard is empty. Start predicting!</div>
+            <div className="p-8 text-center text-slate-500 font-medium">Leaderboard is empty. Start predicting!</div>
           ) : (
             leaders.map((leader, idx) => (
-              <div key={leader.alias} className="p-4 flex flex-col gap-3 bg-slate-900/20">
+              <div key={leader.alias} className="p-5 flex flex-col gap-4 hover:bg-white/5 transition-colors">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
                     <span className="font-black text-slate-500 text-lg">#{idx + 1}</span>
@@ -136,9 +136,9 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                       </span>
                     </Link>
                   </div>
-                  <div className="font-black text-emerald-400 text-xl">{leader.total_score || 0} pts</div>
+                  <div className="font-black text-emerald-400 text-2xl drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">{leader.total_score || 0} pts</div>
                 </div>
-                <div className="grid grid-cols-4 gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                <div className="grid grid-cols-4 gap-2 bg-black/40 p-3 rounded-xl border border-white/5 shadow-inner">
                   <div className="text-center">
                     <div className="text-xs text-slate-500 mb-1"><Target size={14} className="mx-auto"/></div>
                     <div className="font-bold text-slate-300">{leader.correct_predictions || 0}</div>
@@ -165,7 +165,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-900/50 text-slate-400 text-sm border-b border-slate-800">
+              <tr className="bg-black/40 text-slate-300 text-sm border-b border-white/5">
                 <th className="p-4 font-medium">Rank</th>
                 <th className="p-4 font-medium">Pundit Alias</th>
                 <th className="p-4 font-medium">
@@ -192,7 +192,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                 </tr>
               ) : (
                 leaders.map((leader, idx) => (
-                  <tr key={leader.alias} className="hover:bg-slate-800/30 transition-colors group">
+                  <tr key={leader.alias} className="hover:bg-white/5 transition-colors group">
                     <td className="p-4 font-bold text-slate-500 group-hover:text-white">#{idx + 1}</td>
                     <td className="p-4 font-bold">
                       <Link href={`/profile/${leader.alias}`} className="flex items-center gap-2 group/link">

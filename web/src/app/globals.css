@@ -16,8 +16,13 @@
 
 body {
   color: var(--foreground);
-  background-color: var(--background);
-  background-image: linear-gradient(rgba(10, 15, 30, 0.92), rgba(10, 15, 30, 0.92)), url('/bg-worldcup.png');
+  background-color: #030712;
+  /* Deep purple/blue burn over the worldcup background for an ultra-premium athletic vibe */
+  background-image: 
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 40%),
+    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.08), transparent 40%),
+    linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.95)), 
+    url('/bg-worldcup.png');
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
@@ -25,10 +30,18 @@ body {
   min-height: 100vh;
 }
 
-.glass-card {
-  background-color: #111827;
-  border: 1px solid #1E293B;
-  border-radius: 1rem;
+.premium-glass {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+.premium-glass:hover {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);
 }
 
 /* Animations */
@@ -37,8 +50,17 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes pulseNeon {
+  0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-neon {
+  animation: pulseNeon 2s infinite;
 }
 
 /* Hide scrollbar completely but allow scrolling */

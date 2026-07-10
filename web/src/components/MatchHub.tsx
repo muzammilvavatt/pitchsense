@@ -177,9 +177,9 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
               const kickoff = new Date(match.kickoff).toLocaleString();
 
               return (
-          <div key={match.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm transition-colors hover:border-slate-700">
+          <div key={match.id} className="premium-glass rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_8px_32px_rgba(16,185,129,0.15)] hover:-translate-y-1">
             {/* Clean Match Header */}
-            <div className="p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 border-b border-slate-800/50 bg-slate-900/50">
+            <div className="p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 border-b border-white/5 bg-black/20">
               
               {/* Home Team */}
               <div className="flex-1 flex items-center justify-end gap-4 w-full md:w-auto">
@@ -195,11 +195,11 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
 
               {/* Center Match Info */}
               <div className="flex flex-col items-center justify-center shrink-0 w-24">
-                <div className="text-sm font-medium text-slate-500 mb-1">VS</div>
-                <div className="text-xs text-emerald-500 font-semibold bg-emerald-500/10 px-3 py-1 rounded-full whitespace-nowrap">
+                <div className="text-sm font-bold text-slate-400 mb-1">VS</div>
+                <div className="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full whitespace-nowrap animate-pulse-neon">
                   {kickoff.split(', ')[1]} {/* Just show time */}
                 </div>
-                <div className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider">{kickoff.split(', ')[0]}</div>
+                <div className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider font-semibold">{kickoff.split(', ')[0]}</div>
               </div>
 
               {/* Away Team */}
@@ -218,11 +218,11 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
             <div className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
               {/* AI Analysis */}
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-blue-400 font-medium pb-2 border-b border-slate-700">
-                  <Bot size={18} /> Machine Insight
+                <div className="flex items-center gap-2 text-blue-400 font-bold pb-2 border-b border-white/10">
+                  <Bot size={18} className="animate-pulse" /> Machine Insight
                 </div>
                 {insights[match.id] ? (
-                  <div className="text-slate-300 leading-relaxed text-sm bg-slate-900 p-5 rounded-lg border border-slate-800 font-sans prose prose-invert prose-sm max-w-none">
+                  <div className="text-slate-300 leading-relaxed text-sm bg-black/20 p-5 rounded-xl border border-white/5 font-sans prose prose-invert prose-sm max-w-none">
                     <ReactMarkdown>{insights[match.id].insight}</ReactMarkdown>
                   </div>
                 ) : (
@@ -232,15 +232,16 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
 
               {/* Human Prediction Form */}
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-emerald-400 font-medium pb-2 border-b border-slate-700">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold pb-2 border-b border-white/10">
                   <User size={18} /> Your Prediction
                 </div>
                 
                 {pred.locked ? (
-                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 text-center space-y-2">
-                    <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={24} />
-                    <h4 className="text-white font-bold">Prediction Locked</h4>
-                    <p className="text-slate-400 text-sm">You picked <span className="font-bold text-white">{pred.winner} ({pred.score})</span></p>
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5 text-center space-y-2 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                    <CheckCircle2 className="mx-auto text-emerald-400 mb-2 relative z-10" size={28} />
+                    <h4 className="text-white font-bold text-lg relative z-10">Prediction Locked</h4>
+                    <p className="text-emerald-100/70 text-sm relative z-10">You picked <span className="font-bold text-white">{pred.winner} ({pred.score})</span></p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -248,7 +249,7 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                       <select
                         value={pred.winner}
                         onChange={(e) => handlePredictionChange(match.id, "winner", e.target.value)}
-                        className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm focus:ring-1 focus:ring-emerald-500 outline-none w-full"
+                        className="bg-black/40 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none w-full text-white transition-all shadow-inner"
                       >
                         <option value="">Select Winner</option>
                         <option value={match.home_team}>{match.home_team}</option>
@@ -260,19 +261,19 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                         placeholder="Score (e.g. 2-1)"
                         value={pred.score}
                         onChange={(e) => handlePredictionChange(match.id, "score", e.target.value)}
-                        className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm focus:ring-1 focus:ring-emerald-500 outline-none w-full"
+                        className="bg-black/40 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none w-full text-white transition-all shadow-inner"
                       />
                     </div>
                     <textarea
                       placeholder="Add tactical justification (Optional)"
                       value={pred.justification}
                       onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm min-h-[100px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
+                      className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm min-h-[100px] focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none resize-none text-white transition-all shadow-inner"
                     />
                             <button
                               onClick={() => submitPrediction(match.id)}
                               disabled={!pred.winner || !pred.score || submitting === match.id}
-                              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:hover:bg-emerald-600 text-white font-bold py-2.5 rounded-lg transition-colors"
+                              className="w-full bg-gradient-to-r from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-emerald-300 disabled:opacity-50 disabled:from-emerald-700 disabled:to-emerald-600 text-white font-black py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transform hover:-translate-y-0.5"
                             >
                               {submitting === match.id ? "Locking in..." : "Submit Prediction"}
                             </button>
