@@ -66,3 +66,31 @@ CREATE TABLE replies (
 );
 
 CREATE INDEX idx_replies_prediction_id ON replies(prediction_id);
+
+-- Prediction Likes Table
+CREATE TABLE prediction_likes (
+    prediction_id UUID NOT NULL REFERENCES predictions(id) ON DELETE CASCADE,
+    alias VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    PRIMARY KEY (prediction_id, alias)
+);
+
+-- Function to update predictions like count
+CREATE OR REPLACE FUNCTION update_prediction_likes_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        UPDATE predictions SET likes = likes + 1 WHERE id = NEW.prediction_id;
+        RETURN NEW;
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE predictions SET likes = likes - 1 WHERE id = OLD.prediction_id;
+        RETURN OLD;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger for prediction likes
+CREATE TRIGGER trigger_update_prediction_likes
+AFTER INSERT OR DELETE ON prediction_likes
+FOR EACH ROW EXECUTE FUNCTION update_prediction_likes_count();
