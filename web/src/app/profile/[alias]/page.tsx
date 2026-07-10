@@ -19,6 +19,8 @@ export default function ProfilePage() {
   
   // Safely compute isOwner for client-side rendering
   const [isOwner, setIsOwner] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     const checkOwner = async () => {
@@ -135,6 +137,20 @@ export default function ProfilePage() {
     setSavingAvatar(false);
   };
 
+  const handleDeleteAccount = async () => {
+    setDeletingAccount(true);
+    // Call the RPC function to delete the auth.users row
+    await supabase.rpc('delete_my_account');
+    
+    // Clear local storage and log out
+    localStorage.removeItem("pitchsense_alias");
+    localStorage.removeItem("pitchsense_avatar_url");
+    await supabase.auth.signOut();
+    
+    // Redirect to home
+    window.location.href = "/";
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -191,12 +207,20 @@ export default function ProfilePage() {
             {/* Badges Container */}
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-6">
               {isOwner && (
-                <button
-                  onClick={() => setIsEditingAvatar(!isEditingAvatar)}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors shadow-md"
-                >
-                  Edit Avatar
-                </button>
+                <>
+                  <button
+                    onClick={() => setIsEditingAvatar(!isEditingAvatar)}
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors shadow-md"
+                  >
+                    Edit Avatar
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold transition-colors shadow-md ml-auto md:ml-0"
+                  >
+                    Delete Account
+                  </button>
+                </>
               )}
               {displayStats?.correct_predictions > 0 && (
                 <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm">
@@ -273,6 +297,34 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-slate-900 border border-red-900/50 p-6 rounded-2xl max-w-md w-full shadow-2xl relative">
+            <h3 className="text-2xl font-black text-white mb-2 text-red-500">Delete Account?</h3>
+            <p className="text-slate-300 mb-6">
+              This action is permanent and irreversible. All your predictions, likes, and replies will be wiped immediately. Are you absolutely sure?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 rounded-lg font-bold text-slate-300 hover:bg-slate-800 transition-colors"
+                disabled={deletingAccount}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deletingAccount}
+                className="px-4 py-2 rounded-lg font-bold bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {deletingAccount ? "Deleting..." : "Permanently Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold text-white flex items-center gap-2">

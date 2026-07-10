@@ -94,3 +94,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER trigger_update_prediction_likes
 AFTER INSERT OR DELETE ON prediction_likes
 FOR EACH ROW EXECUTE FUNCTION update_prediction_likes_count();
+
+-- Account Deletion Function
+CREATE OR REPLACE FUNCTION delete_my_account()
+RETURNS void AS $$
+BEGIN
+  -- Delete the user from auth.users (this triggers ON DELETE CASCADE across the database)
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
