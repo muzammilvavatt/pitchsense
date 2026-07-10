@@ -181,21 +181,21 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
   if (loading) return <div className="text-center py-10 text-slate-400">Loading debate...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto premium-glass rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-      <div className="flex justify-between items-center p-5 border-b border-white/5 bg-black/40">
-        <h2 className="text-lg font-bold text-white hidden md:flex items-center gap-2">
-          <MessageSquare className="text-blue-500" size={18} /> Match Debates
+    <div className="max-w-3xl mx-auto bento-card rounded-3xl overflow-hidden">
+      <div className="flex justify-between items-center p-5 border-b border-[var(--border-subtle)] bg-[var(--bg-card-hover)]">
+        <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <MessageSquare className="text-[#AEFC00]" size={18} /> Debates
         </h2>
-        <div className="flex bg-slate-950/80 rounded-lg p-1 border border-slate-800 ml-auto md:ml-0">
+        <div className="flex bg-[var(--bg-base)] rounded-2xl p-1 border border-[var(--border-medium)]">
           <button 
             onClick={() => setSortBy("top")}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${sortBy === "top" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"}`}
+            className={`px-4 py-1.5 rounded-xl text-sm font-semibold transition-all ${sortBy === "top" ? "bg-[#AEFC00] text-black shadow-sm" : "text-[var(--text-secondary)] hover:text-white"}`}
           >
             Top
           </button>
           <button 
             onClick={() => setSortBy("recent")}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${sortBy === "recent" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"}`}
+            className={`px-4 py-1.5 rounded-xl text-sm font-semibold transition-all ${sortBy === "recent" ? "bg-[#AEFC00] text-black shadow-sm" : "text-[var(--text-secondary)] hover:text-white"}`}
           >
             Recent
           </button>
@@ -212,21 +212,21 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
           const isLastPost = index === predictions.length - 1;
 
           return (
-            <div key={p.id} className="p-4 md:p-6 flex gap-3 md:gap-5 hover:bg-white/5 transition-colors border-b border-white/5 group">
+            <div key={p.id} className="p-4 md:p-6 flex gap-3 md:gap-5 hover:bg-[var(--bg-card-hover)] transition-colors border-b border-[var(--border-subtle)] group">
               
               {/* PARENT POST */}
               <div className="flex gap-3 md:gap-4">
                 {/* Left Column: Avatar & Thread Line */}
                 <div className="w-10 md:w-12 flex flex-col items-center shrink-0">
                   {p.avatar_url ? (
-                    <img src={p.avatar_url} alt={p.alias} className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-slate-600 bg-white z-10" />
+                    <img src={p.avatar_url} alt={p.alias} className="w-10 h-10 md:w-12 md:h-12 rounded-none object-cover border border-[#00f3ff] bg-black shadow-[0_0_5px_rgba(0,243,255,0.5)] z-10" />
                   ) : (
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-base md:text-lg border border-slate-600 z-10">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-none bg-black flex items-center justify-center font-bold text-white text-base md:text-lg border border-[#00f3ff] shadow-[0_0_5px_rgba(0,243,255,0.5)] z-10">
                       ⚽
                     </div>
                   )}
                   {(p.replies?.length > 0 || replyingTo === p.id) && (
-                    <div className="w-0.5 grow bg-slate-800/80 my-1.5 rounded-full min-h-[20px]"></div>
+                    <div className="w-0.5 grow bg-[#00f3ff]/30 my-1.5 min-h-[20px] shadow-[0_0_5px_rgba(0,243,255,0.5)]"></div>
                   )}
                 </div>
 
@@ -234,17 +234,17 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                 <div className="flex-1 min-w-0 pb-3">
                   <div className="flex justify-between items-start mb-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`font-bold text-[15px] md:text-base hover:underline cursor-pointer ${userBadges[p.alias]?.colorClass || 'text-white'}`}>
+                      <span className={`font-black uppercase tracking-widest text-[15px] md:text-base hover:underline cursor-pointer ${userBadges[p.alias]?.colorClass || 'text-[#00f3ff]'}`}>
                         {p.alias} {userBadges[p.alias]?.emoji}
                       </span>
-                      <span className="text-slate-500 text-xs flex items-center gap-1">
+                      <span className="text-slate-500 text-[10px] font-mono tracking-widest flex items-center gap-1">
                         <Clock size={12} /> {timeAgo}
                       </span>
                     </div>
                   </div>
 
                   {/* Match Context Badge */}
-                  <div className="inline-flex items-center gap-2 bg-black/40 border border-white/5 px-3 py-1.5 rounded-lg mb-3 mt-1 shadow-inner">
+                  <div className="inline-flex items-center gap-2 bg-[var(--bg-base)] border border-[var(--border-medium)] px-3 py-1.5 rounded-2xl mb-3 mt-1">
                     <div className="flex -space-x-1.5 shrink-0">
                       {match.home_logo ? (
                         <img src={match.home_logo} className="w-4 h-4 rounded-full bg-slate-800 object-contain p-0.5" />
@@ -329,24 +329,24 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                         {/* Avatar Column */}
                         <div className="w-10 md:w-12 flex flex-col items-center shrink-0">
                           {(r.avatar_url && r.avatar_url !== "null" && r.avatar_url !== "undefined") ? (
-                            <img src={r.avatar_url} alt={r.alias} className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-slate-700 bg-white z-10" />
+                            <img src={r.avatar_url} alt={r.alias} className="w-7 h-7 md:w-8 md:h-8 rounded-none object-cover border border-[#00f3ff] bg-black z-10 shadow-[0_0_5px_rgba(0,243,255,0.5)]" />
                           ) : (
-                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-700 z-10">
+                            <div className="w-7 h-7 md:w-8 md:h-8 rounded-none bg-black flex items-center justify-center font-bold text-white text-[10px] border border-[#00f3ff] z-10 shadow-[0_0_5px_rgba(0,243,255,0.5)]">
                               ⚽
                             </div>
                           )}
                           {!isLast && (
-                            <div className="w-0.5 grow bg-slate-800/80 my-1.5 rounded-full min-h-[20px]"></div>
+                            <div className="w-0.5 grow bg-[#00f3ff]/30 my-1.5 min-h-[20px] shadow-[0_0_5px_rgba(0,243,255,0.5)]"></div>
                           )}
                         </div>
 
                         {/* Reply Content */}
                         <div className="flex-1 min-w-0 pb-3">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className={`font-bold text-[13px] md:text-[14px] hover:underline cursor-pointer ${userBadges[r.alias]?.colorClass || 'text-white'}`}>
+                            <span className={`font-black uppercase tracking-widest text-[13px] md:text-[14px] hover:underline cursor-pointer ${userBadges[r.alias]?.colorClass || 'text-[#00f3ff]'}`}>
                               {r.alias} {userBadges[r.alias]?.emoji}
                             </span>
-                            <span className="text-slate-500 text-[10px] md:text-[11px]">
+                            <span className="text-slate-500 font-mono tracking-widest text-[10px] md:text-[11px]">
                               {new Date(r.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                             </span>
                             {currentUserAlias && r.alias === currentUserAlias && (
@@ -370,9 +370,9 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                       {/* Current User Avatar */}
                       <div className="w-10 md:w-12 flex flex-col items-center shrink-0">
                         {(currentUserAvatar && currentUserAvatar !== "null" && currentUserAvatar !== "undefined") ? (
-                          <img src={currentUserAvatar} alt={currentUserAlias || ""} className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-slate-700 bg-white" />
+                          <img src={currentUserAvatar} alt={currentUserAlias || ""} className="w-7 h-7 md:w-8 md:h-8 rounded-none object-cover border border-[#00f3ff] bg-black shadow-[0_0_5px_rgba(0,243,255,0.5)]" />
                         ) : (
-                          <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-[10px] border border-slate-700">
+                          <div className="w-7 h-7 md:w-8 md:h-8 rounded-none bg-black flex items-center justify-center font-bold text-white text-[10px] border border-[#00f3ff] shadow-[0_0_5px_rgba(0,243,255,0.5)]">
                             ⚽
                           </div>
                         )}
@@ -385,7 +385,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                           value={replyContent}
                           onChange={(e) => setReplyContent(e.target.value)}
                           placeholder={currentUserAlias ? `Replying as ${currentUserAlias}...` : "Write a reply..."}
-                          className="flex-1 bg-black/40 border border-white/10 rounded-full px-5 py-2 md:py-2.5 text-[13px] md:text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 shadow-inner transition-all"
+                          className="flex-1 bg-black/80 border border-[#00f3ff]/30 rounded-none px-5 py-2 md:py-2.5 text-[13px] md:text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00f3ff] focus:border-[#00f3ff] shadow-inner transition-all tracking-wider"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') handleReplySubmit(p.id);
                           }}
@@ -393,9 +393,9 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                         <button 
                           onClick={() => handleReplySubmit(p.id)}
                           disabled={submittingReply || !replyContent.trim()}
-                          className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 md:py-2 rounded-full text-[13px] md:text-sm font-bold transition-colors disabled:opacity-50 shadow-md"
+                          className="cyber-button bg-[#00f3ff] hover:bg-[#ff003c] text-black hover:text-white px-5 py-1.5 md:py-2 rounded-none text-[13px] md:text-sm font-black uppercase tracking-widest transition-all disabled:opacity-50 drop-shadow-[0_0_8px_rgba(0,243,255,0.8)]"
                         >
-                          Reply
+                          TRANSMIT
                         </button>
                       </div>
                     </div>

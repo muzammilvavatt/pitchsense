@@ -5,62 +5,169 @@
 }
 
 :root {
-  --background: #0B0F19;
-  --foreground: #F8FAFC;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --accent: #10b981;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --card-border: rgba(255, 255, 255, 0.1);
+  /* Bento Box Design System */
+  --bg-base: #060B16;
+  --bg-surface: #0A1120;
+  --bg-card: #0D1526;
+  --bg-card-hover: #111D33;
+
+  --accent-lime: #AEFC00;
+  --accent-lime-dim: rgba(174, 252, 0, 0.15);
+  --accent-lime-glow: rgba(174, 252, 0, 0.3);
+
+  --accent-blue: #3B82F6;
+  --accent-purple: #8B5CF6;
+  --accent-amber: #F59E0B;
+  --accent-red: #EF4444;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.1);
+  --border-lime: rgba(174, 252, 0, 0.25);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #475569;
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-lime: 0 0 20px rgba(174, 252, 0, 0.15);
 }
 
 body {
-  color: var(--foreground);
-  background-color: #030712;
-  /* Deep purple/blue burn over the worldcup background for an ultra-premium athletic vibe */
-  background-image: 
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 40%),
-    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.08), transparent 40%),
-    linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.95)), 
-    url('/bg-worldcup.png');
-  background-size: cover;
-  background-position: center center;
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(174, 252, 0, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
   background-attachment: fixed;
   font-family: var(--font-sans), sans-serif;
   min-height: 100vh;
 }
 
-.premium-glass {
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+/* === BENTO CARDS === */
+.bento-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.premium-glass:hover {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);
+.bento-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card-hover);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+.bento-card-lime {
+  background: var(--bg-card);
+  border: 1px solid var(--border-lime);
+  box-shadow: var(--shadow-card), var(--shadow-lime);
+}
+
+/* === LIME ACCENT ELEMENTS === */
+.lime-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-lime);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-lime);
+}
+
+.lime-badge {
+  background: var(--accent-lime-dim);
+  border: 1px solid var(--border-lime);
+  color: var(--accent-lime);
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* === SIDEBAR GLASS === */
+.sidebar-glass {
+  background: rgba(10, 17, 32, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* === PREMIUM BUTTON === */
+.btn-lime {
+  background: var(--accent-lime);
+  color: #050505;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 0 0 rgba(174, 252, 0, 0);
+}
+
+.btn-lime:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(174, 252, 0, 0.35);
+}
+
+.btn-lime:disabled {
+  opacity: 0.4;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  font-weight: 600;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent-lime);
+  color: var(--accent-lime);
+  background: var(--accent-lime-dim);
+}
+
+/* === FORM INPUTS === */
+.bento-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 0.75rem;
+  outline: none;
+}
+
+.bento-input:focus {
+  border-color: rgba(174, 252, 0, 0.5);
+  box-shadow: 0 0 0 3px rgba(174, 252, 0, 0.08);
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes pulseNeon {
-  0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
-  50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes limePulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(174, 252, 0, 0); }
+  50% { box-shadow: 0 0 16px rgba(174, 252, 0, 0.4); }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-pulse-neon {
-  animation: pulseNeon 2s infinite;
+.animate-lime-pulse {
+  animation: limePulse 2.5s ease-in-out infinite;
 }
 
 /* Hide scrollbar completely but allow scrolling */
@@ -70,4 +177,10 @@ body {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Divider line */
+.divider {
+  height: 1px;
+  background: var(--border-subtle);
 }

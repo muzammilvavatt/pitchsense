@@ -116,12 +116,22 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
     }
   };
 
-  if (loading) return <div className="text-center py-10 text-slate-400">Loading fixtures...</div>;
+  if (loading) return (
+    <div className="py-20 flex flex-col items-center gap-4">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:0ms]"></div>
+        <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:150ms]"></div>
+        <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:300ms]"></div>
+      </div>
+      <p className="text-[var(--text-muted)] text-sm font-medium">Loading fixtures...</p>
+    </div>
+  );
 
   if (matches.length === 0) return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-10 text-center text-slate-400">
-      <AlertCircle className="mx-auto mb-4" size={32} />
-      <p>No upcoming matches found.</p>
+    <div className="bento-card rounded-3xl p-12 text-center">
+      <AlertCircle className="mx-auto mb-4 text-[var(--text-muted)]" size={32} />
+      <p className="text-[var(--text-secondary)] font-semibold">No upcoming matches in the next 24 hours.</p>
+      <p className="text-[var(--text-muted)] text-sm mt-1">Check back before kickoff!</p>
     </div>
   );
 
@@ -146,11 +156,12 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8">
+    <div className="w-full space-y-8">
       <SeasonBanner />
       {successMsg && (
-        <div className="bg-emerald-500/20 border border-emerald-500 text-emerald-400 p-4 rounded-lg flex items-center gap-3 animate-fade-in">
-          <CheckCircle2 size={20} /> {successMsg}
+        <div className="bento-card-lime rounded-2xl p-4 flex items-center gap-3 animate-fade-in">
+          <CheckCircle2 size={20} className="text-[#AEFC00] shrink-0" /> 
+          <span className="text-[#AEFC00] font-semibold text-sm">{successMsg}</span>
         </div>
       )}
 
@@ -164,84 +175,99 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
         }, {} as Record<string, any[]>);
 
         return Object.entries(groupedMatches).map(([league, leagueMatches]) => (
-          <div key={league} className="space-y-6 mt-8">
-            <div className="flex items-center gap-4 mb-2 pb-2">
-              <h2 className="text-xl md:text-2xl font-black text-white bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-emerald-200">
+          <div key={league} className="space-y-5 mt-6">
+            <div className="flex items-center gap-3">
+              <div className="lime-dot"></div>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text-secondary)]">
                 {league}
               </h2>
-              <div className="h-px bg-slate-700 flex-grow"></div>
+              <div className="h-px bg-[var(--border-subtle)] flex-grow"></div>
             </div>
 
             {(leagueMatches as any[]).map((match: any) => {
               const pred = predictions[match.id] || { winner: "", score: "", justification: "" };
-              const kickoff = new Date(match.kickoff).toLocaleString();
+              const kickoffDate = new Date(match.kickoff);
+              const kickoffTime = kickoffDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const kickoffDay = kickoffDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
 
               return (
-          <div key={match.id} className="premium-glass rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_8px_32px_rgba(16,185,129,0.15)] hover:-translate-y-1">
-            {/* Clean Match Header */}
-            <div className="p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 border-b border-white/5 bg-black/20">
-              
-              {/* Home Team */}
-              <div className="flex-1 flex items-center justify-end gap-4 w-full md:w-auto">
-                <h3 className="text-xl md:text-2xl font-bold text-white text-right leading-tight">{match.home_team}</h3>
-                <div className="w-12 h-12 md:w-16 md:h-16 shrink-0 flex items-center justify-center bg-slate-800 rounded-full border border-slate-700 p-2">
-                  {match.home_logo ? (
-                    <img src={match.home_logo} alt={match.home_team} className="w-full h-full object-contain" />
-                  ) : (
-                    <span className="font-bold text-slate-500 text-lg">H</span>
-                  )}
+          <div key={match.id} className="bento-card rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5">
+            {/* Match Header */}
+            <div className="p-5 md:p-7 bg-gradient-to-br from-[var(--bg-card-hover)] to-[var(--bg-card)] border-b border-[var(--border-subtle)]">
+              <div className="flex items-center justify-between mb-5">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">{kickoffDay}</span>
+                <div className="flex items-center gap-2 bg-[#AEFC00]/10 border border-[var(--border-lime)] px-3 py-1 rounded-full animate-lime-pulse">
+                  <div className="lime-dot w-1.5 h-1.5"></div>
+                  <span className="text-[#AEFC00] text-xs font-bold">{kickoffTime}</span>
                 </div>
               </div>
 
-              {/* Center Match Info */}
-              <div className="flex flex-col items-center justify-center shrink-0 w-24">
-                <div className="text-sm font-bold text-slate-400 mb-1">VS</div>
-                <div className="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full whitespace-nowrap animate-pulse-neon">
-                  {kickoff.split(', ')[1]} {/* Just show time */}
+              <div className="flex items-center gap-4 md:gap-8">
+                {/* Home Team */}
+                <div className="flex-1 flex flex-col items-center gap-3 text-center">
+                  <div className="w-14 h-14 md:w-16 md:h-16 shrink-0 flex items-center justify-center bg-[var(--bg-card)] rounded-2xl border border-[var(--border-medium)] p-2">
+                    {match.home_logo ? (
+                      <img src={match.home_logo} alt={match.home_team} className="w-full h-full object-contain" />
+                    ) : (
+                      <span className="font-bold text-[var(--text-muted)] text-xl">H</span>
+                    )}
+                  </div>
+                  <h3 className="text-sm md:text-base font-bold text-white leading-tight">{match.home_team}</h3>
                 </div>
-                <div className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider font-semibold">{kickoff.split(', ')[0]}</div>
-              </div>
 
-              {/* Away Team */}
-              <div className="flex-1 flex items-center justify-start gap-4 w-full md:w-auto">
-                <div className="w-12 h-12 md:w-16 md:h-16 shrink-0 flex items-center justify-center bg-slate-800 rounded-full border border-slate-700 p-2">
-                  {match.away_logo ? (
-                    <img src={match.away_logo} alt={match.away_team} className="w-full h-full object-contain" />
-                  ) : (
-                    <span className="font-bold text-slate-500 text-lg">A</span>
-                  )}
+                {/* Center */}
+                <div className="flex flex-col items-center gap-1 shrink-0">
+                  <span className="text-lg font-black text-[var(--text-muted)]">vs</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-white text-left leading-tight">{match.away_team}</h3>
+
+                {/* Away Team */}
+                <div className="flex-1 flex flex-col items-center gap-3 text-center">
+                  <div className="w-14 h-14 md:w-16 md:h-16 shrink-0 flex items-center justify-center bg-[var(--bg-card)] rounded-2xl border border-[var(--border-medium)] p-2">
+                    {match.away_logo ? (
+                      <img src={match.away_logo} alt={match.away_team} className="w-full h-full object-contain" />
+                    ) : (
+                      <span className="font-bold text-[var(--text-muted)] text-xl">A</span>
+                    )}
+                  </div>
+                  <h3 className="text-sm md:text-base font-bold text-white leading-tight">{match.away_team}</h3>
+                </div>
               </div>
             </div>
 
-            <div className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+            <div className="p-5 md:p-7 grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* AI Analysis */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-blue-400 font-bold pb-2 border-b border-white/10">
-                  <Bot size={18} className="animate-pulse" /> Machine Insight
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <Bot size={14} className="text-blue-400" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">AI Analysis</span>
                 </div>
                 {insights[match.id] ? (
-                  <div className="text-slate-300 leading-relaxed text-sm bg-black/20 p-5 rounded-xl border border-white/5 font-sans prose prose-invert prose-sm max-w-none">
+                  <div className="text-[var(--text-secondary)] leading-relaxed text-sm bg-[var(--bg-base)] p-4 rounded-2xl border border-[var(--border-subtle)] font-sans prose prose-invert prose-sm max-w-none">
                     <ReactMarkdown>{insights[match.id].insight}</ReactMarkdown>
                   </div>
                 ) : (
-                  <p className="text-slate-500 italic text-sm">No AI insights available for this fixture.</p>
+                  <div className="bg-[var(--bg-base)] rounded-2xl p-4 border border-[var(--border-subtle)]">
+                    <p className="text-[var(--text-muted)] text-sm italic">No AI insights available yet.</p>
+                  </div>
                 )}
               </div>
 
-              {/* Human Prediction Form */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold pb-2 border-b border-white/10">
-                  <User size={18} /> Your Prediction
+              {/* Prediction Form */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-[#AEFC00]/20 flex items-center justify-center">
+                    <User size={14} className="text-[#AEFC00]" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">Your Prediction</span>
                 </div>
-                
+
                 {pred.locked ? (
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5 text-center space-y-2 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                    <CheckCircle2 className="mx-auto text-emerald-400 mb-2 relative z-10" size={28} />
-                    <h4 className="text-white font-bold text-lg relative z-10">Prediction Locked</h4>
-                    <p className="text-emerald-100/70 text-sm relative z-10">You picked <span className="font-bold text-white">{pred.winner} ({pred.score})</span></p>
+                  <div className="bento-card-lime rounded-2xl p-5 text-center space-y-2 relative overflow-hidden">
+                    <CheckCircle2 className="mx-auto text-[#AEFC00] mb-2" size={28} />
+                    <h4 className="text-white font-bold text-base">Prediction Locked In!</h4>
+                    <p className="text-[#AEFC00]/70 text-sm">You picked <span className="font-bold text-white">{pred.winner}</span> — Score: <span className="font-bold text-white">{pred.score}</span></p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -249,9 +275,9 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                       <select
                         value={pred.winner}
                         onChange={(e) => handlePredictionChange(match.id, "winner", e.target.value)}
-                        className="bg-black/40 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none w-full text-white transition-all shadow-inner"
+                        className="bento-input p-3 text-sm w-full bg-[var(--bg-base)]"
                       >
-                        <option value="">Select Winner</option>
+                        <option value="">Winner</option>
                         <option value={match.home_team}>{match.home_team}</option>
                         <option value={match.away_team}>{match.away_team}</option>
                         {!match.is_knockout && <option value="Draw">Draw</option>}
@@ -261,34 +287,32 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                         placeholder="Score (e.g. 2-1)"
                         value={pred.score}
                         onChange={(e) => handlePredictionChange(match.id, "score", e.target.value)}
-                        className="bg-black/40 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none w-full text-white transition-all shadow-inner"
+                        className="bento-input p-3 text-sm w-full bg-[var(--bg-base)]"
                       />
                     </div>
                     <textarea
-                      placeholder="Add tactical justification (Optional)"
+                      placeholder="Your reasoning... (optional)"
                       value={pred.justification}
                       onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm min-h-[100px] focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none resize-none text-white transition-all shadow-inner"
+                      className="bento-input w-full p-3 text-sm min-h-[90px] resize-none bg-[var(--bg-base)]"
                     />
-                            <button
-                              onClick={() => submitPrediction(match.id)}
-                              disabled={!pred.winner || !pred.score || submitting === match.id}
-                              className="w-full bg-gradient-to-r from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-emerald-300 disabled:opacity-50 disabled:from-emerald-700 disabled:to-emerald-600 text-white font-black py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transform hover:-translate-y-0.5"
-                            >
-                              {submitting === match.id ? "Locking in..." : "Submit Prediction"}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    <button
+                      onClick={() => submitPrediction(match.id)}
+                      disabled={!pred.winner || !pred.score || submitting === match.id}
+                      className="btn-lime w-full py-3 rounded-2xl text-sm"
+                    >
+                      {submitting === match.id ? "Submitting..." : "Lock In Prediction →"}
+                    </button>
                   </div>
-                );
-              })}
+                )}
+              </div>
             </div>
-          ));
-        })()}
+          </div>
+              );
+            })}
+          </div>
+        ));
+      })()}
       </div>
     );
   }
-
-

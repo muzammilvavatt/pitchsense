@@ -74,29 +74,29 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
 
   if (compact) {
     return (
-      <div className="premium-glass rounded-2xl overflow-hidden">
-        <div className="bg-black/40 p-3 border-b border-white/5 flex items-center gap-2">
-          <Trophy className="text-yellow-400" size={16} />
-          <h3 className="font-bold text-sm">Top Pundits</h3>
+      <div className="bento-card rounded-2xl overflow-hidden">
+        <div className="bg-[#AEFC00]/10 p-4 border-b border-[var(--border-lime)] flex items-center gap-2">
+          <Trophy className="text-[#AEFC00]" size={15} />
+          <h3 className="font-bold text-sm text-white uppercase tracking-wider">Top Pundits</h3>
         </div>
         <div className="flex flex-col divide-y divide-slate-800/50">
           {leaders.length === 0 ? (
             <div className="p-4 text-center text-xs text-slate-500">No predictions yet.</div>
           ) : (
             leaders.map((leader, idx) => (
-              <Link key={leader.alias} href={`/profile/${leader.alias}`} className="flex items-center justify-between p-3 hover:bg-slate-800/50 transition-colors">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-500 text-xs w-4">#{idx + 1}</span>
+              <Link key={leader.alias} href={`/profile/${leader.alias}`} className="flex items-center justify-between p-3 hover:bg-[var(--bg-card-hover)] transition-colors">
+                <div className="flex items-center gap-2.5">
+                  <span className="font-bold text-[var(--text-muted)] text-xs w-5 text-center">#{idx + 1}</span>
                   {leader.avatar_url ? (
-                    <img src={leader.avatar_url} alt={leader.alias} className="w-6 h-6 rounded-full object-cover border border-slate-700 bg-white" />
+                    <img src={leader.avatar_url} alt={leader.alias} className="w-7 h-7 rounded-xl object-cover border border-[var(--border-medium)] bg-white" />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-xs border border-slate-700">⚽</div>
+                    <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-[#AEFC00]/30 to-[#3B82F6]/20 flex items-center justify-center font-bold text-white text-xs border border-[var(--border-lime)]">⚽</div>
                   )}
-                  <span className={`font-semibold text-sm truncate max-w-[100px] ${userBadges[leader.alias]?.colorClass || 'text-slate-200'}`}>
+                  <span className={`font-semibold text-sm truncate max-w-[90px] ${userBadges[leader.alias]?.colorClass || 'text-[var(--text-primary)]'}`}>
                     {leader.alias}
                   </span>
                 </div>
-                <div className="font-bold text-emerald-400 text-sm">{leader.total_score || 0}</div>
+                <div className="font-black text-[#AEFC00] text-sm">{leader.total_score || 0}</div>
               </Link>
             ))
           )}
@@ -107,10 +107,10 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="premium-glass rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10">
-        <div className="bg-black/40 p-5 border-b border-white/5 flex items-center gap-3">
-          <Trophy className="text-yellow-400" size={20} />
-          <h3 className="font-bold text-lg">Top Pundits</h3>
+      <div className="bento-card rounded-3xl overflow-hidden">
+        <div className="bg-[#AEFC00]/10 p-6 border-b border-[var(--border-lime)] flex items-center gap-3">
+          <Trophy className="text-[#AEFC00]" size={20} />
+          <h3 className="font-bold text-xl text-white uppercase tracking-wider">Top Pundits</h3>
         </div>
         
         {/* Mobile View (Cards) */}
@@ -131,14 +131,14 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                           ⚽
                         </div>
                       )}
-                      <span className={`font-bold text-lg group-hover:underline ${userBadges[leader.alias]?.colorClass || 'text-blue-400'}`}>
+                      <span className={`font-black text-lg uppercase tracking-widest group-hover:underline ${userBadges[leader.alias]?.colorClass || 'text-[#00f3ff]'}`}>
                         {leader.alias} {userBadges[leader.alias]?.emoji}
                       </span>
                     </Link>
                   </div>
-                  <div className="font-black text-emerald-400 text-2xl drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">{leader.total_score || 0} pts</div>
+                  <div className="font-black text-[#AEFC00] text-xl drop-shadow-[0_0_5px_rgba(174,252,0,0.6)]">{leader.total_score || 0} pts</div>
                 </div>
-                <div className="grid grid-cols-4 gap-2 bg-black/40 p-3 rounded-xl border border-white/5 shadow-inner">
+                <div className="grid grid-cols-4 gap-2 bg-[var(--bg-base)] p-3 rounded-2xl border border-[var(--border-subtle)]">
                   <div className="text-center">
                     <div className="text-xs text-slate-500 mb-1"><Target size={14} className="mx-auto"/></div>
                     <div className="font-bold text-slate-300">{leader.correct_predictions || 0}</div>

@@ -69,18 +69,22 @@ export default function Home() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:0ms]"></div>
+          <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:150ms]"></div>
+          <div className="w-2 h-2 rounded-full bg-[#AEFC00] animate-bounce [animation-delay:300ms]"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
+    <main className="min-h-screen max-w-[1600px] mx-auto">
       {showAuth && !alias ? (
-        <div className="relative">
+        <div className="relative p-4 md:p-8">
           <button 
             onClick={() => setShowAuth(false)}
-            className="absolute top-4 left-4 z-50 text-slate-400 hover:text-white flex items-center gap-2 bg-slate-900/80 px-4 py-2 rounded-lg border border-slate-700"
+            className="mb-6 btn-ghost px-4 py-2 rounded-xl flex items-center gap-2 text-sm"
           >
             ← Back to App
           </button>
@@ -92,10 +96,10 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4 group cursor-default">
-              <div className="premium-glass p-3 rounded-2xl animate-pulse-neon transition-transform duration-500 group-hover:scale-110">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <header className="hidden md:flex items-center justify-between px-8 py-6 border-b border-[var(--border-subtle)]">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#AEFC00] flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#050505" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 16l-4-3 1.5-5h5L16 13z" />
                   <path d="M8 13l-6 2" />
@@ -105,9 +109,8 @@ export default function Home() {
                   <path d="M12 16v6" />
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-gradient-to-r from-white via-emerald-100 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]">
-                PitchSense<span className="text-emerald-400 animate-pulse">.</span>
-              </h1>
+              <span className="text-xl font-bold tracking-tight text-white">PitchSense</span>
+              <span className="lime-badge ml-1">BETA</span>
             </div>
             <div className="flex items-center gap-4">
               <HowItWorksModal />
