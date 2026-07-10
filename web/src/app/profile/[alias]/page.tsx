@@ -140,7 +140,13 @@ export default function ProfilePage() {
   const handleDeleteAccount = async () => {
     setDeletingAccount(true);
     // Call the RPC function to delete the auth.users row
-    await supabase.rpc('delete_my_account');
+    const { error } = await supabase.rpc('delete_my_account');
+    
+    if (error) {
+      alert("Failed to delete account: " + error.message);
+      setDeletingAccount(false);
+      return;
+    }
     
     // Clear local storage and log out
     localStorage.removeItem("pitchsense_alias");
