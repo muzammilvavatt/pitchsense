@@ -119,7 +119,7 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
   if (loading) return <div className="text-center py-10 text-slate-400">Loading fixtures...</div>;
 
   if (matches.length === 0) return (
-    <div className="glass-card p-10 text-center text-slate-400">
+    <div className="bg-slate-900 border border-slate-800 rounded-xl p-10 text-center text-slate-400">
       <AlertCircle className="mx-auto mb-4" size={32} />
       <p>No upcoming matches found.</p>
     </div>

@@ -49,7 +49,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
         
         {/* Left Sidebar (Desktop Only) */}
         <aside className="hidden md:flex flex-col w-64 shrink-0 space-y-6">
-          <div className="glass-card p-5">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             {isGuest ? (
               <div className="text-center">
                 <div className="w-16 h-16 mx-auto rounded-full bg-slate-800 flex items-center justify-center text-slate-500 shadow-lg border-2 border-slate-700 mb-3">

@@ -74,7 +74,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
 
   if (compact) {
     return (
-      <div className="glass-card overflow-hidden">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
         <div className="bg-slate-800/80 p-3 border-b border-slate-700 flex items-center gap-2">
           <Trophy className="text-yellow-400" size={16} />
           <h3 className="font-bold text-sm">Top Pundits</h3>
@@ -107,7 +107,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="glass-card overflow-hidden">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
         <div className="bg-slate-800/80 p-4 border-b border-slate-700 flex items-center gap-2">
           <Trophy className="text-yellow-400" size={20} />
           <h3 className="font-bold text-lg">Top Pundits</h3>

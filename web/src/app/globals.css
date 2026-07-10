@@ -17,6 +17,10 @@
 body {
   color: var(--foreground);
   background-color: var(--background);
+  background-image: linear-gradient(rgba(10, 15, 30, 0.92), rgba(10, 15, 30, 0.92)), url('/bg-worldcup.png');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
   font-family: var(--font-sans), sans-serif;
   min-height: 100vh;
 }

@@ -184,7 +184,7 @@ export default function ProfilePage() {
         <ArrowLeft size={20} /> Back to Dashboard
       </Link>
 
-      <div className="glass-card p-6 md:p-10 mb-8">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm p-6 md:p-10 mb-8">
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
           <div className="relative">
             {displayStats?.avatar_url ? (
@@ -363,7 +363,7 @@ export default function ProfilePage() {
       <div className="space-y-4">
         {history.length > 0 ? (
           history.map((pred, i) => (
-            <div key={i} className="glass-card p-5 transition-transform hover:scale-[1.01]">
+            <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-5 transition-transform hover:scale-[1.01]">
               <div className="flex flex-col md:flex-row justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
