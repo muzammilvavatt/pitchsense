@@ -18,13 +18,16 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
 
   useEffect(() => {
     async function fetchData() {
-      // 1. Fetch upcoming matches (kickoff > now)
-      const now = new Date().toISOString();
+      // 1. Fetch upcoming matches (now < kickoff < now + 24 hours)
+      const now = new Date();
+      const next24 = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      
       const { data: matchData } = await supabase
         .from("matches")
         .select("*")
         .is("result", null)
-        .gt("kickoff", now)
+        .gt("kickoff", now.toISOString())
+        .lt("kickoff", next24.toISOString())
         .order("kickoff")
         .limit(3); // Bumped to 3 so they have options
       
