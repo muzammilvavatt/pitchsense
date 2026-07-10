@@ -5,35 +5,26 @@
 }
 
 :root {
-  --background: #0f172a; /* Slate 900 */
-  --foreground: #f8fafc; /* Slate 50 */
+  --background: #0B0F19;
+  --foreground: #F8FAFC;
   --primary: #3b82f6;
   --primary-hover: #2563eb;
   --accent: #10b981;
-  --card-bg: rgba(30, 41, 59, 0.7); /* Slate 800 with opacity */
+  --card-bg: rgba(30, 41, 59, 0.7);
   --card-border: rgba(255, 255, 255, 0.1);
 }
 
 body {
   color: var(--foreground);
   background-color: var(--background);
-  /* A massive 90% dark overlay over the worldcup image to provide subtle texture */
-  background-image: linear-gradient(rgba(10, 15, 30, 0.92), rgba(10, 15, 30, 0.92)), url('/bg-worldcup.png');
-  background-size: cover;
-  background-position: center center;
-  background-attachment: fixed;
   font-family: var(--font-sans), sans-serif;
   min-height: 100vh;
 }
 
 .glass-card {
-  background: rgba(15, 23, 42, 0.95); /* Deep solid slate */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05); /* Extremely subtle border */
-  border-top: 1px solid rgba(255, 255, 255, 0.08); /* Slight top highlight */
-  border-radius: 1.25rem;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  background-color: #111827;
+  border: 1px solid #1E293B;
+  border-radius: 1rem;
 }
 
 /* Animations */

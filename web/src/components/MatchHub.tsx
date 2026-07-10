@@ -177,44 +177,41 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
               const kickoff = new Date(match.kickoff).toLocaleString();
 
               return (
-          <div key={match.id} className="glass-card overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-[0_15px_50px_-15px_rgba(0,0,0,0.7)] hover:shadow-[0_20px_50px_-10px_rgba(16,185,129,0.2)] hover:border-emerald-500/30 transition-all duration-300 border border-slate-700/80 group">
-            <div className="bg-slate-900/60 p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-700/50">
-              <h3 className="font-bold text-lg md:text-xl">
-                {match.home_team} <span className="text-slate-500 font-normal mx-1 md:mx-2 text-sm md:text-base">vs</span> {match.away_team}
-              </h3>
-              <div className="flex items-center justify-between w-full sm:w-auto gap-3 mt-1 sm:mt-0">
-                <span className="text-xs md:text-sm text-slate-400 bg-slate-900 px-3 py-1.5 rounded-full whitespace-nowrap border border-slate-700/50">{kickoff}</span>
-                <button
-                  onClick={() => handleShare(match)}
-                  className="flex items-center gap-2 text-slate-300 bg-slate-700/80 hover:bg-slate-600 px-4 py-1.5 rounded-full text-sm transition-colors border border-slate-600/50 font-medium shadow-sm"
-                >
-                  <Share2 size={14} /> Share
-                </button>
+          <div key={match.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm transition-colors hover:border-slate-700">
+            {/* Clean Match Header */}
+            <div className="p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 border-b border-slate-800/50 bg-slate-900/50">
+              
+              {/* Home Team */}
+              <div className="flex-1 flex items-center justify-end gap-4 w-full md:w-auto">
+                <h3 className="text-xl md:text-2xl font-bold text-white text-right leading-tight">{match.home_team}</h3>
+                <div className="w-12 h-12 md:w-16 md:h-16 shrink-0 flex items-center justify-center bg-slate-800 rounded-full border border-slate-700 p-2">
+                  {match.home_logo ? (
+                    <img src={match.home_logo} alt={match.home_team} className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="font-bold text-slate-500 text-lg">H</span>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="flex justify-between items-center px-4 md:px-12 py-8 md:py-12 mb-4 mt-4 md:mt-6 mx-2 md:mx-6 relative bg-gradient-to-r from-emerald-900/40 via-slate-900 to-blue-900/40 rounded-3xl border border-slate-700/50 shadow-inner group-hover:from-emerald-800/40 group-hover:to-blue-800/40 transition-colors duration-500">
-              {/* VS Badge */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-400 font-bold italic text-base md:text-xl bg-slate-950 px-4 py-2 rounded-full border border-slate-700 shadow-xl shadow-black/40 z-10">
-                VS
+              {/* Center Match Info */}
+              <div className="flex flex-col items-center justify-center shrink-0 w-24">
+                <div className="text-sm font-medium text-slate-500 mb-1">VS</div>
+                <div className="text-xs text-emerald-500 font-semibold bg-emerald-500/10 px-3 py-1 rounded-full whitespace-nowrap">
+                  {kickoff.split(', ')[1]} {/* Just show time */}
+                </div>
+                <div className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider">{kickoff.split(', ')[0]}</div>
               </div>
-              
-              <div className="text-center w-5/12 flex flex-col items-center gap-2 md:gap-4 relative z-20">
-                {match.home_logo ? (
-                  <img src={match.home_logo} alt={match.home_team} className="w-16 h-16 md:w-28 md:h-28 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 transition-transform duration-500" />
-                ) : (
-                  <div className="w-16 h-16 md:w-28 md:h-28 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center font-bold text-slate-500 text-2xl md:text-3xl shadow-inner">H</div>
-                )}
-                <h3 className="text-lg md:text-3xl font-black text-white mt-1 md:mt-2 drop-shadow-md tracking-tight leading-none">{match.home_team}</h3>
-              </div>
-              
-              <div className="text-center w-5/12 flex flex-col items-center gap-2 md:gap-4 relative z-20">
-                {match.away_logo ? (
-                  <img src={match.away_logo} alt={match.away_team} className="w-16 h-16 md:w-28 md:h-28 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 transition-transform duration-500" />
-                ) : (
-                  <div className="w-16 h-16 md:w-28 md:h-28 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center font-bold text-slate-500 text-2xl md:text-3xl shadow-inner">A</div>
-                )}
-                <h3 className="text-lg md:text-3xl font-black text-white mt-1 md:mt-2 drop-shadow-md tracking-tight leading-none">{match.away_team}</h3>
+
+              {/* Away Team */}
+              <div className="flex-1 flex items-center justify-start gap-4 w-full md:w-auto">
+                <div className="w-12 h-12 md:w-16 md:h-16 shrink-0 flex items-center justify-center bg-slate-800 rounded-full border border-slate-700 p-2">
+                  {match.away_logo ? (
+                    <img src={match.away_logo} alt={match.away_team} className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="font-bold text-slate-500 text-lg">A</span>
+                  )}
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-white text-left leading-tight">{match.away_team}</h3>
               </div>
             </div>
 
@@ -225,7 +222,7 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                   <Bot size={18} /> Machine Insight
                 </div>
                 {insights[match.id] ? (
-                  <div className="text-slate-200 leading-loose text-base bg-blue-950/20 p-6 rounded-xl border border-blue-900/30 font-sans prose prose-invert prose-base max-w-none shadow-inner tracking-wide">
+                  <div className="text-slate-300 leading-relaxed text-sm bg-slate-900 p-5 rounded-lg border border-slate-800 font-sans prose prose-invert prose-sm max-w-none">
                     <ReactMarkdown>{insights[match.id].insight}</ReactMarkdown>
                   </div>
                 ) : (
@@ -240,11 +237,10 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                 </div>
                 
                 {pred.locked ? (
-                  <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6 text-center space-y-2 shadow-inner">
-                    <CheckCircle2 className="mx-auto text-emerald-400 mb-2" size={32} />
-                    <h4 className="text-white font-bold text-lg">Prediction Locked</h4>
-                    <p className="text-slate-400 text-sm">You predicted <span className="font-bold text-white">{pred.winner} ({pred.score})</span>.</p>
-                    <p className="text-slate-500 text-xs mt-2 italic">Waiting for full time...</p>
+                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 text-center space-y-2">
+                    <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={24} />
+                    <h4 className="text-white font-bold">Prediction Locked</h4>
+                    <p className="text-slate-400 text-sm">You picked <span className="font-bold text-white">{pred.winner} ({pred.score})</span></p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -276,7 +272,7 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                             <button
                               onClick={() => submitPrediction(match.id)}
                               disabled={!pred.winner || !pred.score || submitting === match.id}
-                              className="w-full bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 disabled:hover:bg-emerald-900 text-white font-bold py-3 rounded-lg transition-all active:scale-[0.98] border border-emerald-600/50"
+                              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:hover:bg-emerald-600 text-white font-bold py-2.5 rounded-lg transition-colors"
                             >
                               {submitting === match.id ? "Locking in..." : "Submit Prediction"}
                             </button>

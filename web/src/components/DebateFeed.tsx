@@ -181,7 +181,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
   if (loading) return <div className="text-center py-10 text-slate-400">Loading debate...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto glass-card overflow-hidden">
+    <div className="max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
       <div className="flex justify-between items-center p-4 border-b border-slate-800/80 bg-slate-900/40">
         <h2 className="text-lg font-bold text-white hidden md:flex items-center gap-2">
           <MessageSquare className="text-blue-500" size={18} /> Match Debates

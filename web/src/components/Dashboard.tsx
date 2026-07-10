@@ -73,7 +73,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
             )}
           </div>
 
-          <nav className="glass-card overflow-hidden flex flex-col p-3 gap-2">
+          <nav className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col p-3 gap-2">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -113,7 +113,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
           <Leaderboard compact={true} />
           
           {/* Add a quick pitch for PitchSense */}
-          <div className="glass-card p-5 bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <h3 className="font-bold text-lg mb-2 text-white">About PitchSense</h3>
             <p className="text-sm text-slate-400 leading-relaxed">
               Predict scores, debate with AI analysts, and climb the ranks. Only matches kicking off within 24 hours appear in the Hub.
