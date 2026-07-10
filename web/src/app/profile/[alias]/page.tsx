@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Edit2 } from "lucide-react";
+import { ArrowLeft, Trophy, Target, Brain, Crosshair, Heart, Edit2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { resolveAvatar } from "@/lib/avatar";
@@ -63,6 +63,13 @@ export default function ProfilePage() {
 
     fetchProfile();
   }, [alias]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem("pitchsense_alias");
+    localStorage.removeItem("pitchsense_avatar_url");
+    window.location.href = "/";
+  };
 
   const handleDeleteAccount = async () => {
     setDeletingAccount(true);
@@ -158,12 +165,20 @@ export default function ProfilePage() {
                 </div>
               )}
               {isOwner && (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-1.5 text-xs font-semibold bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1.5 rounded-full hover:bg-red-500/20 transition-colors"
-                >
-                  Delete Account
-                </button>
+                <>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-1.5 text-xs font-semibold bg-white/5 border border-white/10 text-[var(--text-muted)] px-3 py-1.5 rounded-full hover:bg-white/10 hover:text-white transition-colors"
+                  >
+                    <LogOut size={13} /> Sign Out
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex items-center gap-1.5 text-xs font-semibold bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1.5 rounded-full hover:bg-red-500/20 transition-colors"
+                  >
+                    Delete Account
+                  </button>
+                </>
               )}
             </div>
           </div>
