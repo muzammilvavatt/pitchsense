@@ -16,17 +16,23 @@ interface LeaderboardRow {
   total_likes: number;
 }
 
-export default function Leaderboard() {
+export default function Leaderboard({ compact = false }: { compact?: boolean }) {
   const [leaders, setLeaders] = useState<LeaderboardRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [userBadges, setUserBadges] = useState<Record<string, PrestigeBadge | null>>({});
 
   useEffect(() => {
     async function fetchLeaderboard() {
-      const { data } = await supabase
+      let query = supabase
         .from("leaderboard")
         .select("*")
         .order("total_score", { ascending: false });
+        
+      if (compact) {
+        query = query.limit(5);
+      }
+      
+      const { data } = await query;
       
       if (data) setLeaders(data);
       setLoading(false);
@@ -64,6 +70,39 @@ export default function Leaderboard() {
   }, []);
 
   if (loading) return <div className="text-center py-10 text-slate-400">Loading rankings...</div>;
+
+  if (compact) {
+    return (
+      <div className="glass-card overflow-hidden">
+        <div className="bg-slate-800/80 p-3 border-b border-slate-700 flex items-center gap-2">
+          <Trophy className="text-yellow-400" size={16} />
+          <h3 className="font-bold text-sm">Top Pundits</h3>
+        </div>
+        <div className="flex flex-col divide-y divide-slate-800/50">
+          {leaders.length === 0 ? (
+            <div className="p-4 text-center text-xs text-slate-500">No predictions yet.</div>
+          ) : (
+            leaders.map((leader, idx) => (
+              <Link key={leader.alias} href={`/profile/${leader.alias}`} className="flex items-center justify-between p-3 hover:bg-slate-800/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-500 text-xs w-4">#{idx + 1}</span>
+                  {leader.avatar_url ? (
+                    <img src={leader.avatar_url} alt={leader.alias} className="w-6 h-6 rounded-full object-cover border border-slate-700 bg-white" />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-xs border border-slate-700">⚽</div>
+                  )}
+                  <span className={`font-semibold text-sm truncate max-w-[100px] ${userBadges[leader.alias]?.colorClass || 'text-slate-200'}`}>
+                    {leader.alias}
+                  </span>
+                </div>
+                <div className="font-bold text-emerald-400 text-sm">{leader.total_score || 0}</div>
+              </Link>
+            ))
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

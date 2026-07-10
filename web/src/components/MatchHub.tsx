@@ -177,8 +177,8 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
               const kickoff = new Date(match.kickoff).toLocaleString();
 
               return (
-          <div key={match.id} className="glass-card overflow-hidden">
-            <div className="bg-slate-800/80 p-4 border-b border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div key={match.id} className="glass-card overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 border border-slate-700/80 hover:border-slate-600">
+            <div className="bg-slate-900/60 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h3 className="font-bold text-lg md:text-xl">
                 {match.home_team} <span className="text-slate-500 font-normal mx-1 md:mx-2 text-sm md:text-base">vs</span> {match.away_team}
               </h3>
@@ -193,28 +193,28 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
               </div>
             </div>
 
-            <div className="flex justify-between items-center px-2 md:px-8 py-6 mb-2 mt-4 mx-4 relative bg-slate-900/30 rounded-2xl border border-slate-800/50">
+            <div className="flex justify-between items-center px-2 md:px-8 py-8 mb-2 mt-4 mx-4 relative bg-gradient-to-r from-emerald-950/30 via-slate-900/80 to-blue-950/30 rounded-2xl border border-slate-700/50 shadow-inner">
               {/* VS Badge */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 border border-slate-700 text-slate-500 font-black italic rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-xs md:text-sm z-10 shadow-xl shadow-black/50">
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950 border border-slate-700 text-slate-400 font-black italic rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xs md:text-sm z-10 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                 VS
               </div>
               
-              <div className="text-center w-5/12 flex flex-col items-center gap-2">
+              <div className="text-center w-5/12 flex flex-col items-center gap-3">
                 {match.home_logo ? (
-                  <img src={match.home_logo} alt={match.home_team} className="w-14 h-14 md:w-24 md:h-24 object-contain drop-shadow-xl" />
+                  <img src={match.home_logo} alt={match.home_team} className="w-16 h-16 md:w-28 md:h-28 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform duration-300" />
                 ) : (
-                  <div className="w-14 h-14 md:w-24 md:h-24 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-500 shadow-inner">H</div>
+                  <div className="w-16 h-16 md:w-28 md:h-28 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-500 shadow-inner">H</div>
                 )}
-                <h3 className="text-base md:text-2xl font-black text-white leading-tight mt-1">{match.home_team}</h3>
+                <h3 className="text-lg md:text-2xl font-black text-white leading-tight mt-1 tracking-tight">{match.home_team}</h3>
               </div>
               
-              <div className="text-center w-5/12 flex flex-col items-center gap-2">
+              <div className="text-center w-5/12 flex flex-col items-center gap-3">
                 {match.away_logo ? (
-                  <img src={match.away_logo} alt={match.away_team} className="w-14 h-14 md:w-24 md:h-24 object-contain drop-shadow-xl" />
+                  <img src={match.away_logo} alt={match.away_team} className="w-16 h-16 md:w-28 md:h-28 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:scale-110 transition-transform duration-300" />
                 ) : (
-                  <div className="w-14 h-14 md:w-24 md:h-24 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-500 shadow-inner">A</div>
+                  <div className="w-16 h-16 md:w-28 md:h-28 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-500 shadow-inner">A</div>
                 )}
-                <h3 className="text-base md:text-2xl font-black text-white leading-tight mt-1">{match.away_team}</h3>
+                <h3 className="text-lg md:text-2xl font-black text-white leading-tight mt-1 tracking-tight">{match.away_team}</h3>
               </div>
             </div>
 

@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LogOut, Trophy, MessageSquare, LayoutDashboard, Palette } from "lucide-react";
+import { LogOut, Trophy, MessageSquare, LayoutDashboard, User } from "lucide-react";
 import MatchHub from "./MatchHub";
 import DebateFeed from "./DebateFeed";
 import Leaderboard from "./Leaderboard";
 import Link from "next/link";
 
-type Tab = "hub" | "debate" | "leaderboard";
+type Tab = "hub" | "debate" | "leaderboard" | "profile";
 
 export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLoginClick }: { alias: string, avatarUrl?: string | null, onLogout: () => void, isGuest?: boolean, onLoginClick?: () => void }) {
   const [activeTab, setActiveTab] = useState<Tab>("hub");
@@ -19,107 +19,137 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
     setLocalAvatar(storedAvatar || avatarUrl || null);
   }, [avatarUrl]);
 
+  const navItems = [
+    { id: "hub", label: "Hub", icon: LayoutDashboard, color: "text-blue-400" },
+    { id: "debate", label: "Debate", icon: MessageSquare, color: "text-emerald-400" },
+    { id: "leaderboard", label: "Ranks", icon: Trophy, color: "text-yellow-400" },
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <header className="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-4 z-40 shadow-xl shadow-slate-900/50">
-        <div className="flex w-full md:w-auto justify-between items-center">
-          {isGuest ? (
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 shadow-lg border-2 border-slate-700">
-                <LogOut size={20} />
-              </div>
-              <div>
-                <h2 className="font-bold text-xl leading-tight text-white tracking-wide">Guest</h2>
-                <button onClick={onLoginClick} className="text-xs text-emerald-400 hover:underline mt-0.5 font-medium">Sign in to join the action!</button>
-              </div>
-            </div>
-          ) : (
-            <Link href={`/profile/${alias}`} className="flex items-center gap-3 group">
-              {localAvatar ? (
-                <img src={localAvatar} alt={alias} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700 shadow-lg group-hover:border-blue-400 transition-colors bg-white" />
-              ) : (
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-lg text-xl border-2 border-slate-700">
-                  ⚽
-                </div>
-              )}
-              <div>
-                <h2 className="font-bold text-xl leading-tight text-white tracking-wide group-hover:text-blue-400 transition-colors">{alias}</h2>
-                <p className="text-xs text-blue-400 group-hover:underline mt-0.5">View Profile</p>
-              </div>
-            </Link>
-          )}
-          {/* Mobile actions (Theme Toggle + Auth) */}
-          <div className="md:hidden flex items-center gap-2">
-            
-            {isGuest ? (
-              <button onClick={onLoginClick} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-md transition-colors">
-                Sign In
-              </button>
+    <div className="min-h-screen bg-slate-950 text-slate-200">
+      {/* Mobile Top Header */}
+      <header className="md:hidden sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 p-4 flex justify-between items-center shadow-lg">
+        <h1 className="text-xl font-black italic tracking-tighter bg-gradient-to-br from-emerald-400 to-blue-500 bg-clip-text text-transparent">PitchSense</h1>
+        {isGuest ? (
+          <button onClick={onLoginClick} className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-md transition-colors">
+            Sign In
+          </button>
+        ) : (
+          <Link href={`/profile/${alias}`}>
+            {localAvatar ? (
+              <img src={localAvatar} alt={alias} className="w-8 h-8 rounded-full object-cover border-2 border-slate-700 bg-white" />
             ) : (
-              <button onClick={onLogout} className="text-slate-400 hover:text-white p-2">
-                <LogOut size={20} />
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white text-xs border-2 border-slate-700">⚽</div>
+            )}
+          </Link>
+        )}
+      </header>
+
+      <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row gap-6 p-4 md:p-6 md:h-screen md:overflow-hidden">
+        
+        {/* Left Sidebar (Desktop Only) */}
+        <aside className="hidden md:flex flex-col w-64 shrink-0 space-y-6">
+          <div className="glass-card p-5">
+            {isGuest ? (
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto rounded-full bg-slate-800 flex items-center justify-center text-slate-500 shadow-lg border-2 border-slate-700 mb-3">
+                  <User size={28} />
+                </div>
+                <h2 className="font-bold text-xl text-white tracking-wide">Guest</h2>
+                <button onClick={onLoginClick} className="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg transition-colors">
+                  Sign Up to Play
+                </button>
+              </div>
+            ) : (
+              <Link href={`/profile/${alias}`} className="group block text-center">
+                {localAvatar ? (
+                  <img src={localAvatar} alt={alias} className="w-20 h-20 mx-auto rounded-full object-cover border-4 border-slate-800 shadow-lg group-hover:border-blue-500 transition-colors bg-white mb-3" />
+                ) : (
+                  <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center font-bold text-white shadow-lg text-3xl border-4 border-slate-800 mb-3">⚽</div>
+                )}
+                <h2 className="font-bold text-xl leading-tight text-white tracking-wide group-hover:text-blue-400 transition-colors">{alias}</h2>
+                <p className="text-xs text-slate-400 group-hover:text-blue-400 mt-1 transition-colors">View Profile</p>
+              </Link>
+            )}
+          </div>
+
+          <nav className="glass-card overflow-hidden flex flex-col p-2">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id as Tab)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold transition-all ${
+                  activeTab === item.id ? "bg-slate-800 text-white shadow-md border-l-4 border-emerald-500" : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                }`}
+              >
+                <item.icon size={20} className={activeTab === item.id ? item.color : ""} /> {item.label}
+              </button>
+            ))}
+          </nav>
+          
+          <div className="mt-auto">
+            {!isGuest && (
+              <button
+                onClick={onLogout}
+                className="w-full flex items-center justify-center gap-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 font-bold transition-colors p-3 rounded-lg border border-transparent hover:border-red-500/20"
+              >
+                <LogOut size={18} /> Sign Out
               </button>
             )}
           </div>
-        </div>
+        </aside>
 
-        {/* Navigation Tabs */}
-        <div className="w-full md:w-auto flex bg-slate-900/60 p-1 rounded-xl border border-slate-700/50 overflow-x-auto hide-scrollbar">
-          <button
-            onClick={() => setActiveTab("hub")}
-            className={`flex items-center justify-center flex-1 md:flex-none gap-2 px-3 md:px-5 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-              activeTab === "hub" ? "bg-slate-800 text-white shadow-md border border-slate-700" : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            <LayoutDashboard size={16} className={activeTab === "hub" ? "text-blue-400" : ""} /> Hub
-          </button>
-          <button
-            onClick={() => setActiveTab("debate")}
-            className={`flex items-center justify-center flex-1 md:flex-none gap-2 px-3 md:px-5 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-              activeTab === "debate" ? "bg-slate-800 text-white shadow-md border border-slate-700" : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            <MessageSquare size={16} className={activeTab === "debate" ? "text-emerald-400" : ""} /> Debate
-          </button>
-          <button
-            onClick={() => setActiveTab("leaderboard")}
-            className={`flex items-center justify-center flex-1 md:flex-none gap-2 px-3 md:px-5 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-              activeTab === "leaderboard" ? "bg-slate-800 text-white shadow-md border border-slate-700" : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            <Trophy size={16} className={activeTab === "leaderboard" ? "text-yellow-400" : ""} /> Ranks
-          </button>
-        </div>
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto hide-scrollbar pb-24 md:pb-0 relative">
+          <div className="animate-fade-in w-full max-w-2xl mx-auto">
+            {activeTab === "hub" && <MatchHub alias={alias} avatarUrl={localAvatar} isGuest={isGuest} onLoginClick={onLoginClick} />}
+            {activeTab === "debate" && <DebateFeed currentUserAlias={alias} currentUserAvatar={localAvatar} isGuest={isGuest} onLoginClick={onLoginClick} />}
+            {activeTab === "leaderboard" && <Leaderboard />}
+          </div>
+        </main>
 
-        {/* Desktop actions (Auth) */}
-        <div className="hidden md:flex items-center gap-2">
+        {/* Right Sidebar (Desktop Only) */}
+        <aside className="hidden lg:flex flex-col w-80 shrink-0 space-y-6 overflow-y-auto hide-scrollbar pb-6">
+          <Leaderboard compact={true} />
           
-          {isGuest ? (
-            <button
-              onClick={onLoginClick}
-              className="flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-lg shadow-md transition-all hover:scale-105"
-            >
-              Sign Up to Play
-            </button>
-          ) : (
-            <button
-              onClick={onLogout}
-              className="flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors p-2 rounded-lg"
-              title="Log Out"
-            >
-              <LogOut size={20} />
-            </button>
-          )}
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <div className="animate-fade-in">
-        {activeTab === "hub" && <MatchHub alias={alias} avatarUrl={localAvatar} isGuest={isGuest} onLoginClick={onLoginClick} />}
-        {activeTab === "debate" && <DebateFeed currentUserAlias={alias} currentUserAvatar={localAvatar} isGuest={isGuest} onLoginClick={onLoginClick} />}
-        {activeTab === "leaderboard" && <Leaderboard />}
+          {/* Add a quick pitch for PitchSense */}
+          <div className="glass-card p-5 bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
+            <h3 className="font-bold text-lg mb-2 text-white">About PitchSense</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              Predict scores, debate with AI analysts, and climb the ranks. Only matches kicking off within 24 hours appear in the Hub.
+            </p>
+          </div>
+        </aside>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 flex justify-around p-2 z-50 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.5)] safe-area-bottom">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setActiveTab(item.id as Tab)}
+            className={`flex flex-col items-center justify-center w-16 py-1 rounded-xl transition-all ${
+              activeTab === item.id ? "text-white" : "text-slate-500"
+            }`}
+          >
+            <div className={`p-1.5 rounded-full mb-1 transition-all ${activeTab === item.id ? 'bg-slate-800 scale-110' : ''}`}>
+              <item.icon size={22} className={activeTab === item.id ? item.color : ""} />
+            </div>
+            <span className={`text-[10px] font-bold ${activeTab === item.id ? "opacity-100" : "opacity-0 h-0 overflow-hidden"} transition-all`}>{item.label}</span>
+          </button>
+        ))}
+        {!isGuest && (
+          <Link href={`/profile/${alias}`} className={`flex flex-col items-center justify-center w-16 py-1 rounded-xl transition-all text-slate-500`}>
+            <div className={`p-1 rounded-full mb-1 border-2 transition-all border-transparent`}>
+               {localAvatar ? (
+                  <img src={localAvatar} alt={alias} className="w-[22px] h-[22px] rounded-full object-cover bg-white" />
+                ) : (
+                  <div className="w-[22px] h-[22px] rounded-full bg-gradient-to-br from-emerald-600 to-green-800 flex items-center justify-center text-[10px] text-white">⚽</div>
+                )}
+            </div>
+          </Link>
+        )}
+      </nav>
     </div>
   );
 }
