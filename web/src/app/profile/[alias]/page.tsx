@@ -74,32 +74,7 @@ export default function ProfilePage() {
     fetchProfile();
   }, [alias]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const MAX_SIZE = 150;
-        let width = img.width;
-        let height = img.height;
-        if (width > height) {
-          if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-        } else {
-          if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, width, height);
-        setNewAvatarUrl(canvas.toDataURL("image/jpeg", 0.8));
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  };
+  // Custom file upload has been removed in favor of lightweight preset SVGs
 
   const saveAvatar = async () => {
     setSavingAvatar(true);
@@ -237,7 +212,7 @@ export default function ProfilePage() {
         {isEditingAvatar && (
           <div className="relative mt-6 pt-6 border-t border-[var(--border-subtle)]">
             <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4">Choose Avatar</p>
-            <div className="flex flex-wrap gap-3 mb-5">
+            <div className="flex flex-wrap justify-center gap-3 mb-6">
               {[
                 "/avatars/shirt-red-white.svg",
                 "/avatars/shirt-blue-white.svg",
@@ -251,29 +226,15 @@ export default function ProfilePage() {
                 <button
                   key={idx}
                   onClick={() => setNewAvatarUrl(url)}
-                  className={`w-12 h-12 rounded-2xl overflow-hidden border-2 transition-all hover:scale-110 ${
+                  className={`w-14 h-14 rounded-2xl overflow-hidden border-2 transition-all hover:scale-110 ${
                     newAvatarUrl === url
-                      ? "border-[#AEFC00] scale-110 shadow-[0_0_12px_rgba(174,252,0,0.4)]"
-                      : "border-[var(--border-medium)] hover:border-[var(--border-lime)]"
+                      ? "border-[#AEFC00] scale-110 shadow-[0_0_15px_rgba(174,252,0,0.4)]"
+                      : "border-[var(--border-medium)] hover:border-[var(--border-lime)] bg-black/20"
                   }`}
                 >
-                  <img src={url} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={url} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover p-1" />
                 </button>
               ))}
-            </div>
-
-            <div className="mb-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex-1 h-px bg-[var(--border-subtle)]"></div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">or upload custom</span>
-                <div className="flex-1 h-px bg-[var(--border-subtle)]"></div>
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="block w-full text-sm text-[var(--text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#AEFC00] file:text-black hover:file:opacity-90 transition-all cursor-pointer"
-              />
             </div>
 
             <div className="flex gap-2 pt-4 border-t border-[var(--border-subtle)]">

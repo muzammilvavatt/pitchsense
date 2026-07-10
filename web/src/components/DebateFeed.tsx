@@ -14,7 +14,6 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
   const [replyContent, setReplyContent] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
   const [sortBy, setSortBy] = useState<"top" | "recent">("top");
-  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
 
   const fetchPredictions = async (currentSort: "top" | "recent") => {
     // Only fetch predictions from the last 72 hours to keep the feed fresh
@@ -95,13 +94,6 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
       supabase.removeChannel(channel);
     };
   }, [sortBy, currentUserAlias]);
-
-  const toggleExpand = (id: string) => {
-    const newSet = new Set(expandedPosts);
-    if (newSet.has(id)) newSet.delete(id);
-    else newSet.add(id);
-    setExpandedPosts(newSet);
-  };
 
   const handleUpvote = async (id: string, currentLikes: number) => {
     if (isGuest) {
@@ -270,17 +262,10 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                   </div>
 
                   {p.justification && p.justification.trim() !== "" && (
-                    <div className="mb-4 cursor-pointer group" onClick={() => toggleExpand(p.id)}>
-                      <p className={`text-slate-200 text-base md:text-lg leading-loose whitespace-pre-wrap tracking-wide ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
+                    <div className="mb-4">
+                      <p className="text-[var(--text-primary)] text-base md:text-lg leading-relaxed whitespace-pre-wrap">
                         {p.justification}
                       </p>
-                      {p.justification?.length > 120 && !expandedPosts.has(p.id) && (
-                        <span 
-                          className="text-blue-400 text-sm font-bold mt-1 group-hover:underline inline-block"
-                        >
-                          Read more
-                        </span>
-                      )}
                     </div>
                   )}
 

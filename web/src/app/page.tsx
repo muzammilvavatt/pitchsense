@@ -96,7 +96,7 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <header className="hidden md:flex items-center justify-between px-8 py-6 border-b border-[var(--border-subtle)]">
+          <header className="hidden md:flex items-center justify-between px-8 py-6 border-b border-[var(--border-subtle)] sticky top-0 z-50 bg-[var(--bg-base)]/80 backdrop-blur-xl">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-[#AEFC00] flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#050505" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

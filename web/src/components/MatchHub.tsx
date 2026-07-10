@@ -272,16 +272,40 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                 ) : (
                   <div className="space-y-3">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <select
-                        value={pred.winner}
-                        onChange={(e) => handlePredictionChange(match.id, "winner", e.target.value)}
-                        className="bento-input p-3 text-sm w-full bg-[var(--bg-base)]"
-                      >
-                        <option value="">Winner</option>
-                        <option value={match.home_team}>{match.home_team}</option>
-                        <option value={match.away_team}>{match.away_team}</option>
-                        {!match.is_knockout && <option value="Draw">Draw</option>}
-                      </select>
+                      <div className="flex bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-2xl overflow-hidden p-1">
+                        <button
+                          onClick={() => handlePredictionChange(match.id, "winner", match.home_team)}
+                          className={`flex-1 text-xs font-bold py-2 rounded-xl transition-all ${
+                            pred.winner === match.home_team 
+                              ? 'bg-[#AEFC00] text-black shadow-[0_0_10px_rgba(174,252,0,0.3)]' 
+                              : 'text-[var(--text-muted)] hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          Home
+                        </button>
+                        {!match.is_knockout && (
+                          <button
+                            onClick={() => handlePredictionChange(match.id, "winner", "Draw")}
+                            className={`flex-1 text-xs font-bold py-2 rounded-xl transition-all ${
+                              pred.winner === "Draw" 
+                                ? 'bg-slate-300 text-black shadow-[0_0_10px_rgba(203,213,225,0.3)]' 
+                                : 'text-[var(--text-muted)] hover:text-white hover:bg-white/5'
+                            }`}
+                          >
+                            Draw
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handlePredictionChange(match.id, "winner", match.away_team)}
+                          className={`flex-1 text-xs font-bold py-2 rounded-xl transition-all ${
+                            pred.winner === match.away_team 
+                              ? 'bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.3)]' 
+                              : 'text-[var(--text-muted)] hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          Away
+                        </button>
+                      </div>
                       <input
                         type="text"
                         placeholder="Score (e.g. 2-1)"
