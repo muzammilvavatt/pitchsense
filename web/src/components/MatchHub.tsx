@@ -268,14 +268,14 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                       />
                     </div>
                     <textarea
-                      placeholder="Provide your tactical justification here..."
+                      placeholder="Add tactical justification (Optional: Great analyses get highly liked which boosts your prestige rank!)"
                       value={pred.justification}
                       onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
                       className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm min-h-[100px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                     />
                             <button
                               onClick={() => submitPrediction(match.id)}
-                              disabled={!pred.winner || !pred.score || !pred.justification || submitting === match.id}
+                              disabled={!pred.winner || !pred.score || submitting === match.id}
                               className="w-full bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 disabled:hover:bg-emerald-900 text-white font-bold py-3 rounded-lg transition-all active:scale-[0.98] border border-emerald-600/50"
                             >
                               {submitting === match.id ? "Locking in..." : "Submit Prediction"}

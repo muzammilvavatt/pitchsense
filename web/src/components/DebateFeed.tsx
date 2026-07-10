@@ -269,18 +269,20 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                     </span>
                   </div>
 
-                  <div className="mb-2 cursor-pointer group" onClick={() => toggleExpand(p.id)}>
-                    <p className={`text-slate-200 text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
-                      {p.justification}
-                    </p>
-                    {p.justification?.length > 120 && !expandedPosts.has(p.id) && (
-                      <span 
-                        className="text-blue-400 text-sm font-bold mt-1 group-hover:underline inline-block"
-                      >
-                        Read more
-                      </span>
-                    )}
-                  </div>
+                  {p.justification && p.justification.trim() !== "" && (
+                    <div className="mb-2 cursor-pointer group" onClick={() => toggleExpand(p.id)}>
+                      <p className={`text-slate-200 text-[15px] md:text-[16px] leading-relaxed whitespace-pre-wrap ${!expandedPosts.has(p.id) ? "line-clamp-4" : ""}`}>
+                        {p.justification}
+                      </p>
+                      {p.justification?.length > 120 && !expandedPosts.has(p.id) && (
+                        <span 
+                          className="text-blue-400 text-sm font-bold mt-1 group-hover:underline inline-block"
+                        >
+                          Read more
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   {/* Action Bar */}
                   <div className="flex items-center gap-4 md:gap-6 text-slate-500">
