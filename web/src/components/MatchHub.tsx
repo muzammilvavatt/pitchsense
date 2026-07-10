@@ -264,7 +264,7 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
                       />
                     </div>
                     <textarea
-                      placeholder="Add tactical justification (Optional: Great analyses get highly liked which boosts your prestige rank!)"
+                      placeholder="Add tactical justification (Optional)"
                       value={pred.justification}
                       onChange={(e) => handlePredictionChange(match.id, "justification", e.target.value)}
                       className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm min-h-[100px] focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
