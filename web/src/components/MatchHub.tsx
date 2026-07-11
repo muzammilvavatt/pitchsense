@@ -196,9 +196,18 @@ export default function MatchHub({ alias, avatarUrl, isGuest, onLoginClick }: { 
             <div className="p-5 md:p-7 border-b border-[var(--border-subtle)]">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">{kickoffDay}</span>
-                <div className="flex items-center gap-2 bg-[#AEFC00]/10 border border-[var(--border-lime)] px-3 py-1 rounded-full animate-lime-pulse">
-                  <div className="lime-dot w-1.5 h-1.5"></div>
-                  <span className="text-[#AEFC00] text-xs font-bold">{kickoffTime}</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-[#AEFC00]/10 border border-[var(--border-lime)] px-3 py-1 rounded-full animate-lime-pulse">
+                    <div className="lime-dot w-1.5 h-1.5"></div>
+                    <span className="text-[#AEFC00] text-xs font-bold">{kickoffTime}</span>
+                  </div>
+                  <button 
+                    onClick={() => handleShare(match)} 
+                    className="text-[var(--text-muted)] hover:text-[#AEFC00] transition-colors p-1.5 rounded-lg hover:bg-[#AEFC00]/10 flex items-center gap-1"
+                    title="Share this match"
+                  >
+                    <Share2 size={16} />
+                  </button>
                 </div>
               </div>
 
