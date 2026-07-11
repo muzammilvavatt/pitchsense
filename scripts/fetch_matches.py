@@ -42,8 +42,8 @@ def fetch_hot_matches():
         "league": "String (e.g. Euro Championship)",
         "kickoff": "ISO 8601 string of the exact match time (e.g. 2026-07-11T20:00:00Z)",
         "is_knockout": true/false (true if it is a knockout stage, quarter final, semi final, final, etc.),
-        "home_logo": "",
-        "away_logo": ""
+        "home_logo": "String. URL of the team's logo/flag. For national teams, ALWAYS use https://flagcdn.com/w160/xx.png where xx is the 2-letter ISO 3166-1 alpha-2 country code (e.g. ar.png for Argentina, es.png for Spain, gb-eng.png for England).",
+        "away_logo": "String. URL of the team's logo/flag. Same rule as home_logo."
     }}
     
     Do not invent matches. Only return real matches scheduled in the next 7 days. Limit to at most 10 matches.
