@@ -30,7 +30,9 @@ def fetch_hot_matches():
     prompt = f"""
     Today's date is {today}.
     Search the web for the most important upcoming international and top-flight club football (soccer) fixtures over the next 7 days.
-    Focus exclusively on major tournaments like: World Cup, Euro Championship, Copa America, UEFA Nations League, UEFA Champions League, Premier League, La Liga, Major League Soccer.
+    Focus EXCLUSIVELY on major elite tournaments: FIFA World Cup, Euro Championship, Copa America, UEFA Nations League, UEFA Champions League, Premier League, La Liga, Serie A, Bundesliga.
+    DO NOT return minor leagues or Major League Soccer (MLS) under any circumstances.
+    If there are World Cup matches happening in the next 48 hours, they MUST be included.
     
     Return the matches as a raw JSON array of objects. Do NOT wrap it in markdown block quotes like ```json. Just raw text.
     Each object must exactly match this structure:
