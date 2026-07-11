@@ -152,11 +152,7 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
               href={`/profile/${alias}`}
               className="flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-[var(--text-muted)] hover:text-white transition-all"
             >
-              {localAvatar ? (
-                <img src={localAvatar} alt={alias} className="w-6 h-6 rounded-lg object-cover" />
-              ) : (
-                <User size={20} />
-              )}
+              <img src={resolveAvatar(localAvatar, alias)} alt={alias} className="w-6 h-6 rounded-lg object-cover border border-[var(--border-medium)]" />
               <span className="text-[10px] font-bold">Me</span>
             </Link>
           )}
