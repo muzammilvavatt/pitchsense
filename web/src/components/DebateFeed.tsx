@@ -26,25 +26,41 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
       .from("predictions")
       .select(`
         id, alias, prediction, score_prediction, justification, likes, created_at,
-        matches ( home_team, away_team ),
+        matches ( home_team, away_team, kickoff, result ),
         replies ( id, alias, avatar_url, content, created_at )
       `)
       .gte('created_at', threeDaysAgo.toISOString());
       
-    if (currentSort === "top") {
-      query = query.order("likes", { ascending: false }).order("created_at", { ascending: false });
-    } else {
-      query = query.order("created_at", { ascending: false });
-    }
-    
     const { data } = await query.limit(50);
     
     if (data) {
       // Sort replies by creation time for each prediction
-      const sortedData = data.map(p => ({
+      let sortedData = data.map(p => ({
         ...p,
         replies: p.replies ? p.replies.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) : []
       }));
+
+      // Sort by Match Status -> Then by Top/Recent
+      sortedData.sort((a, b) => {
+        const aMatch = Array.isArray(a.matches) ? a.matches[0] : a.matches;
+        const bMatch = Array.isArray(b.matches) ? b.matches[0] : b.matches;
+        
+        const aIsUpcoming = aMatch?.result === null ? 1 : 0;
+        const bIsUpcoming = bMatch?.result === null ? 1 : 0;
+        
+        // Priority 1: Upcoming matches at the top, finished matches at the bottom
+        if (aIsUpcoming !== bIsUpcoming) {
+          return bIsUpcoming - aIsUpcoming;
+        }
+        
+        // Priority 2: Use the selected sort mode
+        if (currentSort === "top") {
+          return (b.likes || 0) - (a.likes || 0);
+        } else {
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+      });
+
       setPredictions(sortedData);
     }
     setLoading(false);
@@ -240,7 +256,11 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                   </div>
 
                   {/* Match Context Badge */}
-                  <div className="hidden sm:inline-flex items-center gap-2 bg-black/20 border border-[var(--border-medium)] px-3 py-1.5 rounded-2xl">
+                  <div className={`hidden sm:inline-flex items-center gap-2 border px-3 py-1.5 rounded-2xl ${
+                    match.result === null 
+                      ? 'bg-[#AEFC00]/10 border-[#AEFC00]/30' 
+                      : 'bg-black/20 border-[var(--border-medium)] opacity-70'
+                  }`}>
                     <div className="flex -space-x-1.5 shrink-0">
                       {match.home_logo ? (
                         <img src={match.home_logo} className="w-4 h-4 rounded-full bg-slate-800 object-contain p-0.5" />
@@ -260,7 +280,11 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                 </div>
 
                 {/* Mobile Match Context (if hidden on desktop) */}
-                <div className="sm:hidden inline-flex items-center gap-2 bg-black/20 border border-[var(--border-medium)] px-3 py-1.5 rounded-2xl self-start">
+                <div className={`sm:hidden inline-flex items-center gap-2 border px-3 py-1.5 rounded-2xl self-start ${
+                  match.result === null 
+                    ? 'bg-[#AEFC00]/10 border-[#AEFC00]/30' 
+                    : 'bg-black/20 border-[var(--border-medium)] opacity-70'
+                }`}>
                   <div className="flex -space-x-1.5 shrink-0">
                     {match.home_logo ? (
                       <img src={match.home_logo} className="w-4 h-4 rounded-full bg-slate-800 object-contain p-0.5" />
