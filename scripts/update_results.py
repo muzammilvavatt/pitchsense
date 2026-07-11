@@ -1,6 +1,7 @@
 import os
 import requests
-from datetime import datetime, timedelta
+import json
+from datetime import datetime, timezone
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
@@ -9,47 +10,74 @@ load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-API_FOOTBALL_KEY = os.getenv("API_FOOTBALL_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if not SUPABASE_URL or not SUPABASE_KEY or not API_FOOTBALL_KEY:
-    print("Please set SUPABASE_URL, SUPABASE_KEY, and API_FOOTBALL_KEY in your .env file.")
+if not SUPABASE_URL or not SUPABASE_KEY or not GEMINI_API_KEY:
+    print("Please set SUPABASE_URL, SUPABASE_KEY, and GEMINI_API_KEY in your environment.")
     exit(1)
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def fetch_recent_results():
+def fetch_finished_matches_ai(pending_matches):
     """
-    Fetches matches from the last 2 days from API-Football to find finished games.
+    Passes pending matches to Gemini AI to search the web for their final results.
     """
-    finished_matches = []
-    headers = {"x-apisports-key": API_FOOTBALL_KEY}
-    url = "https://v3.football.api-sports.io/fixtures"
+    match_descriptions = "\n".join([f"- {m['home_team']} vs {m['away_team']} (Played around {m['kickoff']})" for m in pending_matches])
     
-    # Check yesterday and today
-    for i in range(-1, 1):
-        target_date = (datetime.now() + timedelta(days=i)).strftime("%Y-%m-%d")
-        querystring = {"date": target_date}
+    print(f"Asking Gemini AI to search for results of {len(pending_matches)} matches...")
+    
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    
+    prompt = f"""
+    Today's date is {datetime.now(timezone.utc).isoformat()}.
+    Search the web for the final, official full-time results of the following football (soccer) matches:
+    
+    {match_descriptions}
+    
+    If a match has not finished yet or was postponed, do NOT include it in the response.
+    If a match went to penalty shootouts, you MUST include the penalty scores.
+    
+    Return the finished matches as a raw JSON array of objects. Do NOT wrap it in markdown block quotes like ```json. Just raw text.
+    Each object must exactly match this structure:
+    {{
+        "home_team": "String (exact same name as I provided)",
+        "away_team": "String (exact same name as I provided)",
+        "home_goals": Integer (goals scored in regular + extra time),
+        "away_goals": Integer (goals scored in regular + extra time),
+        "home_penalties": Integer (0 if no shootout),
+        "away_penalties": Integer (0 if no shootout)
+    }}
+    """
+    
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "tools": [{"googleSearch": {}}],
+        "generationConfig": {
+            "temperature": 0.1
+        }
+    }
+    
+    try:
+        res = requests.post(url, headers={"Content-Type": "application/json"}, json=payload)
+        res.raise_for_status()
         
-        response = requests.get(url, headers=headers, params=querystring)
-        data = response.json()
+        data = res.json()
+        text = data['candidates'][0]['content']['parts'][0]['text']
         
-        if "response" in data:
-            for item in data["response"]:
-                fixture = item["fixture"]
-                teams = item["teams"]
-                goals = item["goals"]
-                
-                # Check if match is finished (FT, AET, PEN)
-                if fixture["status"]["short"] in ["FT", "AET", "PEN"]:
-                    finished_matches.append({
-                        "home_team": teams["home"]["name"],
-                        "away_team": teams["away"]["name"],
-                        "home_goals": goals["home"],
-                        "away_goals": goals["away"],
-                        "home_penalties": item["score"]["penalty"]["home"] if item["score"]["penalty"]["home"] is not None else 0,
-                        "away_penalties": item["score"]["penalty"]["away"] if item["score"]["penalty"]["away"] is not None else 0
-                    })
-    return finished_matches
+        text = text.replace('```json', '').replace('```', '').strip()
+        
+        results = json.loads(text)
+        
+        if not isinstance(results, list):
+            print("Gemini did not return a list.")
+            return []
+            
+        print(f"Gemini confirmed {len(results)} matches are finished!")
+        return results
+        
+    except Exception as e:
+        print("Failed to fetch results from Gemini:", e)
+        return []
 
 def determine_winner(home_team, away_team, home_goals, away_goals, home_penalties, away_penalties):
     if home_goals > away_goals:
@@ -65,17 +93,25 @@ def determine_winner(home_team, away_team, home_goals, away_goals, home_penaltie
         
     return "Draw"
 
-def update_database_results(api_results):
-    # 1. Fetch pending matches from Supabase (where result is null)
-    response = supabase.table("matches").select("*").is_("result", "null").execute()
+def update_database_results():
+    # 1. Fetch pending matches from Supabase (where result is null AND kickoff is in the past)
+    now = datetime.now(timezone.utc).isoformat()
+    response = supabase.table("matches").select("*").is_("result", "null").lt("kickoff", now).execute()
     pending_matches = response.data
     
     if not pending_matches:
-        print("No pending matches found in database.")
+        print("No pending finished matches found in database.")
+        return
+
+    # 2. Get the results from AI
+    api_results = fetch_finished_matches_ai(pending_matches)
+    
+    if not api_results:
+        print("No finished match results returned by AI.")
         return
 
     for db_match in pending_matches:
-        # 2. Find the corresponding finished match from the API data
+        # 3. Find the corresponding finished match from the AI data
         matched_api_game = next(
             (m for m in api_results if m["home_team"] == db_match["home_team"] and m["away_team"] == db_match["away_team"]), 
             None
@@ -98,10 +134,10 @@ def update_database_results(api_results):
             
             print(f"Match Finished: {db_match['home_team']} vs {db_match['away_team']} -> {score_string} (Winner: {actual_winner})")
             
-            # 3. Update the matches table with the final result
+            # 4. Update the matches table with the final result
             supabase.table("matches").update({"result": score_string}).eq("id", db_match["id"]).execute()
             
-            # 4. Evaluate all predictions for this match
+            # 5. Evaluate all predictions for this match
             pred_response = supabase.table("predictions").select("*").eq("match_id", db_match["id"]).execute()
             predictions = pred_response.data
             
@@ -118,8 +154,6 @@ def update_database_results(api_results):
                 print(f"  - Scored prediction by {pred['alias']}: {'Correct' if is_correct else 'Incorrect'}, Exact Score: {is_exact_score}")
 
 if __name__ == "__main__":
-    print("Looking for completed matches...")
-    results = fetch_recent_results()
-    if results:
-        update_database_results(results)
+    print("Looking for completed matches via AI...")
+    update_database_results()
     print("Done updating results.")
