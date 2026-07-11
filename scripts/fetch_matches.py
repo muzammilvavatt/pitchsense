@@ -21,8 +21,14 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 HOT_LEAGUES = {
     1: "World Cup",
     2: "UEFA Champions League",
+    3: "Europa League",
+    4: "Euro Championship",
+    5: "UEFA Nations League",
+    9: "Copa America",
+    15: "FIFA Club World Cup",
     39: "Premier League",
-    140: "La Liga"
+    140: "La Liga",
+    253: "Major League Soccer"
 }
 
 def fetch_hot_matches():
