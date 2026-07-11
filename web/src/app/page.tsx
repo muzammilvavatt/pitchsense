@@ -96,10 +96,10 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <header className="hidden md:flex items-center justify-between px-8 py-6 border-b border-[var(--border-subtle)] sticky top-0 z-50 bg-[var(--bg-base)]/80 backdrop-blur-xl">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#AEFC00] flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#050505" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <header className="flex items-center justify-between px-4 md:px-8 py-4 md:py-6 border-b border-[var(--border-subtle)] sticky top-0 z-50 bg-[var(--bg-base)]/80 backdrop-blur-xl">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="w-7 h-7 md:w-9 md:h-9 rounded-xl bg-[#AEFC00] flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#050505" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 md:w-5 md:h-5">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 16l-4-3 1.5-5h5L16 13z" />
                   <path d="M8 13l-6 2" />
@@ -109,8 +109,8 @@ export default function Home() {
                   <path d="M12 16v6" />
                 </svg>
               </div>
-              <span className="text-xl font-bold tracking-tight text-white">PitchSense</span>
-              <span className="lime-badge ml-1">BETA</span>
+              <span className="text-lg md:text-xl font-bold tracking-tight text-white">PitchSense</span>
+              <span className="lime-badge ml-0 md:ml-1 scale-75 md:scale-100 origin-left">BETA</span>
             </div>
             <div className="flex items-center gap-4">
               <HowItWorksModal />

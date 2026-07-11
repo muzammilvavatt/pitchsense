@@ -53,10 +53,10 @@ export default function HowItWorksModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="btn-ghost flex items-center gap-2 text-sm px-4 py-2 rounded-2xl"
+        className="btn-ghost flex items-center gap-1.5 md:gap-2 text-sm px-3 py-2 md:px-4 rounded-2xl"
       >
-        <Info size={15} />
-        How it Works
+        <Info size={18} className="md:w-[15px] md:h-[15px]" />
+        <span className="hidden sm:inline">How it Works</span>
       </button>
 
       {isOpen && mounted && createPortal(
