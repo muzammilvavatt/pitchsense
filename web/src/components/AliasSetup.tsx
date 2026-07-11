@@ -13,6 +13,28 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
   const [alias, setAlias] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [resetSuccess, setResetSuccess] = useState(false);
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      setErrorMsg('Please enter your email address first.');
+      return;
+    }
+    setLoading(true);
+    setErrorMsg('');
+    setResetSuccess(false);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (error) {
+      setErrorMsg(error.message);
+    } else {
+      setResetSuccess(true);
+    }
+    setLoading(false);
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,6 +151,16 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
             </div>
           )}
 
+          {/* Success message (password reset) */}
+          {resetSuccess && (
+            <div className="flex items-start gap-3 bg-[#AEFC00]/10 border border-[#AEFC00]/20 p-4 rounded-2xl">
+              <AlertCircle size={16} className="text-[#AEFC00] shrink-0 mt-0.5" />
+              <p className="text-[#AEFC00] text-sm leading-relaxed">
+                Password reset email sent! Check your inbox (and spam folder) for the link.
+              </p>
+            </div>
+          )}
+
           {/* Email */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Email</label>
@@ -162,12 +194,14 @@ export default function AliasSetup({ onAliasSet }: AuthScreenProps) {
             </div>
             {isLogin && (
               <div className="flex justify-end">
-                <a
-                  href="mailto:four4inbazar@gmail.com?subject=Password Reset Request"
-                  className="text-xs text-[var(--text-muted)] hover:text-[#AEFC00] transition-colors"
+                <button
+                  type="button"
+                  onClick={handleResetPassword}
+                  disabled={loading}
+                  className="text-xs text-[var(--text-muted)] hover:text-[#AEFC00] transition-colors cursor-pointer"
                 >
                   Forgot password?
-                </a>
+                </button>
               </div>
             )}
           </div>
