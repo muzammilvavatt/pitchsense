@@ -10,6 +10,7 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [isLiking, setIsLiking] = useState<Set<string>>(new Set());
   const [userBadges, setUserBadges] = useState<Record<string, PrestigeBadge | null>>({});
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
@@ -96,12 +97,16 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
     };
   }, [sortBy, currentUserAlias]);
 
-  const handleUpvote = async (id: string, currentLikes: number) => {
+  const handleUpvote = async (id: string, authorAlias: string, currentLikes: number) => {
     if (isGuest) {
       onLoginClick?.();
       return;
     }
     if (!currentUserAlias) return;
+    if (currentUserAlias === authorAlias) return; // Cannot like your own prediction
+    if (isLiking.has(id)) return; // Prevent rapid double clicks
+
+    setIsLiking(prev => new Set(prev).add(id));
 
     const isLiked = likedIds.has(id);
     const newLikedIds = new Set(likedIds);
@@ -132,6 +137,12 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
 
     // Optimistic UI update
     setPredictions(current => current.map(p => p.id === id ? { ...p, likes: newLikesCount } : p));
+    
+    setIsLiking(prev => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
   };
 
   const handleReplySubmit = async (predictionId: string) => {
@@ -287,14 +298,17 @@ export default function DebateFeed({ currentUserAlias, currentUserAvatar, isGues
                   {/* Action Bar */}
                   <div className="flex items-center gap-3 pt-2">
                     <button
-                      onClick={() => handleUpvote(p.id, p.likes || 0)}
+                      onClick={() => handleUpvote(p.id, p.alias, p.likes || 0)}
+                      disabled={p.alias === currentUserAlias || isLiking.has(p.id)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold transition-all border ${
-                        likedIds.has(p.id) 
-                          ? 'bg-[#AEFC00]/20 text-[#AEFC00] border-[#AEFC00]/30' 
-                          : 'bg-black/20 text-[var(--text-secondary)] border-[var(--border-medium)] hover:text-white hover:border-[var(--text-muted)]'
+                        p.alias === currentUserAlias
+                          ? 'bg-black/10 text-[var(--text-muted)] border-[var(--border-subtle)] cursor-not-allowed opacity-50'
+                          : likedIds.has(p.id) 
+                            ? 'bg-[#AEFC00]/20 text-[#AEFC00] border-[#AEFC00]/30' 
+                            : 'bg-black/20 text-[var(--text-secondary)] border-[var(--border-medium)] hover:text-white hover:border-[var(--text-muted)]'
                       }`}
                     >
-                      <ThumbsUp size={16} className={likedIds.has(p.id) ? 'fill-[#AEFC00]' : ''} /> 
+                      <ThumbsUp size={16} className={likedIds.has(p.id) && p.alias !== currentUserAlias ? 'fill-[#AEFC00]' : ''} /> 
                       {p.likes || 0}
                     </button>
                     
