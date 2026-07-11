@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { LogOut, Trophy, MessageSquare, LayoutDashboard, User, Zap, ChevronRight } from "lucide-react";
+import { LogOut, LogIn, Trophy, MessageSquare, LayoutDashboard, User, Zap, ChevronRight } from "lucide-react";
 import MatchHub from "./MatchHub";
 import DebateFeed from "./DebateFeed";
 import Leaderboard from "./Leaderboard";
@@ -147,7 +147,15 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
               <span className="text-[10px] font-bold">{item.label}</span>
             </button>
           ))}
-          {!isGuest && (
+          {isGuest ? (
+            <button
+              onClick={onLoginClick}
+              className="flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-[var(--text-muted)] hover:text-white transition-all"
+            >
+              <LogIn size={20} />
+              <span className="text-[10px] font-bold">Sign In</span>
+            </button>
+          ) : (
             <Link
               href={`/profile/${alias}`}
               className="flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-[var(--text-muted)] hover:text-white transition-all"
