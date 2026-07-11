@@ -113,32 +113,8 @@ export default function Dashboard({ alias, avatarUrl, onLogout, isGuest, onLogin
         </div>
       </aside>
 
-      {/* ── MOBILE HEADER ── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 sidebar-glass border-b border-[var(--border-subtle)]">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#AEFC00] flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#050505" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16l-4-3 1.5-5h5L16 13z" />
-                <path d="M8 13l-6 2" /><path d="M16 13l6 2" />
-              </svg>
-            </div>
-            <span className="text-base font-bold text-white">PitchSense</span>
-            <span className="lime-badge text-[9px]">BETA</span>
-          </div>
-          {isGuest ? (
-            <button onClick={onLoginClick} className="btn-lime text-xs px-3 py-1.5 rounded-xl">Sign In</button>
-          ) : (
-            <Link href={`/profile/${alias}`}>
-              <img src={resolveAvatar(localAvatar, alias)} alt={alias} className="w-8 h-8 rounded-xl object-cover border-2 border-[var(--border-lime)] bg-white" />
-            </Link>
-          )}
-        </div>
-      </div>
-
       {/* ── MAIN CONTENT ── */}
-      <main ref={mainRef} className="flex-1 overflow-y-auto hide-scrollbar pb-20 md:pb-0 pt-[60px] md:pt-0">
+      <main ref={mainRef} className="flex-1 overflow-y-auto hide-scrollbar pb-20 md:pb-0">
         <div className="animate-fade-up max-w-3xl mx-auto p-4 md:p-8">
           {activeTab === "hub" && <MatchHub alias={alias} avatarUrl={localAvatar} isGuest={isGuest} onLoginClick={onLoginClick} />}
           {activeTab === "debate" && <DebateFeed currentUserAlias={alias} currentUserAvatar={localAvatar} isGuest={isGuest} onLoginClick={onLoginClick} />}
