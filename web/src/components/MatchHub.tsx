@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Bot, User, CheckCircle2, AlertCircle, Share2, Copy } from "lucide-react";
+import { Bot, User, CheckCircle2, AlertCircle, Share2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import SeasonBanner from "./SeasonBanner";
 

@@ -106,7 +106,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  }, [compact]);
 
   /* ── COMPACT (sidebar) ── */
   if (compact) {
@@ -170,7 +170,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
         </div>
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-none">Leaderboard</h1>
-          <p className="text-sm text-[var(--text-muted)] font-medium mt-0.5">Who's the sharpest pundit?</p>
+          <p className="text-sm text-[var(--text-muted)] font-medium mt-0.5">Who&apos;s the sharpest pundit?</p>
         </div>
       </div>
 
@@ -188,7 +188,7 @@ export default function Leaderboard({ compact = false }: { compact?: boolean }) 
                 { data: top3[1], cfg: RANK_CONFIG[1], rank: 2 },
                 { data: top3[0], cfg: RANK_CONFIG[0], rank: 1 },
                 { data: top3[2], cfg: RANK_CONFIG[2], rank: 3 },
-              ].filter(p => p.data).map(({ data: leader, cfg, rank }) => {
+              ].filter(p => p.data).map(({ data: leader, cfg }) => {
                 const RankIcon = cfg.icon;
                 return (
                   <Link

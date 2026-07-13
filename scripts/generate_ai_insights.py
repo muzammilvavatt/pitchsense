@@ -1,6 +1,6 @@
 import os
 import time
-from google import genai
+import requests
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
@@ -16,7 +16,6 @@ if not SUPABASE_URL or not SUPABASE_KEY or not GEMINI_API_KEY:
     exit(1)
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-client = genai.Client(api_key=GEMINI_API_KEY)
 
 def generate_tactical_analysis(home_team, away_team):
     """
@@ -42,8 +41,18 @@ def generate_tactical_analysis(home_team, away_team):
     [Your tactical paragraph explaining EXACTLY why you think this will happen based on playstyles, midfield battles, or attacking threat. Keep it under 100 words. Be bold and opinionated.]
     """
     
-    response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
-    return response.text.strip()
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.5
+        }
+    }
+    
+    res = requests.post(url, headers={"Content-Type": "application/json"}, json=payload)
+    res.raise_for_status()
+    data = res.json()
+    return data['candidates'][0]['content']['parts'][0]['text'].strip()
 
 def process_upcoming_matches():
     # 1. Get all matches that don't have a result yet
@@ -85,9 +94,9 @@ def process_upcoming_matches():
             supabase.table("machine_insights").insert(insight_data).execute()
             print("Insight saved successfully.")
             
-            # Wait 15 seconds before the next request to avoid hitting Google's 5 Requests Per Minute limit
-            print("Waiting 15 seconds to respect free API rate limits...")
-            time.sleep(15)
+            # Wait 5 seconds before the next request to avoid hitting Google's 15 Requests Per Minute limit
+            print("Waiting 5 seconds to respect free API rate limits...")
+            time.sleep(5)
         except Exception as e:
             print(f"Failed to generate or save insight: {e}")
 
