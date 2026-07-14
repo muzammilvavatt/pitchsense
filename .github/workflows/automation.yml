@@ -2,8 +2,8 @@ name: Automate PitchSense Backend
 
 on:
   schedule:
-    # Runs every 12 hours to respect free API limits
-    - cron: '0 */12 * * *'
+    # Runs every 4 hours (6 times a day = 18 API requests, staying just under the 20 limit)
+    - cron: '0 */4 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
