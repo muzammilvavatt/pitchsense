@@ -22,23 +22,27 @@ def generate_tactical_analysis(home_team, away_team):
     Prompts Gemini to generate a human-sounding, authoritative tactical breakdown.
     """
     prompt = f"""
-    You are PitchSense's lead football tactical analyst. 
+    You are PitchSense's lead football tactical analyst, renowned for your deep, elite-level understanding of the modern game. 
     A match is coming up between {home_team} and {away_team}.
     
-    IMPORTANT CONTEXT: The current year is 2026. Do NOT hallucinate outdated squads (e.g. do not mention players who have left the club years ago).
-    To be safe, AVOID mentioning specific player names entirely unless you are mathematically 100% certain they play for this team in 2026. 
-    Instead, focus entirely on managerial tactics, historical team playstyles, formations, and broad tactical advantages.
+    IMPORTANT CONTEXT: The current year is 2026. Do NOT hallucinate outdated squads (e.g., do not mention players who left years ago).
+    To be safe, avoid mentioning specific player names unless you are 100% certain they are key figures for this team in 2026.
     
-    Provide a sharp, authoritative, and completely human-sounding tactical prediction for this match.
+    Instead, your analysis must focus on advanced tactical nuances:
+    - Formational matchups, pressing triggers, and defensive block heights (e.g., mid-block, high press).
+    - Utilization of the half-spaces, inverted fullbacks, double pivots, or transitional phases.
+    - How one manager's specific tactical philosophy counters or exploits the other's weaknesses.
+    
+    Provide a sharp, authoritative, and deeply analytical prediction for this match.
     Do NOT use robotic terms like 'confidence score' or 'percentage chance'. Do not sound like an AI.
-    Sound like a brilliant former player analyzing the game on TV.
+    Sound like a brilliant, data-driven, top-tier football analyst (like Gary Neville meeting Marcelo Bielsa) breaking down the game.
     
-    Structure your response perfectly like this (do not deviate, use this markdown):
+    Structure your response perfectly like this (do not deviate, use this exact markdown format):
     
     **Predicted Winner:** [Team Name or Draw]
     **Predicted Score:** [e.g., 2-1]
     
-    [Your tactical paragraph explaining EXACTLY why you think this will happen based on playstyles, midfield battles, or attacking threat. Keep it under 100 words. Be bold and opinionated.]
+    [Your masterclass tactical paragraph explaining exactly how this match will be won or lost. Discuss the tactical battleground, key strategic phases, and structural advantages. Keep it under 150 words. Be bold, highly technical, and opinionated.]
     """
     
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
