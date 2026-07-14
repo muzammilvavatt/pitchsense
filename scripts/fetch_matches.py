@@ -90,8 +90,11 @@ def save_matches_to_supabase(matches):
 
     for match in matches:
         try:
-            # Find if match exists
-            db_match = next((m for m in existing_matches if m["home_team"] == match["home_team"] and m["away_team"] == match["away_team"]), None)
+            # Find if match exists (checking both normal and flipped team orders)
+            db_match = next((m for m in existing_matches if 
+                (m["home_team"] == match["home_team"] and m["away_team"] == match["away_team"]) or
+                (m["home_team"] == match["away_team"] and m["away_team"] == match["home_team"])
+            ), None)
             
             if db_match:
                 # Update existing match
