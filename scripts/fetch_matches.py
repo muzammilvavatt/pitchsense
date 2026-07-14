@@ -24,7 +24,7 @@ def fetch_hot_matches():
     """
     print("Asking Gemini AI to search the web for upcoming Hot Matches...")
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     
     today = datetime.now().strftime('%Y-%m-%d')
     prompt = f"""

@@ -45,7 +45,7 @@ def generate_tactical_analysis(home_team, away_team):
     [Your masterclass tactical paragraph explaining exactly how this match will be won or lost. Discuss the tactical battleground, key strategic phases, and structural advantages. Keep it under 150 words. Be bold, highly technical, and opinionated.]
     """
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
