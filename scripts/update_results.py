@@ -26,7 +26,7 @@ def fetch_finished_matches_ai(pending_matches):
     
     print(f"Asking Gemini AI to search for results of {len(pending_matches)} matches...")
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     
     prompt = f"""
     Today's date is {datetime.now(timezone.utc).isoformat()}.

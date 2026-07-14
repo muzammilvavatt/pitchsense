@@ -24,7 +24,7 @@ def fetch_hot_matches():
     """
     print("Asking Gemini AI to search the web for upcoming Hot Matches...")
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     
     today = datetime.now().strftime('%Y-%m-%d')
     prompt = f"""
@@ -32,6 +32,7 @@ def fetch_hot_matches():
     Search the web for the most important upcoming international and top-flight club football (soccer) fixtures over the next 7 days.
     Focus EXCLUSIVELY on major elite tournaments: FIFA World Cup, Euro Championship, Copa America, UEFA Nations League, UEFA Champions League, Premier League, La Liga, Serie A, Bundesliga.
     DO NOT return minor leagues or Major League Soccer (MLS) under any circumstances.
+    DO NOT include ANY qualification rounds, qualifiers, or playoffs for club competitions (e.g., UEFA Champions League Qualifiers). Only include the main tournament stages.
     If there are World Cup matches happening in the next 48 hours, they MUST be included.
     
     Return the matches as a raw JSON array of objects. Do NOT wrap it in markdown block quotes like ```json. Just raw text.

@@ -2,8 +2,8 @@ name: Automate PitchSense Backend
 
 on:
   schedule:
-    # Runs every 1 hour (aggressive syncing for fast updates)
-    - cron: '0 * * * *'
+    # Runs every 12 hours to respect free API limits
+    - cron: '0 */12 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:

@@ -41,7 +41,7 @@ def generate_tactical_analysis(home_team, away_team):
     [Your tactical paragraph explaining EXACTLY why you think this will happen based on playstyles, midfield battles, or attacking threat. Keep it under 100 words. Be bold and opinionated.]
     """
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
