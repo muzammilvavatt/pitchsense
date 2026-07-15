@@ -22,19 +22,19 @@ def fetch_finished_matches_ai(pending_matches):
     """
     Passes pending matches to Gemini AI to search the web for their final results.
     """
-    match_descriptions = "\n".join([f"- {m['home_team']} vs {m['away_team']} (Played around {m['kickoff']})" for m in pending_matches])
+    match_descriptions = "\n".join([f"- {m['home_team']} vs {m['away_team']}" for m in pending_matches])
     
     print(f"Asking Gemini AI to search for results of {len(pending_matches)} matches...")
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     
     prompt = f"""
     Today's date is {datetime.now(timezone.utc).isoformat()}.
-    Search the web for the final, official full-time results of the following football (soccer) matches:
+    Search the web for the MOST RECENT final, official full-time result of the following football (soccer) matches:
     
     {match_descriptions}
     
-    If a match has not finished yet or was postponed, do NOT include it in the response.
+    Even if the date of the match you find online doesn't perfectly match today's date, return the most recent result you can find for this exact matchup.
     If a match went to penalty shootouts, you MUST include the penalty scores.
     
     Return the finished matches as a raw JSON array of objects. Do NOT wrap it in markdown block quotes like ```json. Just raw text.
