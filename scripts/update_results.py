@@ -137,21 +137,63 @@ def update_database_results():
             # 4. Update the matches table with the final result
             supabase.table("matches").update({"result": score_string}).eq("id", db_match["id"]).execute()
             
-            # 5. Evaluate all predictions for this match
-            pred_response = supabase.table("predictions").select("*").eq("match_id", db_match["id"]).execute()
-            predictions = pred_response.data
+    # 5. Evaluate all predictions for any match that HAS a result, but predictions haven't been scored
+    print("\nEvaluating unscored predictions for finished matches...")
+    
+    # Get all matches that have a result
+    finished_matches_response = supabase.table("matches").select("*").neq("result", "null").execute()
+    finished_matches = finished_matches_response.data
+    
+    for match in finished_matches:
+        result_str = match['result']
+        if not result_str or '-' not in result_str:
+            continue
             
-            exact_score = f"{matched_api_game['home_goals']}-{matched_api_game['away_goals']}"
+        # Parse the result string (e.g. "2-1" or "1-1 (PEN: 4-3)")
+        base_score = result_str.split(' (PEN')[0].strip()
+        try:
+            home_g, away_g = map(int, base_score.split('-'))
             
-            for pred in predictions:
-                is_correct = (pred["prediction"] == actual_winner)
-                is_exact_score = (pred["score_prediction"] == exact_score)
-                
-                supabase.table("predictions").update({
-                    "is_correct": is_correct,
-                    "is_exact_score": is_exact_score
-                }).eq("id", pred["id"]).execute()
-                print(f"  - Scored prediction by {pred['alias']}: {'Correct' if is_correct else 'Incorrect'}, Exact Score: {is_exact_score}")
+            # Determine winner based on the string
+            winner = "Draw"
+            if home_g > away_g:
+                winner = match['home_team']
+            elif away_g > home_g:
+                winner = match['away_team']
+            elif 'PEN' in result_str:
+                # If there are penalties, extract them
+                pen_str = result_str.split('(PEN: ')[1].replace(')', '').strip()
+                home_p, away_p = map(int, pen_str.split('-'))
+                if home_p > away_p:
+                    winner = match['home_team']
+                elif away_p > home_p:
+                    winner = match['away_team']
+        except Exception as e:
+            print(f"Could not parse result {result_str} for match {match['id']}: {e}")
+            continue
+            
+        # Get unscored predictions for this match
+        pred_response = supabase.table("predictions").select("*").eq("match_id", match["id"]).is_("is_correct", "null").execute()
+        predictions = pred_response.data
+        
+        if not predictions:
+            continue
+            
+        print(f"Scoring {len(predictions)} predictions for {match['home_team']} vs {match['away_team']} (Result: {result_str}, Winner: {winner})")
+        
+        for pred in predictions:
+            is_correct = (pred["prediction"] == winner)
+            # Check for exact score match, allow combinations like "Team 2-1" or just "2-1"
+            pred_score = pred.get("score_prediction", "")
+            is_exact_score = False
+            if pred_score:
+                is_exact_score = (base_score in pred_score)
+            
+            supabase.table("predictions").update({
+                "is_correct": is_correct,
+                "is_exact_score": is_exact_score
+            }).eq("id", pred["id"]).execute()
+            print(f"  - Scored prediction by {pred['alias']}: {'Correct' if is_correct else 'Incorrect'}, Exact Score: {is_exact_score}")
 
 if __name__ == "__main__":
     print("Looking for completed matches via AI...")
