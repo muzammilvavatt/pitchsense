@@ -41,13 +41,16 @@ def generate_batched_tactical_analysis(matches_list):
     Do NOT use robotic terms like 'confidence score' or 'percentage chance'. Do not sound like an AI.
     Sound like a brilliant, data-driven, top-tier football analyst (like Gary Neville meeting Marcelo Bielsa) breaking down the game.
     
+    IMPORTANT CRITERIA FOR SCORE PREDICTION:
+    Do NOT default to "2-1" for every match! Analyze the specific offensive and defensive capabilities of these two teams. Predict a wide, realistic variety of scores (e.g., 1-0, 3-0, 0-0, 2-2, 3-1, 1-1, 4-2, etc.) depending on whether it will be a tight defensive struggle or an open shootout. Be bold.
+    
     Return a raw JSON array of objects. Do NOT wrap it in markdown block quotes like ```json. Just raw text.
     Each object must exactly match this structure:
     {{
         "home_team": "String (exact same name as I provided)",
         "away_team": "String (exact same name as I provided)",
         "predicted_winner": "String (Team Name or Draw)",
-        "predicted_score": "String (e.g. 2-1)",
+        "predicted_score": "String (e.g. 3-1)",
         "insight": "String (Your masterclass tactical paragraph. Keep it under 150 words. Be bold, highly technical, and opinionated.)"
     }}
     """
@@ -56,7 +59,7 @@ def generate_batched_tactical_analysis(matches_list):
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
-            "temperature": 0.5
+            "temperature": 0.95
         }
     }
     
