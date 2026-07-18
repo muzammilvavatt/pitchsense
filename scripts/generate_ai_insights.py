@@ -111,9 +111,11 @@ def process_upcoming_matches():
                 db_match = next((m for m in batch if m['home_team'] == ai_match['home_team'] and m['away_team'] == ai_match['away_team']), None)
                 
                 if db_match:
+                    formatted_insight = f"**Predicted Winner:** {ai_match['predicted_winner']}\n**Predicted Score:** {ai_match.get('predicted_score', 'N/A')}\n\n{ai_match['insight']}"
+                    
                     insight_data = {
                         "match_id": db_match["id"],
-                        "insight": ai_match["insight"],
+                        "insight": formatted_insight,
                         "predicted_winner": ai_match["predicted_winner"]
                     }
                     supabase.table("machine_insights").insert(insight_data).execute()
