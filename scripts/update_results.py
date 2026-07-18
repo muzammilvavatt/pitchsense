@@ -28,11 +28,23 @@ def fetch_finished_matches_ai(pending_matches):
     
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={GEMINI_API_KEY}"
     
+    # Fetch raw data from ESPN public scoreboard to feed to Gemini
+    # This bypasses the need for the googleSearch tool, avoiding the free tier rate limit
+    try:
+        espn_res = requests.get('https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates=20260710-20260725')
+        espn_data = espn_res.text[:30000] # Limit to 30k chars to fit in context
+    except Exception:
+        espn_data = "No data available."
+
     prompt = f"""
     Today's date is {datetime.now(timezone.utc).isoformat()}.
-    Search the web for the MOST RECENT final, official full-time result of the following football (soccer) matches:
+    I am providing you with raw JSON scoreboard data from a public sports API.
+    Analyze this raw data to find the final, official full-time result of the following football (soccer) matches:
     
     {match_descriptions}
+    
+    RAW SCOREBOARD DATA:
+    {espn_data}
     
     Even if the date of the match you find online doesn't perfectly match today's date, return the most recent result you can find for this exact matchup.
     If a match went to penalty shootouts, you MUST include the penalty scores.
@@ -51,7 +63,6 @@ def fetch_finished_matches_ai(pending_matches):
     
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "tools": [{"googleSearch": {}}],
         "generationConfig": {
             "temperature": 0.1
         }
@@ -94,50 +105,7 @@ def determine_winner(home_team, away_team, home_goals, away_goals, home_penaltie
     return "Draw"
 
 def update_database_results():
-    # 1. Fetch pending matches from Supabase (where result is null AND kickoff is in the past)
-    now = datetime.now(timezone.utc).isoformat()
-    response = supabase.table("matches").select("*").is_("result", "null").lt("kickoff", now).execute()
-    pending_matches = response.data
-    
-    if not pending_matches:
-        print("No pending finished matches found in database.")
-        return
-
-    # 2. Get the results from AI
-    api_results = fetch_finished_matches_ai(pending_matches)
-    
-    if not api_results:
-        print("No finished match results returned by AI.")
-        return
-
-    for db_match in pending_matches:
-        # 3. Find the corresponding finished match from the AI data
-        matched_api_game = next(
-            (m for m in api_results if m["home_team"] == db_match["home_team"] and m["away_team"] == db_match["away_team"]), 
-            None
-        )
-        
-        if matched_api_game:
-            # Format score string
-            score_string = f"{matched_api_game['home_goals']}-{matched_api_game['away_goals']}"
-            if matched_api_game['home_penalties'] > 0 or matched_api_game['away_penalties'] > 0:
-                score_string += f" (PEN: {matched_api_game['home_penalties']}-{matched_api_game['away_penalties']})"
-
-            actual_winner = determine_winner(
-                matched_api_game["home_team"], 
-                matched_api_game["away_team"], 
-                matched_api_game["home_goals"], 
-                matched_api_game["away_goals"],
-                matched_api_game["home_penalties"],
-                matched_api_game["away_penalties"]
-            )
-            
-            print(f"Match Finished: {db_match['home_team']} vs {db_match['away_team']} -> {score_string} (Winner: {actual_winner})")
-            
-            # 4. Update the matches table with the final result
-            supabase.table("matches").update({"result": score_string}).eq("id", db_match["id"]).execute()
-            
-    # 5. Evaluate all predictions for any match that HAS a result, but predictions haven't been scored
+    # 1. Evaluate all predictions for any match that HAS a result, but predictions haven't been scored
     print("\nEvaluating unscored predictions for finished matches...")
     
     # Get all matches that have a result
@@ -194,6 +162,50 @@ def update_database_results():
                 "is_exact_score": is_exact_score
             }).eq("id", pred["id"]).execute()
             print(f"  - Scored prediction by {pred['alias']}: {'Correct' if is_correct else 'Incorrect'}, Exact Score: {is_exact_score}")
+            
+    # 2. Fetch pending matches from Supabase (where result is null AND kickoff is in the past)
+    now = datetime.now(timezone.utc).isoformat()
+    response = supabase.table("matches").select("*").is_("result", "null").lt("kickoff", now).execute()
+    pending_matches = response.data
+    
+    if not pending_matches:
+        print("No pending finished matches found in database.")
+        return
+
+    # 3. Get the results from AI
+    api_results = fetch_finished_matches_ai(pending_matches)
+    
+    if not api_results:
+        print("No finished match results returned by AI.")
+        return
+
+    for db_match in pending_matches:
+        # 4. Find the corresponding finished match from the AI data
+        matched_api_game = next(
+            (m for m in api_results if m["home_team"] == db_match["home_team"] and m["away_team"] == db_match["away_team"]), 
+            None
+        )
+        
+        if matched_api_game:
+            # Format score string
+            score_string = f"{matched_api_game['home_goals']}-{matched_api_game['away_goals']}"
+            if matched_api_game['home_penalties'] > 0 or matched_api_game['away_penalties'] > 0:
+                score_string += f" (PEN: {matched_api_game['home_penalties']}-{matched_api_game['away_penalties']})"
+
+            actual_winner = determine_winner(
+                matched_api_game["home_team"], 
+                matched_api_game["away_team"], 
+                matched_api_game["home_goals"], 
+                matched_api_game["away_goals"],
+                matched_api_game["home_penalties"],
+                matched_api_game["away_penalties"]
+            )
+            
+            print(f"Match Finished: {db_match['home_team']} vs {db_match['away_team']} -> {score_string} (Winner: {actual_winner})")
+            
+            # 5. Update the matches table with the final result
+            supabase.table("matches").update({"result": score_string}).eq("id", db_match["id"]).execute()
+            
 
 if __name__ == "__main__":
     print("Looking for completed matches via AI...")

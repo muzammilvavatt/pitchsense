@@ -27,13 +27,22 @@ def fetch_hot_matches():
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={GEMINI_API_KEY}"
     
     today = datetime.now().strftime('%Y-%m-%d')
+    # Fetch raw data from ESPN public scoreboard to feed to Gemini
+    # This bypasses the need for the googleSearch tool, avoiding the free tier rate limit
+    try:
+        espn_res = requests.get('https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates=20260718-20260725')
+        espn_data = espn_res.text[:30000] # Limit to 30k chars to fit in context
+    except Exception:
+        espn_data = "No data available."
+
     prompt = f"""
     Today's date is {today}.
-    Search the web for the most important upcoming international and top-flight club football (soccer) fixtures over the next 7 days.
-    Focus EXCLUSIVELY on major elite tournaments: FIFA World Cup, Euro Championship, Copa America, UEFA Nations League, UEFA Champions League, Premier League, La Liga, Serie A, Bundesliga.
-    DO NOT return minor leagues or Major League Soccer (MLS) under any circumstances.
-    DO NOT include ANY qualification rounds, qualifiers, or playoffs for club competitions (e.g., UEFA Champions League Qualifiers). Only include the main tournament stages.
-    If there are World Cup matches happening in the next 48 hours, they MUST be included.
+    I am providing you with raw JSON scoreboard data from a public sports API.
+    Analyze this raw data to find the most important upcoming international and top-flight club football (soccer) fixtures over the next 7 days.
+    Focus EXCLUSIVELY on major elite tournaments.
+    
+    RAW SCOREBOARD DATA:
+    {espn_data}
     
     Return the matches as a raw JSON array of objects. Do NOT wrap it in markdown block quotes like ```json. Just raw text.
     Each object must exactly match this structure:
@@ -52,7 +61,6 @@ def fetch_hot_matches():
     
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "tools": [{"googleSearch": {}}],
         "generationConfig": {
             "temperature": 0.1
         }
