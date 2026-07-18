@@ -45,7 +45,7 @@ def generate_batched_tactical_analysis(matches_list):
     Predict a wide, realistic variety of scores (e.g., 1-0, 3-0, 0-0, 2-1, 2-2, 3-1, 1-1, 4-2, etc.) depending on whether it will be a tight defensive struggle or an open shootout. Do not use the exact same score for every match. Analyze the specific offensive and defensive capabilities of these two teams to determine the most likely outcome. Be bold.
     
     Return a raw JSON array of objects. Do NOT wrap it in markdown block quotes like ```json. Just raw text.
-    Each object must exactly match this structure:
+    Each object must exactly match this structure. Do NOT change the JSON keys:
     {{
         "home_team": "String (exact same name as I provided)",
         "away_team": "String (exact same name as I provided)",
@@ -59,7 +59,8 @@ def generate_batched_tactical_analysis(matches_list):
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
-            "temperature": 0.95
+            "temperature": 0.2,
+            "responseMimeType": "application/json"
         }
     }
     
