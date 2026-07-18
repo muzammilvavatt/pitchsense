@@ -42,7 +42,7 @@ def generate_batched_tactical_analysis(matches_list):
     Sound like a brilliant, data-driven, top-tier football analyst (like Gary Neville meeting Marcelo Bielsa) breaking down the game.
     
     IMPORTANT CRITERIA FOR SCORE PREDICTION:
-    Do NOT default to "2-1" for every match! Analyze the specific offensive and defensive capabilities of these two teams. Predict a wide, realistic variety of scores (e.g., 1-0, 3-0, 0-0, 2-2, 3-1, 1-1, 4-2, etc.) depending on whether it will be a tight defensive struggle or an open shootout. Be bold.
+    Predict a wide, realistic variety of scores (e.g., 1-0, 3-0, 0-0, 2-1, 2-2, 3-1, 1-1, 4-2, etc.) depending on whether it will be a tight defensive struggle or an open shootout. Do not use the exact same score for every match. Analyze the specific offensive and defensive capabilities of these two teams to determine the most likely outcome. Be bold.
     
     Return a raw JSON array of objects. Do NOT wrap it in markdown block quotes like ```json. Just raw text.
     Each object must exactly match this structure:
