@@ -64,7 +64,8 @@ def fetch_finished_matches_ai(pending_matches):
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
-            "temperature": 0.1
+            "temperature": 0.1,
+            "responseMimeType": "application/json"
         }
     }
     
@@ -186,18 +187,18 @@ def update_database_results():
             None
         )
         
-        if matched_api_game:
+        if matched_api_game and matched_api_game.get('home_goals') is not None and matched_api_game.get('away_goals') is not None:
             # Format score string
             score_string = f"{matched_api_game['home_goals']}-{matched_api_game['away_goals']}"
-            if matched_api_game['home_penalties'] > 0 or matched_api_game['away_penalties'] > 0:
-                score_string += f" (PEN: {matched_api_game['home_penalties']}-{matched_api_game['away_penalties']})"
+            if matched_api_game.get('home_penalties', 0) > 0 or matched_api_game.get('away_penalties', 0) > 0:
+                score_string += f" (PEN: {matched_api_game.get('home_penalties', 0)}-{matched_api_game.get('away_penalties', 0)})"
 
             actual_winner = determine_winner(
                 matched_api_game["home_team"], 
                 matched_api_game["away_team"], 
                 matched_api_game["home_goals"], 
                 matched_api_game["away_goals"],
-                matched_api_game["home_penalties"],
+                matched_api_game.get("home_penalties", 0),
                 matched_api_game["away_penalties"]
             )
             
